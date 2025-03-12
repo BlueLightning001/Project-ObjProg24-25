@@ -31,5 +31,8 @@ public class Player {
         this.money.set(money);
     }
 
+    public String toString(){
+        return "Name: " + getName() + ", Money: " + getMoney();
+    }
 
 }

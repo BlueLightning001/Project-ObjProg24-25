@@ -43,13 +43,13 @@ public class StartScreenView {
     private final Button startButton;
     private final Label titleLabel;
     private final StackPane titleContainer;
-
+    private final Label warningLabel;
     public StartScreenView(PlayerModel model, Locale locale) {
         Font labelFont = Font.font("Monotype Corsiva", FontWeight.BOLD, 20);
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         this.model = model;
 
-        ObservableList<Player> players = model.getPlayers();
+
 
         this.container = new StackPane();
         this.centerContainer = new VBox();
@@ -117,9 +117,12 @@ public class StartScreenView {
                         "-fx-border-width: 2px;"
         );
 
+        // Warning label
+        this.warningLabel = new Label();
+        warningLabel.setStyle("-fx-text-fill: red;");
+        warningLabel.setVisible(false);
 
-
-        this.centerContainer.getChildren().addAll(titleContainer, grid, startButton); //TODO startbutton
+        this.centerContainer.getChildren().addAll(titleContainer,warningLabel, grid, startButton); //TODO startbutton
         this.centerContainer.setSpacing(20);
 
         // Used for resizing the window
@@ -154,7 +157,13 @@ public class StartScreenView {
         this.centerContainer.setAlignment(Pos.CENTER);
 
     }
-
+    public void showWarning(String message) {
+        warningLabel.setVisible(true);
+        warningLabel.setText(message);
+    }
+    public void hideWarning() {
+        warningLabel.setVisible(false);
+    }
     private static BackgroundImage getBackgroundImage(Image backgroundImage) {
         // Scale to 100% of parent width and height
         // Scale width and height proportionally
