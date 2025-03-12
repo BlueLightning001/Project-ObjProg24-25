@@ -109,6 +109,14 @@ public class StartScreenView {
         this.startButton = new Button(bundle.getString("startScreen.startButton"));
         this.startButton.setPrefSize(centerContainer.getPrefWidth(), 50);
         this.startButton.setFont(labelFont);
+        this.startButton.setStyle(
+                "-fx-background-color: rgba(0, 0, 0, 0.7); " +
+                        "-fx-text-fill: white; " +
+                        "-fx-opacity: 0.8; " +
+                        "-fx-border-color: white; " +
+                        "-fx-border-width: 2px;"
+        );
+
 
 
         this.centerContainer.getChildren().addAll(titleContainer, grid, startButton); //TODO startbutton
