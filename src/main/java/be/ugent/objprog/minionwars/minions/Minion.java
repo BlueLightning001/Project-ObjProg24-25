@@ -1,19 +1,23 @@
 package be.ugent.objprog.minionwars.minions;
 
+import be.ugent.objprog.minionwars.effects.EffectVisitor;
+import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.effect.Effect;
 
-public class Minion {
-    private final SimpleStringProperty name;
-    private final SimpleIntegerProperty cost;
-    private final SimpleIntegerProperty movement;
-    private Integer[] range;
-    private final SimpleIntegerProperty attack;
-    private final SimpleIntegerProperty defence;
-    private MinionEffect effect;
 
-    public Minion(String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect) {
+public abstract class Minion {
+    protected final SimpleStringProperty name;
+    protected final SimpleIntegerProperty cost;
+    protected final SimpleIntegerProperty movement;
+    protected Integer[] range;
+    protected final SimpleIntegerProperty attack;
+    protected final SimpleIntegerProperty defence;
+    protected MinionEffect effect;
+
+    public Minion(String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, MinionTypeImage type) {
         this.name = new SimpleStringProperty(name);
         this.cost = new SimpleIntegerProperty(cost);
         this.movement = new SimpleIntegerProperty(movement);
@@ -29,6 +33,13 @@ public class Minion {
 
     public SimpleIntegerProperty costProperty() {
         return cost;
+    }
+
+    public void decreaseDefence(int value) {
+        if (this.defence.get() < value) {
+            throw  new IllegalArgumentException("Defence too low " + defence.get());
+        }
+        this.defence.set(this.defence.get() - value);
     }
 
     public SimpleIntegerProperty defenceProperty() {
@@ -98,5 +109,11 @@ public class Minion {
     public SimpleStringProperty nameProperty() {
         return name;
     }
+    // Accept method for Visitor
+    //TODO remove individual minion classes if deemed unnecessary
+    public abstract void applyEffect(EffectVisitor effectVisitor);
 
+    public void applyEffectLogic(MinionEffect effect) {
+        effect.applyEffect(this);
+    }
 }
