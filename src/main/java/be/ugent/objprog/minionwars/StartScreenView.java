@@ -32,79 +32,108 @@ public class StartScreenView {
     private final PlayerModel model;
     private final StackPane container;
     private final VBox centerContainer;
-    private final TextField player1TextField;
-    private final Label player1Label;
-    private final TextField player2TextField;
-    private final Label player2Label;
-    private final TextField moneyTextField;
-    private final Label moneyLabel;
-    private final GridPane grid;
-    private final Button startButton;
-    private final Label titleLabel;
-    private final StackPane titleContainer;
-    private final Label warningLabel;
-
+    private TextField player1TextField;
+    private Label player1Label;
+    private TextField player2TextField;
+    private Label player2Label;
+    private TextField moneyTextField;
+    private Label moneyLabel;
+    private GridPane grid;
+    private Button startButton;
+    private Label titleLabel;
+    private StackPane titleContainer;
+    private Label warningLabel;
     public StartScreenView(PlayerModel model, Locale locale) {
-        Font labelFont = Font.font("Monotype Corsiva", FontWeight.BOLD, 20);
-        this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         this.model = model;
+        this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
+        Font labelFont = Font.font("Monotype Corsiva", FontWeight.BOLD, 20);
+        DropShadow shadow = createDropShadow();
 
         this.container = new StackPane();
         this.centerContainer = new VBox();
 
-        // Shadow effect
-        DropShadow shadow = new DropShadow();
+        setupTitle();
+        setupGrid(labelFont, shadow);
+        setupStartButton(labelFont);
+        setupWarningLabel();
+        setupBackground();
+        setupResizing();
 
+        this.centerContainer.getChildren().addAll(titleContainer, warningLabel, grid, startButton);
+        this.centerContainer.setSpacing(20);
+        this.centerContainer.setAlignment(Pos.CENTER);
+        this.centerContainer.setMaxWidth(Double.MAX_VALUE);
+        VBox.setVgrow(this.centerContainer, Priority.ALWAYS);
+
+        this.container.setAlignment(Pos.CENTER);
+        Group scalingGroup = new Group(centerContainer);
+        this.container.getChildren().add(scalingGroup);
+    }
+
+    // Creates a shadow effect
+    private DropShadow createDropShadow() {
+        DropShadow shadow = new DropShadow();
         shadow.setBlurType(BlurType.GAUSSIAN);
         shadow.setRadius(10);
         shadow.setColor(Color.BLACK);
+        return shadow;
+    }
 
-        this.player1TextField = new TextField();
-        this.player1Label = new Label(bundle.getString("startScreen.player1Label"));
-        this.player1Label.setStyle("-fx-text-fill: white;");
-        this.player1Label.setEffect(shadow);
-        this.player1Label.setFont(labelFont);
-        this.player1TextField.setPromptText(bundle.getString("startScreen.player1Prompt"));
+    // Sets up the title container
+    private void setupTitle() {
+        this.titleContainer = new StackPane();
+        Image titleBanner = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/other/banner.png")));
+        this.titleContainer.setPrefSize(titleBanner.getWidth(), titleBanner.getHeight());
+        this.titleContainer.setBackground(new Background(getBackgroundImage(titleBanner)));
 
-        this.player2TextField = new TextField();
-        this.player2Label = new Label(bundle.getString("startScreen.player2Label"));
-        this.player2Label.setStyle("-fx-text-fill: white;");
-        this.player2Label.setEffect(shadow);
-        this.player2Label.setFont(labelFont);
-        this.player2TextField.setPromptText(bundle.getString("startScreen.player2Prompt"));
+        this.titleLabel = new Label(bundle.getString("startScreen.titleLabel"));
+        titleLabel.setFont(Font.font("Old English Text MT", 90));
+        titleLabel.setStyle("-fx-text-fill: #2D2D2D;");
+        titleContainer.getChildren().add(titleLabel);
+    }
 
-        this.moneyTextField = new TextField();
-        this.moneyLabel = new Label(bundle.getString("startScreen.moneyLabel"));
-        this.moneyLabel.setStyle("-fx-text-fill: white;");
-        this.moneyLabel.setEffect(shadow);
-        this.moneyLabel.setFont(labelFont);
-        this.moneyTextField.setPromptText(bundle.getString("startScreen.moneyPrompt"));
-
+    // Sets up the grid layout with text fields and labels
+    private void setupGrid(Font labelFont, DropShadow shadow) {
         this.grid = new GridPane();
-        grid.setHgap(10); // Space between Label & TextField
-        grid.setVgap(10); // Space between rows
+        grid.setHgap(10);
+        grid.setVgap(10);
         grid.setAlignment(Pos.CENTER);
 
-        // Add to grid (column, row)
+        this.player1TextField = createTextField("startScreen.player1Prompt");
+        this.player1Label = createStyledLabel("startScreen.player1Label", labelFont, shadow);
+
+        this.player2TextField = createTextField("startScreen.player2Prompt");
+        this.player2Label = createStyledLabel("startScreen.player2Label", labelFont, shadow);
+
+        this.moneyTextField = createTextField("startScreen.moneyPrompt");
+        this.moneyLabel = createStyledLabel("startScreen.moneyLabel", labelFont, shadow);
+
         grid.add(player1Label, 0, 0);
         grid.add(player1TextField, 1, 0);
         grid.add(player2Label, 0, 1);
         grid.add(player2TextField, 1, 1);
         grid.add(moneyLabel, 0, 2);
         grid.add(moneyTextField, 1, 2);
+    }
 
-        // Title
-        this.titleContainer = new StackPane();
-        Image titleBanner = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/other/banner.png")));
-        this.titleContainer.setPrefSize(titleBanner.getWidth(), titleBanner.getHeight());
-        this.titleContainer.setBackground(new Background(getBackgroundImage(titleBanner)));
-        this.titleLabel = new Label(bundle.getString("startScreen.titleLabel"));
-        titleLabel.setFont(Font.font("Old English Text MT", 90));
-        titleLabel.setStyle("-fx-text-fill: #2D2D2D;");
-        titleContainer.getChildren().add(titleLabel);
+    // Creates a styled label
+    private Label createStyledLabel(String key, Font font, DropShadow shadow) {
+        Label label = new Label(bundle.getString(key));
+        label.setStyle("-fx-text-fill: white;");
+        label.setEffect(shadow);
+        label.setFont(font);
+        return label;
+    }
 
-        // Start button
+    private TextField createTextField(String prompt) {
+        TextField textField = new TextField();
+        textField.setPromptText(bundle.getString(prompt));
+        return textField;
+    }
+
+
+    private void setupStartButton(Font labelFont) {
         this.startButton = new Button(bundle.getString("startScreen.startButton"));
         this.startButton.setPrefSize(centerContainer.getPrefWidth(), 50);
         this.startButton.setFont(labelFont);
@@ -115,46 +144,32 @@ public class StartScreenView {
                         "-fx-border-color: white; " +
                         "-fx-border-width: 2px;"
         );
+    }
 
-        // Warning label
+
+    private void setupWarningLabel() {
         this.warningLabel = new Label();
         warningLabel.setStyle("-fx-text-fill: red;");
         warningLabel.setVisible(false);
-
-        this.centerContainer.getChildren().addAll(titleContainer, warningLabel, grid, startButton); //TODO startbutton
-        this.centerContainer.setSpacing(20);
-
-        // Used for resizing the window
-        Group scalingGroup = new Group(centerContainer);
-        this.container.getChildren().add(scalingGroup);
-
-        this.container.setAlignment(Pos.CENTER);
-
-        this.centerContainer.setAlignment(Pos.CENTER);
-        this.centerContainer.setMaxWidth(Double.MAX_VALUE);
-        VBox.setVgrow(this.centerContainer, Priority.ALWAYS);
+    }
 
 
-        // Background
-        Image backgroundImage = new Image("be/ugent/objprog/minionwars/images/splash-end.jpg");
-
+    private void setupBackground() {
+        Image backgroundImage = new Image("be/ugent/objprog/minionwars/images/splash-start.jpg");
         BackgroundImage bgImage = getBackgroundImage(backgroundImage);
         container.setBackground(new Background(bgImage));
+    }
 
-        // Resizing
+    // Configures window resizing
+    private void setupResizing() {
         Scale scale = new Scale(1, 1);
         centerContainer.getTransforms().add(scale);
 
-        // Bind scaling to window size
         scale.xProperty().bind(Bindings.createDoubleBinding(
                 () -> Math.min(container.getWidth() / 500, container.getHeight() / 500),
                 container.widthProperty(), container.heightProperty()
         ));
-        scale.yProperty().bind(scale.xProperty()); // Keep aspect ratio
-
-        this.container.setAlignment(Pos.CENTER);
-        this.centerContainer.setAlignment(Pos.CENTER);
-
+        scale.yProperty().bind(scale.xProperty());
     }
 
     private static BackgroundImage getBackgroundImage(Image backgroundImage) {
