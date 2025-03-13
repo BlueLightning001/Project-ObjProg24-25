@@ -1,11 +1,12 @@
-package be.ugent.objprog.minionwars;
+package be.ugent.objprog.minionwars.controllers;
 
+import be.ugent.objprog.minionwars.models.PlayerModel;
+import be.ugent.objprog.minionwars.views.GameView;
+import be.ugent.objprog.minionwars.views.StartScreenView;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
@@ -99,16 +100,14 @@ public class StartScreenController {
 
         GameController gameController = new GameController();
         GameView gameView = new GameView();
-        StackPane root = new StackPane(new Button("TESTER"));
-        root.setPrefSize(500, 500); //TODO adjust to view
-
-        root.setOnKeyPressed(event -> {
+        Scene scene = new Scene(gameController.getView(), 800, 600);
+        scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.F11) {
                 stage.setFullScreen(!stage.isFullScreen());
             }
         });
 
-        stage.setScene(new Scene(root));
+        stage.setScene(scene);
         stage.centerOnScreen();
         if (fullscreen) {
             stage.setFullScreenExitHint(""); // Hide the hint

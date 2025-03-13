@@ -1,4 +1,4 @@
-package be.ugent.objprog.minionwars;
+package be.ugent.objprog.minionwars.models;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;

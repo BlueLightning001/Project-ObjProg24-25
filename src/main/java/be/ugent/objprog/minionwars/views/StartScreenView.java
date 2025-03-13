@@ -1,5 +1,6 @@
-package be.ugent.objprog.minionwars;
+package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
