@@ -36,8 +36,9 @@ public class GameView {
         menuTitleLabel = new Label();
         menuTable = new TableView<>();
         endTurnButton = new Button();
-        gameTilePane = new TilePane(tileModel,tileModel.getInitialTiles()); //TODO
-
+        gameTilePane = new TilePane(tileModel); //TODO
+        this.root.getChildren().addAll(menuContainer, gameTilePane);
+        this.container.getChildren().add(root);
 
 
 

@@ -27,6 +27,7 @@ public class HexTile extends Polygon {
         );
 
         // Load image
+        System.out.println(tile);
         Image image = new Image(getClass().getResource(tile.getImagePath()).toExternalForm());
         setFill(new ImagePattern(image));
 

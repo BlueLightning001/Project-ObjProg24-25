@@ -2,11 +2,13 @@ package be.ugent.objprog.minionwars.tiles;
 
 import be.ugent.objprog.minionwars.minions.Minion;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 public abstract class Tile {
     private final int xCoord;
     private final int yCoord;
+    private final SimpleIntegerProperty homebase;
     private final String imagePath;
     private final boolean traversable;
     private int traversalCost;
@@ -16,9 +18,11 @@ public abstract class Tile {
 
 
 
-    public Tile(int x, int y, String imagePath,boolean traversable,int traversalCost , boolean canAttack, boolean canBeAttacked) {
+    public Tile(int x, int y,int homebase, String imagePath,boolean traversable,
+                int traversalCost , boolean canAttack, boolean canBeAttacked) {
         this.xCoord = x;
         this.yCoord = y;
+        this.homebase = new SimpleIntegerProperty(homebase);
         this.imagePath = imagePath;
         this.traversable = traversable;
         this.traversalCost = traversalCost;
@@ -26,19 +30,31 @@ public abstract class Tile {
         this.canBeAttacked = canBeAttacked;
     }
 
+    public int getHomebase() {
+        return homebase.get();
+    }
 
 
     public int getXCoord() { return xCoord; }
     public int getYCoord() { return yCoord; }
     public String getImagePath() { return imagePath; }
     public Minion getOccupant() { return occupant.get(); }
+
+    public SimpleIntegerProperty homebaseProperty() {
+        return homebase;
+    }
+
+    public void setHomebase(int homebase) {
+        this.homebase.set(homebase);
+    }
+
     public void setOccupant(Minion occupant) {this.occupant.set(occupant); }
     public ObjectProperty<Minion> occupantProperty() { return occupant; }
 
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "(" + xCoord + ", " + yCoord + "Occupant: " + occupant  +")";
+        return this.getClass().getSimpleName() + "(" + xCoord + ", " + yCoord + ") ( Occupant: " + occupant.get()  +")";
     }
 
 }
