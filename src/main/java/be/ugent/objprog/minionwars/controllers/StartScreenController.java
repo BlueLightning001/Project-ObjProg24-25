@@ -22,12 +22,13 @@ public class StartScreenController {
     private final Stage stage;
     private Double prefStageWidth = null;
     private Double prefStageHeight = null;
-
+    private Locale locale;
     public StartScreenController(Stage stage, Locale locale) {
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         this.model = new PlayerModel();
         this.view = new StartScreenView(model, locale);
         this.stage = stage;
+        this.locale = locale;
 
         setupBindings();
         setupListeners();
@@ -98,8 +99,7 @@ public class StartScreenController {
     private void startGame() {
         boolean fullscreen = stage.isFullScreen();
 
-        GameController gameController = new GameController();
-        GameView gameView = new GameView();
+        GameController gameController = new GameController(model,locale);
         Scene scene = new Scene(gameController.getView(), 800, 600);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.F11) {

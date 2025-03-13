@@ -8,7 +8,7 @@ public abstract class MinionEffect {
     public MinionEffect(int value) {
         this.value = value;
     }
-
+    //TODO implement each effect
     public abstract void applyEffect(Minion minion);
 
     public int getValue() {
