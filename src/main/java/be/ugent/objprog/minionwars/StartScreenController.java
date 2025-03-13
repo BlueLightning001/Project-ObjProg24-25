@@ -38,23 +38,29 @@ public class StartScreenController {
     }
 
     private void startGameIfValid() {
-        if (model.allPlayersHaveNames()) {
-            if (model.playersHaveDistinctNames()) {
-                if (model.isValidStartBudget()) {
-                    view.hideWarning();
-                    System.out.println("STARTED");
-                    model.giveStartBudget();
-                    startGame();
-                } else {
-                    view.showWarning(MessageFormat.format(bundle.getString("warning.invalidStartBudget"), model.getMinStartBudget(), model.getMaxStartBudget()));
-                }
-            }else {
-                view.showWarning(bundle.getString("warning.duplicateNames"));
-            }
-        } else {
+        if (!model.allPlayersHaveNames()) {
             view.showWarning(bundle.getString("warning.missingPlayers"));
+            return;
         }
+
+        if (!model.playersHaveDistinctNames()) {
+            view.showWarning(bundle.getString("warning.duplicateNames"));
+            return;
+        }
+
+        if (!model.isValidStartBudget()) {
+            view.showWarning(MessageFormat.format(bundle.getString("warning.invalidStartBudget"),
+                    model.getMinStartBudget(), model.getMaxStartBudget()));
+            return;
+        }
+
+        // If all checks pass, start the game
+        view.hideWarning();
+        System.out.println("STARTED");
+        model.giveStartBudget();
+        startGame();
     }
+
     public Region getView() {
         return view.getContainer();
     }
