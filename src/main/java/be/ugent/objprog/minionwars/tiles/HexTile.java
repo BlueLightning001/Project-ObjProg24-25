@@ -13,6 +13,7 @@ public class HexTile extends Polygon {
     private static final double n = Math.sqrt(r * r * 0.75);
     private static final double TILE_HEIGHT = 2 * r;
     private static final double TILE_WIDTH = 2 * n;
+    private double startX, startY;
     private ObjectProperty<Tile> tile;
 
     public HexTile(double x, double y, Tile tile) {
@@ -34,7 +35,22 @@ public class HexTile extends Polygon {
         setStrokeWidth(1);
         setStroke(Color.BLACK);
 
-        setOnMouseClicked(e -> System.out.println("Clicked: " + this));
+        setOnMousePressed(event -> {
+            startX = event.getScreenX();
+            startY = event.getScreenY();
+        });
+
+        setOnMouseReleased(event -> {
+            double endX = event.getScreenX();
+            double endY = event.getScreenY();
+
+            double dragDistance = Math.hypot(endX - startX, endY - startY);
+
+            if (dragDistance < 5) { // Only register a click if the movement is small
+                System.out.println("Pressed: " + tile.toString());
+            }
+        });
+
     }
     @Override
     public String toString() {

@@ -48,6 +48,9 @@ public class GameView {
         menuTable = new TableView<>();
         endTurnButton = new Button("START"); //TODO
         centerBoardButton = new Button("CENTER_BOARD");
+        centerBoardButton.setOnAction(event -> {
+            resetGameGroupPosition();
+        });
         menuButtonBar = new ButtonBar();
         gameTileGroup = new TileGroup(tileModel); //TODO
         gamePane = new Pane();
@@ -60,17 +63,21 @@ public class GameView {
         this.root.getChildren().addAll(menuContainer, gamePane);
         gamePane.setPrefSize(500,500);
         gamePane.setStyle("-fx-border-color: black; -fx-border-style: solid; -fx-border-width: 10");
-        setupZoomAndDrag(gamePane, gameTileGroup);
-        Rectangle clip = new Rectangle(500, 500); // Match the gamePane size
-        gamePane.setClip(clip);
+
+
+
+
+
         this.container.getChildren().add(root);
+        setupZoomAndDrag(gamePane, gameTileGroup);
 
 
 
     }
 
     private void setupZoomAndDrag(Pane pane, TileGroup contentGroup) {
-
+        Rectangle clip = new Rectangle(pane.getPrefWidth(), pane.getPrefHeight());
+        pane.setClip(clip);
         pane.setOnScroll((ScrollEvent event) -> {
             double zoomScale = (event.getDeltaY() > 0) ? 1.1 : 0.9; // Zoom in/out
             double newZoomFactor = zoomFactor * zoomScale;
@@ -88,6 +95,7 @@ public class GameView {
         pane.setOnMousePressed((MouseEvent event) -> {
             dragStartX = event.getSceneX();
             dragStartY = event.getSceneY();
+            event.consume();
         });
 
         pane.setOnMouseDragged((MouseEvent event) -> {
@@ -99,7 +107,15 @@ public class GameView {
 
             dragStartX = event.getSceneX();
             dragStartY = event.getSceneY();
+            event.consume();
         });
+    }
+    public void resetGameGroupPosition() {
+        gameTileGroup.setTranslateX(0);
+        gameTileGroup.setTranslateY(0);
+        gameTileGroup.setScaleX(1.0);
+        gameTileGroup.setScaleY(1.0);
+        zoomFactor = 1.0; // Reset stored zoom factor
     }
 
 
