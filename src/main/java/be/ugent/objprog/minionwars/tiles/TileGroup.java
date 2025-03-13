@@ -1,14 +1,10 @@
 package be.ugent.objprog.minionwars.tiles;
 
 import be.ugent.objprog.minionwars.models.TileModel;
-import javafx.collections.ObservableList;
-import javafx.scene.layout.Pane;
+import javafx.scene.Group;
 import javafx.scene.shape.Polygon;
 
-import java.util.List;
-import java.util.Map;
-
-public class TilePane extends Pane {
+public class TileGroup extends Group {
     private static final double r = 20; // Hexagon outer radius
     private static final double n = Math.sqrt(r * r * 0.75); // Hexagon width offset
     private static final double TILE_HEIGHT = 2 * r;
@@ -18,7 +14,7 @@ public class TilePane extends Pane {
 
     private final Tile[][] tileGrid;
 
-    public TilePane(TileModel tileModel) {
+    public TileGroup(TileModel tileModel) {
         this.tileGrid = tileModel.getTileGrid();
         int xStartOffset = 40; // offsets the entire field to the right
         int yStartOffset = 40; // offsets the entire fiels downwards

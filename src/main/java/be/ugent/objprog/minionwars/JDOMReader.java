@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class JDOMReader {
-    private static String FILENAME = "/be/ugent/objprog/minionwars/configs/game-big .xml";
+    private static String FILENAME = "/be/ugent/objprog/minionwars/configs/game-big.xml";
     private List<Minion> minionList;
     private List<Power> powers;
     private List<Tile> tiles;

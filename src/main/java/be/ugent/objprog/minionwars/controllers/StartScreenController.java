@@ -65,7 +65,7 @@ public class StartScreenController {
         });
         view.getMoneyTextField().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                view.getStartButton().requestFocus();
+                startGameIfValid();
             }
         });
 

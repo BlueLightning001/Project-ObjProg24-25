@@ -36,5 +36,9 @@ public class HexTile extends Polygon {
 
         setOnMouseClicked(e -> System.out.println("Clicked: " + this));
     }
+    @Override
+    public String toString() {
+        return tile.toString();
+    }
 }
 
