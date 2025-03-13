@@ -20,13 +20,15 @@ public class TilePane extends Pane {
 
     public TilePane(TileModel tileModel) {
         this.tileGrid = tileModel.getTileGrid();
+        int xStartOffset = 40; // offsets the entire field to the right
+        int yStartOffset = 40; // offsets the entire fiels downwards
 
         // Loop through the tiles and create visual representations
         for (int i = 0; i < tileGrid.length; i++) {
             for (int j = 0; j < tileGrid[i].length; j++) {
                 Tile tile = tileGrid[i][j];
-                double xCoord = tile.getYCoord() * TILE_WIDTH + (tile.getXCoord() % 2) * n;
-                double yCoord = tile.getYCoord() * TILE_HEIGHT * 0.75;
+                double xCoord = i * TILE_WIDTH + (j % 2) * n + xStartOffset;
+                double yCoord = j * TILE_HEIGHT * 0.75 + yStartOffset;
                 Polygon hexTile = new HexTile(xCoord, yCoord, tile);
                 getChildren().add(hexTile);
             }
