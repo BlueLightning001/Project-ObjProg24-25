@@ -1,21 +1,32 @@
 package be.ugent.objprog.minionwars;
 
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
 public class StartScreenController {
     private final StartScreenView view;
     private final PlayerModel model;
     private final ResourceBundle bundle;
+    private final Stage stage;
+    private Double prefStageWidth = null;
+    private Double prefStageHeight = null;
 
-    public StartScreenController(Locale locale) {
+    public StartScreenController(Stage stage, Locale locale) {
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         this.model = new PlayerModel();
         this.view = new StartScreenView(model, locale);
+        this.stage = stage;
 
         setupBindings();
         setupListeners();
@@ -28,9 +39,31 @@ public class StartScreenController {
     }
 
     private void setupListeners() {
-        view.getMoneyTextField().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                view.getMoneyTextField().setText(newValue.replaceAll("[^\\d]", ""));
+        // Only allows numbers moneyTextField
+        UnaryOperator<TextFormatter.Change> filter = change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("\\d*")) { // Allow only digits
+                return change;
+            }
+            return null; // Reject the change
+        };
+
+        TextFormatter<Number> textFormatter = new TextFormatter<>(new NumberStringConverter(), model.getMinStartBudget(), filter);
+        view.getMoneyTextField().setTextFormatter(textFormatter);
+        // Makes it easier to navigate trough the menu using only keyboard
+        view.getPlayer1TextField().setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                view.getPlayer2TextField().requestFocus();
+            }
+        });
+        view.getPlayer2TextField().setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                view.getMoneyTextField().requestFocus();
+            }
+        });
+        view.getMoneyTextField().setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                view.getStartButton().requestFocus();
             }
         });
 
@@ -61,11 +94,33 @@ public class StartScreenController {
         startGame();
     }
 
+    private void startGame() {
+        boolean fullscreen = stage.isFullScreen();
+
+        GameController gameController = new GameController();
+        GameView gameView = new GameView();
+        StackPane root = new StackPane(new Button("TESTER"));
+        root.setPrefSize(500, 500); //TODO adjust to view
+
+        root.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.F11) {
+                stage.setFullScreen(!stage.isFullScreen());
+            }
+        });
+
+        stage.setScene(new Scene(root));
+        stage.centerOnScreen();
+        if (fullscreen) {
+            stage.setFullScreenExitHint(""); // Hide the hint
+            stage.setFullScreen(true);
+        }
+
+        stage.show();
+        stage.setFullScreenExitHint(null); // Restore default hint
+    }
+
     public Region getView() {
         return view.getContainer();
-    }
-    private void startGame() {
-        System.out.println(model);
     }
 
 }

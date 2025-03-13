@@ -15,11 +15,12 @@ public class MinionWars extends Application {
     public void start(Stage primaryStage) throws IOException {
         Locale locale = Locale.getDefault();
 
-        StartScreenController controller = new StartScreenController(locale);
+        StartScreenController controller = new StartScreenController(primaryStage,locale);
         Scene scene = new Scene(controller.getView(), controller.getView().getPrefWidth() , controller.getView().getPrefHeight());
         primaryStage.setTitle("Minion Wars");
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/minions/sword.png"))));
         primaryStage.setScene(scene);
+        primaryStage.centerOnScreen();
         // Add key event handler for F11
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.F11) {
