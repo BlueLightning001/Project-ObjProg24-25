@@ -1,6 +1,8 @@
 package be.ugent.objprog.minionwars.tiles;
 
 import be.ugent.objprog.minionwars.minions.Minion;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 public abstract class Tile {
     private final int xCoord;
@@ -10,7 +12,8 @@ public abstract class Tile {
     private int traversalCost;
     private final boolean canAttack;
     private final boolean canBeAttacked;
-    private Minion occupant = null ;
+    private final ObjectProperty<Minion> occupant = new SimpleObjectProperty<>(this, "occupant", null);
+
 
 
     public Tile(int x, int y, String imagePath,boolean traversable,int traversalCost , boolean canAttack, boolean canBeAttacked) {
@@ -23,20 +26,19 @@ public abstract class Tile {
         this.canBeAttacked = canBeAttacked;
     }
 
-    public Minion getOccupant() {
-        return occupant;
-    }
+
 
     public int getXCoord() { return xCoord; }
     public int getYCoord() { return yCoord; }
     public String getImagePath() { return imagePath; }
+    public Minion getOccupant() { return occupant.get(); }
+    public void setOccupant(Minion occupant) {this.occupant.set(occupant); }
+    public ObjectProperty<Minion> occupantProperty() { return occupant; }
 
-    public void setOccupant(Minion occupant) {
-        this.occupant = occupant;
-    }
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "(" + xCoord + ", " + yCoord + "Occupant: " + occupant  +")";
     }
+
 }

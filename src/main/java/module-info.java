@@ -9,4 +9,5 @@ open module be.ugent.objprog.minionwars {
     exports be.ugent.objprog.minionwars.models;
     exports be.ugent.objprog.minionwars.effects;
     exports be.ugent.objprog.minionwars.minions;
+    exports be.ugent.objprog.minionwars.tiles;
 }
