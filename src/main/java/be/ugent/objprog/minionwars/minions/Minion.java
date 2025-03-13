@@ -7,6 +7,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.effect.Effect;
 
+import java.util.Arrays;
+
 
 public abstract class Minion {
     protected final SimpleStringProperty name;
@@ -16,6 +18,7 @@ public abstract class Minion {
     protected final SimpleIntegerProperty attack;
     protected final SimpleIntegerProperty defence;
     protected MinionEffect effect;
+    protected MinionTypeImage minionType;
 
     public Minion(String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, MinionTypeImage type) {
         this.name = new SimpleStringProperty(name);
@@ -25,6 +28,7 @@ public abstract class Minion {
         this.attack = new SimpleIntegerProperty(attack);
         this.defence = new SimpleIntegerProperty(defence);
         this.effect = effect;
+        this.minionType = type;
     }
 
     public SimpleIntegerProperty attackProperty() {
@@ -115,5 +119,9 @@ public abstract class Minion {
 
     public void applyEffectLogic(MinionEffect effect) {
         effect.applyEffect(this);
+    }
+    @Override
+    public String toString() {
+        return minionType.toString() + ", NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + Arrays.toString(getRange());
     }
 }
