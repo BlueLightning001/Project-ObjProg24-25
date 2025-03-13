@@ -19,15 +19,15 @@ public class TilePane extends Pane {
     private final Tile[][] tileGrid;
 
     public TilePane(TileModel tileModel) {
-        List<Tile> initialTiles = tileModel.getInitialTiles();
         this.tileGrid = tileModel.getTileGrid();
 
         // Loop through the tiles and create visual representations
         for (int i = 0; i < tileGrid.length; i++) {
             for (int j = 0; j < tileGrid[i].length; j++) {
-                double xCoord = j * TILE_WIDTH + (i % 2) * n;
-                double yCoord = j * TILE_HEIGHT * 0.75;
-                Polygon hexTile = new HexTile(xCoord, yCoord, tileGrid[i][j]);
+                Tile tile = tileGrid[i][j];
+                double xCoord = tile.getYCoord() * TILE_WIDTH + (tile.getXCoord() % 2) * n;
+                double yCoord = tile.getYCoord() * TILE_HEIGHT * 0.75;
+                Polygon hexTile = new HexTile(xCoord, yCoord, tile);
                 getChildren().add(hexTile);
             }
         }

@@ -37,7 +37,10 @@ public class GameView {
         menuTable = new TableView<>();
         endTurnButton = new Button();
         gameTilePane = new TilePane(tileModel); //TODO
+        menuContainer.getChildren().addAll(menuTitleLabel,menuTable,endTurnButton);
         this.root.getChildren().addAll(menuContainer, gameTilePane);
+        gameTilePane.setPrefSize(500,500);
+        gameTilePane.setStyle("-fx-background-color: red;");
         this.container.getChildren().add(root);
 
 

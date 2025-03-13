@@ -25,7 +25,7 @@ public class JDOMReader {
     private TileFactory tileFactory;
 
     public JDOMReader() {
-        List<Tile> tiles = new ArrayList<Tile>();
+        tiles = new ArrayList<>();
         tileFactory = new TileFactory();
         // Step 3: Read and parse the XML file using SAXBuilder
         SAXBuilder saxBuilder = new SAXBuilder();
