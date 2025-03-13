@@ -1,10 +1,6 @@
 package be.ugent.objprog.minionwars;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
-import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 import java.text.MessageFormat;
@@ -42,18 +38,21 @@ public class StartScreenController {
     }
 
     private void startGameIfValid() {
-        if (model.areValidPlayers()) {
-            if (model.isValidStartBudget()) {
-                view.hideWarning();
-                System.out.println("STARTED");
-                System.out.println(model);
-                startGame();
-            } else {
-                view.showWarning(String.format(bundle.getString("warning.invalidStartBudget"), model.getMinStartBudget(), model.getMaxStartBudget()));
+        if (model.allPlayersHaveNames()) {
+            if (model.playersHaveDistinctNames()) {
+                if (model.isValidStartBudget()) {
+                    view.hideWarning();
+                    System.out.println("STARTED");
+                    model.giveStartBudget();
+                    startGame();
+                } else {
+                    view.showWarning(MessageFormat.format(bundle.getString("warning.invalidStartBudget"), model.getMinStartBudget(), model.getMaxStartBudget()));
+                }
+            }else {
+                view.showWarning(bundle.getString("warning.duplicateNames"));
             }
         } else {
-            view.showWarning(bundle.getString("warning.invalidPlayers"));
-            System.out.println("INVALID PLAYERS" + model);
+            view.showWarning(bundle.getString("warning.missingPlayers"));
         }
     }
     public Region getView() {
