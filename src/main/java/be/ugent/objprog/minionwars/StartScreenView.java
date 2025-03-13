@@ -80,7 +80,7 @@ public class StartScreenView {
         return shadow;
     }
 
-    // Sets up the title container
+    // Sets up the title container with a custom background
     private void setupTitle() {
         this.titleContainer = new StackPane();
         Image titleBanner = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/other/banner.png")));
@@ -93,7 +93,7 @@ public class StartScreenView {
         titleContainer.getChildren().add(titleLabel);
     }
 
-    // Sets up the grid layout with text fields and labels
+    // Sets up the grid layout for text fields and labels
     private void setupGrid(Font labelFont, DropShadow shadow) {
         this.grid = new GridPane();
         grid.setHgap(10);
@@ -117,7 +117,6 @@ public class StartScreenView {
         grid.add(moneyTextField, 1, 2);
     }
 
-    // Creates a styled label
     private Label createStyledLabel(String key, Font font, DropShadow shadow) {
         Label label = new Label(bundle.getString(key));
         label.setStyle("-fx-text-fill: white;");
