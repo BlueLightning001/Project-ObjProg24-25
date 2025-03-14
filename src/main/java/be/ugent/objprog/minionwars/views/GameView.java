@@ -103,6 +103,12 @@ public class GameView {
         VBox.setVgrow(menuButtonBar, Priority.ALWAYS);
         VBox.setVgrow(currentPlayerHBox, Priority.ALWAYS);
 
+        // Height ratios
+        menuTable.prefHeightProperty().bind(root.heightProperty().multiply(0.8));
+        menuButtonBar.prefHeightProperty().bind(root.heightProperty().multiply(0.1));
+        currentPlayerHBox.prefHeightProperty().bind(root.heightProperty().multiply(0.1));
+
+
         // Bind gamePane size
         gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.75)); // 75% of root width
         gamePane.prefHeightProperty().bind(root.heightProperty());
