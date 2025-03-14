@@ -62,8 +62,9 @@ public class GameView {
         });
 
         menuButtonBar = new ButtonBar();
-        gameTileGroup = new TileGroup(tileModel); //TODO
+
         gamePane = new Pane();  // Using Pane instead of Group for proper layout resizing
+        gameTileGroup = new TileGroup(tileModel,gamePane); //TODO
         menuContainer.getChildren().addAll(menuTitleLabel, menuTable, menuButtonBar);
         menuButtonBar.setPrefSize(menuContainer.getPrefWidth(), 50);
         menuButtonBar.getButtons().addAll(endTurnButton, centerBoardButton);
@@ -78,6 +79,12 @@ public class GameView {
         // Ensure menuContainer resizes properly
         menuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.25)); // 25% of root width
         menuContainer.prefHeightProperty().bind(root.heightProperty());
+        menuTitleLabel.setMaxWidth(Double.MAX_VALUE);
+        menuTable.setMaxWidth(Double.MAX_VALUE);
+        menuTable.setPrefHeight(Region.USE_COMPUTED_SIZE); // Allow automatic height
+        VBox.setVgrow(menuTable, Priority.ALWAYS); // Make it take remaining space
+        VBox.setVgrow(menuButtonBar, Priority.NEVER);
+
 
         // Bind the width of gamePane to root width
         gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.75)); // 75% of root width
