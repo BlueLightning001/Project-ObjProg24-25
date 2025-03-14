@@ -1,5 +1,6 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
@@ -8,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -25,7 +27,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import javafx.scene.layout.*;
-
 public class GameView {
     private StackPane container;
     private Locale locale;
@@ -36,9 +37,7 @@ public class GameView {
     private TableView<Minion> menuTable;
     private Button endTurnButton;
     private TileGroupPane gameTileGroup;
-    private Pane gamePane;
-    private double zoomFactor = 1.0;
-    private double dragStartX, dragStartY;
+    private ZoomableScrollPane gamePane;
     private ButtonBar menuButtonBar;
     private Button centerBoardButton;
     private double borderWidth = 5.0;
@@ -51,40 +50,35 @@ public class GameView {
         menuContainer = new VBox();
         menuTitleLabel = new Label();
         menuTable = new TableView<>();
-        endTurnButton = new Button("START"); //TODO
+        endTurnButton = new Button("START"); // TODO
         centerBoardButton = new Button("CENTER_BOARD");
-        centerBoardButton.setOnAction(event -> {
-            resetGameGroupPosition();
-        });
+
+        // Set up reset button action
+        centerBoardButton.setOnAction(event -> resetGameGroupPosition());
 
         menuButtonBar = new ButtonBar();
 
-        gamePane = new Pane();
-        gameTileGroup = new TileGroupPane(tileModel,gamePane); //TODO
+
+        gameTileGroup = new TileGroupPane(tileModel);
+
+        // Necessary since ZoomableScrollPane requires the content first
+        gamePane = new ZoomableScrollPane(gameTileGroup);
+        gameTileGroup.bindPane(gamePane);
+
+        // Allow scrolling
+        gamePane.setPannable(true);
+
         menuContainer.getChildren().addAll(menuTitleLabel, menuTable, menuButtonBar);
         menuButtonBar.setPrefSize(menuContainer.getPrefWidth(), 50);
         menuButtonBar.getButtons().addAll(endTurnButton, centerBoardButton);
         menuTitleLabel.setPrefSize(menuContainer.getPrefWidth(), 50);
 
-        gamePane.getChildren().add(gameTileGroup);
+        gamePane.setMinSize(400, 400); // Minimum size for the ZoomableScrollPane
+        gamePane.setStyle("-fx-background-color: black");
 
-
-        gamePane.setMinSize(400, 400);
-        gamePane.setBackground(new Background(new BackgroundImage(
-                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/other/grass3.png"))),
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER,
-                new BackgroundSize(
-                        100, 100,
-                        true, true,
-                        true, true
-                )
-        )));
-
+        // Bind gameTileGroup to gamePane size
         gameTileGroup.prefWidthProperty().bind(gamePane.widthProperty());
         gameTileGroup.prefHeightProperty().bind(gamePane.heightProperty());
-
 
         // Ensure menuContainer resizes properly
         menuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.25)); // 25% of root width
@@ -95,10 +89,11 @@ public class GameView {
         VBox.setVgrow(menuTable, Priority.ALWAYS); // Make it take remaining space
         VBox.setVgrow(menuButtonBar, Priority.NEVER);
 
+        // Bind gamePane size
         gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.75)); // 75% of root width
         gamePane.prefHeightProperty().bind(root.heightProperty());
 
-
+        // Bind root size to container size
         root.prefWidthProperty().bind(container.widthProperty());
         root.prefHeightProperty().bind(container.heightProperty());
 
@@ -116,8 +111,6 @@ public class GameView {
                 resetGameGroupPosition();
             }
         });
-
-        setupZoomAndDrag(gamePane, gameTileGroup);
     }
 
     public void resetGameGroupPosition() {
@@ -125,51 +118,6 @@ public class GameView {
         gameTileGroup.setTranslateY(0);
         gameTileGroup.setScaleX(1.0);
         gameTileGroup.setScaleY(1.0);
-        zoomFactor = 1.0; // Reset stored zoom factor
-    }
-
-    private void setupZoomAndDrag(Pane pane, TileGroupPane contentGroup) {
-        // Prevent board from leaving bounds
-        Rectangle rect = new Rectangle(pane.getWidth(), pane.getHeight());
-        pane.setClip(rect);
-        rect.heightProperty().bind(pane.heightProperty());
-        rect.widthProperty().bind(pane.widthProperty());
-
-        pane.setOnScroll((ScrollEvent event) -> {
-            double zoomScale = (event.getDeltaY() > 0) ? 1.1 : 0.9; // Zoom in/out
-            double newZoomFactor = zoomFactor * zoomScale;
-
-            // Prevent zooming out too much or zooming in too much
-            if (newZoomFactor < 0.5 || newZoomFactor > 3.0) return;
-
-            zoomFactor = newZoomFactor;
-            contentGroup.setScaleX(zoomFactor);
-            contentGroup.setScaleY(zoomFactor);
-
-            event.consume();
-        });
-
-        pane.setOnMousePressed((MouseEvent event) -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                dragStartX = event.getSceneX();
-                dragStartY = event.getSceneY();
-                event.consume();
-            }
-        });
-
-        pane.setOnMouseDragged((MouseEvent event) -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                double offsetX = event.getSceneX() - dragStartX;
-                double offsetY = event.getSceneY() - dragStartY;
-
-                contentGroup.setTranslateX(contentGroup.getTranslateX() + offsetX);
-                contentGroup.setTranslateY(contentGroup.getTranslateY() + offsetY);
-
-                dragStartX = event.getSceneX();
-                dragStartY = event.getSceneY();
-                event.consume();
-            }
-        });
     }
 
     public Region getView() {

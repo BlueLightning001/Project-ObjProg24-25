@@ -1,7 +1,9 @@
 package be.ugent.objprog.minionwars.tiles;
 
+import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.animation.PauseTransition;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
@@ -10,12 +12,11 @@ public class TileGroupPane extends Pane {
     private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
     private double tileScaleFactor = 1.0;
     private final Tile[][] tileGrid;
-    private Pane boundPane; // Reference to gamePane
+    private ZoomableScrollPane boundPane; // Reference to gamePane
     private PauseTransition resizeDelay;
 
-    public TileGroupPane(TileModel tileModel, Pane gamePane) {
+    public TileGroupPane(TileModel tileModel) {
         this.tileGrid = tileModel.getTileGrid();
-        this.boundPane = gamePane;
 
         setStyle("-fx-border-color: green; -fx-border-width: 2"); // Debug border
 
@@ -23,14 +24,25 @@ public class TileGroupPane extends Pane {
         resizeDelay = new PauseTransition(Duration.millis(200));
         resizeDelay.setOnFinished(e -> adjustTileSize());
 
+        //updateTiles();  // Initially update the tiles
+    }
+
+    // Method to bind the ZoomableScrollPane after TileGroupPane is initialized
+    public void bindPane(ZoomableScrollPane gamePane) {
+        this.boundPane = gamePane;
+
         // Listen for gamePane size changes
         boundPane.widthProperty().addListener((obs, oldVal, newVal) -> resizeDelay.playFromStart());
         boundPane.heightProperty().addListener((obs, oldVal, newVal) -> resizeDelay.playFromStart());
 
+        // Trigger an initial size adjustment
         updateTiles();
+        adjustTileSize();
     }
 
     private void adjustTileSize() {
+        if (boundPane == null) return; // Check if the boundPane is set
+
         double paneWidth = boundPane.getWidth();
         double paneHeight = boundPane.getHeight();
         double gridWidth = tileGrid.length * BASE_N * 2;
@@ -68,4 +80,3 @@ public class TileGroupPane extends Pane {
         }
     }
 }
-
