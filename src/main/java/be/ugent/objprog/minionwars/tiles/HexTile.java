@@ -2,6 +2,7 @@ package be.ugent.objprog.minionwars.tiles;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
@@ -11,15 +12,18 @@ import javafx.scene.image.Image;
 public class HexTile extends Polygon {
     private static final double BASE_R = 20;
     private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
-    private  double startX;
-    private  double startY;
+
+    private double startX, startY;
     private double r, n, tileWidth, tileHeight;
+    private double x, y;  // Store position for updates
     private ObjectProperty<Tile> tile;
 
     public HexTile(double x, double y, Tile tile, double scaleFactor) {
         this.tile = new SimpleObjectProperty<>(tile);
-        setScaleFactor(scaleFactor);
-        updateShape(x, y);
+        this.x = x;
+        this.y = y;
+
+        setScaleFactor(scaleFactor);  // Calls updateShape()
 
         // Load image
         Image image = new Image(getClass().getResource(tile.getImagePath()).toExternalForm());
@@ -27,26 +31,31 @@ public class HexTile extends Polygon {
 
         setStrokeWidth(1);
         setStroke(Color.BLACK);
+
+        // Only register press if board not dragged
         setOnMousePressed(event -> {
-            startX = event.getScreenX();
-            startY = event.getScreenY();
+            if (event.getButton() == MouseButton.PRIMARY) {
+                startX = event.getScreenX();
+                startY = event.getScreenY();
+            }
+
         });
 
         setOnMouseReleased(event -> {
-            double endX = event.getScreenX();
-            double endY = event.getScreenY();
+            if (event.getButton() == MouseButton.PRIMARY) {
+                double endX = event.getScreenX();
+                double endY = event.getScreenY();
 
-            double dragDistance = Math.hypot(endX - startX, endY - startY);
-
-            if (dragDistance < 5) { // Only register a click if the movement is small
-                handleTileClick(tile);
+                double dragDistance = Math.hypot(endX - startX, endY - startY);
+                if (dragDistance < 5) {
+                    handleTileClick(tile);
+                }
             }
         });
-
     }
 
     private void handleTileClick(Tile tile) {
-        System.out.println("PRESSED: "+tile);
+        System.out.println("PRESSED: " + tile);
     }
 
     public void setScaleFactor(double scaleFactor) {
@@ -54,11 +63,12 @@ public class HexTile extends Polygon {
         this.n = Math.sqrt(this.r * this.r * 0.75);
         this.tileWidth = 2 * this.n;
         this.tileHeight = 2 * this.r;
-    }
 
-    private void updateShape(double x, double y) {
-        getPoints().clear();
-        getPoints().addAll(
+        updateShape();
+    }
+    // Ensure shape updates with scale
+    private void updateShape() {
+        getPoints().setAll(
                 x, y,
                 x, y + r,
                 x + n, y + r * 1.5,
