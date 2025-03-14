@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -21,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import javafx.scene.layout.*;
 
@@ -68,11 +70,20 @@ public class GameView {
 
 
         gamePane.setMinSize(400, 400);
-        gamePane.setStyle("-fx-border-color: black; -fx-border-style: solid; -fx-border-width: 5");
+        gamePane.setBackground(new Background(new BackgroundImage(
+                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/other/grass3.png"))),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(
+                        100, 100,
+                        true, true,
+                        true, true
+                )
+        )));
 
         gameTileGroup.prefWidthProperty().bind(gamePane.widthProperty());
         gameTileGroup.prefHeightProperty().bind(gamePane.heightProperty());
-        gameTileGroup.setStyle("-fx-border-color: red; -fx-border-style: solid; -fx-border-width: 2"); // Debug border
 
 
         // Ensure menuContainer resizes properly
@@ -84,12 +95,10 @@ public class GameView {
         VBox.setVgrow(menuTable, Priority.ALWAYS); // Make it take remaining space
         VBox.setVgrow(menuButtonBar, Priority.NEVER);
 
-
-        // Bind the width of gamePane to root width
         gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.75)); // 75% of root width
         gamePane.prefHeightProperty().bind(root.heightProperty());
 
-        // DEBUG: Check root size binding
+
         root.prefWidthProperty().bind(container.widthProperty());
         root.prefHeightProperty().bind(container.heightProperty());
 

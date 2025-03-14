@@ -8,7 +8,7 @@ import javafx.util.Duration;
 public class TileGroupPane extends Pane {
     private static final double BASE_R = 20; // Base hex radius
     private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
-    private double tileScaleFactor = 1.0; // Initial scale factor
+    private double tileScaleFactor = 1.0;
     private final Tile[][] tileGrid;
     private Pane boundPane; // Reference to gamePane
     private PauseTransition resizeDelay;

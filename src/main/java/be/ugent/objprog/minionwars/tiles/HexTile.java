@@ -15,7 +15,7 @@ public class HexTile extends Polygon {
 
     private double startX, startY;
     private double r, n, tileWidth, tileHeight;
-    private double x, y;  // Store position for updates
+    private double x, y;
     private ObjectProperty<Tile> tile;
 
     public HexTile(double x, double y, Tile tile, double scaleFactor) {
@@ -23,9 +23,9 @@ public class HexTile extends Polygon {
         this.x = x;
         this.y = y;
 
-        setScaleFactor(scaleFactor);  // Calls updateShape()
+        setScaleFactor(scaleFactor);
 
-        // Load image
+
         Image image = new Image(getClass().getResource(tile.getImagePath()).toExternalForm());
         setFill(new ImagePattern(image));
 
@@ -55,7 +55,7 @@ public class HexTile extends Polygon {
     }
 
     private void handleTileClick(Tile tile) {
-        System.out.println("PRESSED: " + tile);
+        System.out.println("PRESSED: " + tile); //TODO
     }
 
     public void setScaleFactor(double scaleFactor) {
