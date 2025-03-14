@@ -22,6 +22,8 @@ public class MinionWars extends Application {
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/minions/sword.png"))));
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
+        primaryStage.setMinHeight(150);
+        primaryStage.setMinWidth(150);
         // Add key event handler for F11
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.F11) {

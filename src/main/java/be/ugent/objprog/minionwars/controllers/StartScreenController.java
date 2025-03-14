@@ -100,14 +100,15 @@ public class StartScreenController {
         boolean fullscreen = stage.isFullScreen();
 
         GameController gameController = new GameController(model,locale);
-        Scene scene = new Scene(gameController.getView(), 800, 600);
+        Scene scene = new Scene(gameController.getView(), getView().getWidth(), getView().getHeight());
+
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.F11) {
                 stage.setFullScreen(!stage.isFullScreen());
             }
         });
-        stage.setMinHeight(scene.getHeight());
-        stage.setMinWidth(scene.getWidth());
+        stage.setMinHeight(150);
+        stage.setMinWidth(350);
         stage.setScene(scene);
         stage.centerOnScreen();
         if (fullscreen) {

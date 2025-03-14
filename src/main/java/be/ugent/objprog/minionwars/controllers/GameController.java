@@ -20,6 +20,7 @@ public class GameController {
         this.tileModel = new TileModel();
         this.locale = locale;
         this.view = new GameView(playerModel,tileModel,locale);
+        view.resetGameGroupPosition();
 
 
     }

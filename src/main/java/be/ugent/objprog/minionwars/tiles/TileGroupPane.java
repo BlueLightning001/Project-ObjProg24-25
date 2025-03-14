@@ -26,6 +26,11 @@ public class TileGroupPane extends Pane {
     private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
     private double tileScaleFactor = 1.0;
     private final Tile[][] tileGrid;
+
+    public ZoomableScrollPane getBoundPane() {
+        return boundPane;
+    }
+
     private ZoomableScrollPane boundPane;
     private final List<HexTile> hexTiles = new ArrayList<>();
 

@@ -28,7 +28,7 @@ public class GameView {
     private Label menuTitleLabel;
     private TableView<Minion> menuTable;
     private Button endTurnButton;
-    private TileGroupPane gameTileGroup;
+    private TileGroupPane gameTileGroupPane;
     private ZoomableScrollPane gamePane;
     private ButtonBar menuButtonBar;
     private Button centerBoardButton;
@@ -45,29 +45,31 @@ public class GameView {
         endTurnButton = new Button("START"); // TODO
         centerBoardButton = new Button("CENTER_BOARD");
 
-        // Set up reset button action
+
         centerBoardButton.setOnAction(event -> resetGameGroupPosition());
 
         menuButtonBar = new ButtonBar();
 
 
-        gameTileGroup = new TileGroupPane(tileModel);
+        gameTileGroupPane = new TileGroupPane(tileModel);
 
-        // Necessary since ZoomableScrollPane requires the content first
-        gamePane = new ZoomableScrollPane(gameTileGroup);
-        gameTileGroup.bindPane(gamePane);
+
+        gamePane = new ZoomableScrollPane(gameTileGroupPane);
+        // gameTileGroupPane doesn't function without a Pane, but this is a workaround since
+        // they cannot both reference each-other from constructor
+        gameTileGroupPane.bindPane(gamePane);
 
         menuContainer.getChildren().addAll(menuTitleLabel, menuTable, menuButtonBar);
         menuButtonBar.setPrefSize(menuContainer.getPrefWidth(), 50);
         menuButtonBar.getButtons().addAll(endTurnButton, centerBoardButton);
         menuTitleLabel.setPrefSize(menuContainer.getPrefWidth(), 50);
 
-        gamePane.setMinSize(400, 400); // Minimum size for the ZoomableScrollPane
 
 
-        // Bind gameTileGroup to gamePane size
-        gameTileGroup.prefWidthProperty().bind(gamePane.widthProperty());
-        gameTileGroup.prefHeightProperty().bind(gamePane.heightProperty());
+
+        // Bind gameTileGroupPane to gamePane size
+        gameTileGroupPane.prefWidthProperty().bind(gamePane.widthProperty());
+        gameTileGroupPane.prefHeightProperty().bind(gamePane.heightProperty());
 
         // Ensure menuContainer resizes properly
         menuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.25)); // 25% of root width
@@ -90,7 +92,7 @@ public class GameView {
         root.getChildren().addAll(menuContainer, gamePane);
         root.setSpacing(20);
 
-        this.container.setMinSize(800, 480);
+
         this.container.setPrefSize(800, 480);
         this.container.getChildren().add(root);
 
@@ -102,10 +104,14 @@ public class GameView {
     }
 
     public void resetGameGroupPosition() {
-        gameTileGroup.setTranslateX(0);
-        gameTileGroup.setTranslateY(0);
-        gameTileGroup.setScaleX(1.0);
-        gameTileGroup.setScaleY(1.0);
+        gameTileGroupPane.setTranslateX(0);
+        gameTileGroupPane.setTranslateY(0);
+        gameTileGroupPane.setScaleX(1.0);
+        gameTileGroupPane.setScaleY(1.0);
+        ZoomableScrollPane boundPane = gameTileGroupPane.getBoundPane();
+        if (boundPane != null) {
+            boundPane.resetScale();
+        }
     }
 
     public Region getView() {

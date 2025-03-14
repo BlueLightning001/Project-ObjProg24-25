@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
     Stack Overflow. Retrieved March 14, 2025, from https://stackoverflow.com/a/44314455
  */
 public class ZoomableScrollPane extends ScrollPane {
-    private double scaleValue = 0.7;
+    private double scaleValue = 1;
     private double zoomIntensity = 0.02;
     private Node target;
     private Node zoomNode;
@@ -104,6 +104,9 @@ public class ZoomableScrollPane extends ScrollPane {
         Bounds updatedInnerBounds = zoomNode.getBoundsInLocal();
         this.setHvalue((valX + adjustment.getX()) / (updatedInnerBounds.getWidth() - viewportBounds.getWidth()));
         this.setVvalue((valY + adjustment.getY()) / (updatedInnerBounds.getHeight() - viewportBounds.getHeight()));
+    }
+    public void resetScale() {
+        scaleValue = 1;
     }
 
 }
