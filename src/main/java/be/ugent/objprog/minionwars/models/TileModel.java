@@ -83,4 +83,7 @@ public class TileModel {
     public void removeTile(Tile tile) {
         tileGrid[tile.getXCoord()][tile.getYCoord()] = null;
     }
+    public void removeTile(int x, int y) {
+        tileGrid[x][y] = null;
+    }
 }

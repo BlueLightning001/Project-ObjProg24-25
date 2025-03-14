@@ -24,6 +24,10 @@ public class GameController {
 
 
     }
+    public void endGame(){
+        //TODO launch new game
+        view.getGameTileGroupPane().shutdown(); // Releases resources from other threads
+    }
     public Region getView() {
         return this.view.getView();
     }

@@ -20,6 +20,7 @@ import javafx.scene.layout.VBox;
 import java.util.Locale;
 
 public class GameView {
+    private final TileGroupPane gameTileGroupPane;
     private StackPane container;
     private Locale locale;
     private PlayerModel playerModel;
@@ -28,12 +29,10 @@ public class GameView {
     private Label menuTitleLabel;
     private TableView<Minion> menuTable;
     private Button endTurnButton;
-    private TileGroupPane gameTileGroupPane;
     private ZoomableScrollPane gamePane;
     private ButtonBar menuButtonBar;
     private Button centerBoardButton;
     private double borderWidth = 5.0;
-
     public GameView(PlayerModel playerModel, TileModel tileModel, Locale locale) {
         this.playerModel = playerModel;
         this.locale = locale;
@@ -63,8 +62,6 @@ public class GameView {
         menuButtonBar.setPrefSize(menuContainer.getPrefWidth(), 50);
         menuButtonBar.getButtons().addAll(endTurnButton, centerBoardButton);
         menuTitleLabel.setPrefSize(menuContainer.getPrefWidth(), 50);
-
-
 
 
         // Bind gameTileGroupPane to gamePane size
@@ -112,6 +109,10 @@ public class GameView {
         if (boundPane != null) {
             boundPane.resetScale();
         }
+    }
+
+    public TileGroupPane getGameTileGroupPane() {
+        return gameTileGroupPane;
     }
 
     public Region getView() {

@@ -2,30 +2,19 @@ package be.ugent.objprog.minionwars.tiles;
 
 import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.models.TileModel;
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
-import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javafx.application.Platform;
-import javafx.scene.layout.Pane;
-import javafx.scene.Node;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TileGroupPane extends Pane {
     private static final double BASE_R = 20;
     private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
     private double tileScaleFactor = 1.0;
-    private final Tile[][] tileGrid;
+    private final Tile[][] tileGridModel;
 
     public ZoomableScrollPane getBoundPane() {
         return boundPane;
@@ -37,7 +26,7 @@ public class TileGroupPane extends Pane {
     private final ExecutorService resizeExecutor = Executors.newSingleThreadExecutor();
 
     public TileGroupPane(TileModel tileModel) {
-        this.tileGrid = tileModel.getTileGrid();
+        this.tileGridModel = tileModel.getTileGrid();
         initializeTiles();  // Create the tiles ONCE
     }
 
@@ -50,9 +39,9 @@ public class TileGroupPane extends Pane {
     }
 
     private void initializeTiles() {
-        for (int i = 0; i < tileGrid.length; i++) {
-            for (int j = 0; j < tileGrid[i].length; j++) {
-                Tile tile = tileGrid[i][j];
+        for (int i = 0; i < tileGridModel.length; i++) {
+            for (int j = 0; j < tileGridModel[i].length; j++) {
+                Tile tile = tileGridModel[i][j];
                 HexTile hexTile = new HexTile(0, 0, tile, tileScaleFactor);
                 hexTiles.add(hexTile);
             }
@@ -66,8 +55,8 @@ public class TileGroupPane extends Pane {
         resizeExecutor.submit(() -> {
             double paneWidth = boundPane.getWidth();
             double paneHeight = boundPane.getHeight();
-            double gridWidth = tileGrid.length * BASE_N * 2;
-            double gridHeight = tileGrid[0].length * BASE_R * 1.5;
+            double gridWidth = tileGridModel.length * BASE_N * 2;
+            double gridHeight = tileGridModel[0].length * BASE_R * 1.5;
 
             double scaleX = paneWidth / gridWidth;
             double scaleY = paneHeight / gridHeight;
@@ -78,8 +67,8 @@ public class TileGroupPane extends Pane {
             double tileWidth = 2 * n;
             double tileHeight = 2 * r;
 
-            double totalWidth = tileGrid.length * tileWidth;
-            double totalHeight = tileGrid[0].length * tileHeight * 0.75;
+            double totalWidth = tileGridModel.length * tileWidth;
+            double totalHeight = tileGridModel[0].length * tileHeight * 0.75;
             double xOffset = (paneWidth - totalWidth) / 2;
             double yOffset = (paneHeight - totalHeight) / 2;
 
