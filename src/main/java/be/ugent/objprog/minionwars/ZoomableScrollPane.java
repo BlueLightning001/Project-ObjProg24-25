@@ -7,7 +7,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 // Credit to
 /*
@@ -28,7 +30,20 @@ public class ZoomableScrollPane extends ScrollPane {
         this.zoomNode = new Group(target);
         setContent(outerNode(zoomNode));
 
-        setPannable(true);
+        setPannable(false);
+        zoomNode.setOnMousePressed(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                setPannable(true);  // Enable panning
+            }
+        });
+        zoomNode.setOnMouseReleased(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                setPannable(false);  // Disable panning after release
+            }
+        });
+        this.getStylesheets().add("/be/ugent/objprog/minionwars/css/scrollpane.css");
+
+
         setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         setFitToHeight(true); //center

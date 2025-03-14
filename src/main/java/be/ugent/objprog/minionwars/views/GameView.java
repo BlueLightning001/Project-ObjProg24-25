@@ -21,6 +21,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
 import java.util.Locale;
@@ -65,16 +66,13 @@ public class GameView {
         gamePane = new ZoomableScrollPane(gameTileGroup);
         gameTileGroup.bindPane(gamePane);
 
-        // Allow scrolling
-        gamePane.setPannable(true);
-
         menuContainer.getChildren().addAll(menuTitleLabel, menuTable, menuButtonBar);
         menuButtonBar.setPrefSize(menuContainer.getPrefWidth(), 50);
         menuButtonBar.getButtons().addAll(endTurnButton, centerBoardButton);
         menuTitleLabel.setPrefSize(menuContainer.getPrefWidth(), 50);
 
         gamePane.setMinSize(400, 400); // Minimum size for the ZoomableScrollPane
-        gamePane.setStyle("-fx-background-color: black");
+
 
         // Bind gameTileGroup to gamePane size
         gameTileGroup.prefWidthProperty().bind(gamePane.widthProperty());
@@ -99,7 +97,6 @@ public class GameView {
 
         root.setPadding(new Insets(20));
         root.getChildren().addAll(menuContainer, gamePane);
-        root.setStyle("-fx-border-color: blue; -fx-border-style: solid; -fx-border-width: 10");
         root.setSpacing(20);
 
         this.container.setMinSize(800, 480);

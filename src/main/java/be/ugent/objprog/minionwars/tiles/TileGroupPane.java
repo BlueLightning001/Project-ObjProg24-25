@@ -18,13 +18,10 @@ public class TileGroupPane extends Pane {
     public TileGroupPane(TileModel tileModel) {
         this.tileGrid = tileModel.getTileGrid();
 
-        setStyle("-fx-border-color: green; -fx-border-width: 2"); // Debug border
-
         // Delay resizing (prevents laggy updates)
         resizeDelay = new PauseTransition(Duration.millis(200));
         resizeDelay.setOnFinished(e -> adjustTileSize());
 
-        //updateTiles();  // Initially update the tiles
     }
 
     // Method to bind the ZoomableScrollPane after TileGroupPane is initialized
