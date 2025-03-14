@@ -16,7 +16,7 @@ public class HexTile extends Polygon {
     private double startX, startY;
     private double r, n, tileWidth, tileHeight;
     private double x, y;
-    private ObjectProperty<Tile> tile;
+    private final ObjectProperty<Tile> tile;
 
     public HexTile(double x, double y, Tile tile, double scaleFactor) {
         this.tile = new SimpleObjectProperty<>(tile);
@@ -54,6 +54,10 @@ public class HexTile extends Polygon {
         });
     }
 
+    public Tile getTile() {
+        return tile.get();
+    }
+
     private void handleTileClick(Tile tile) {
         System.out.println("PRESSED: " + tile); //TODO
     }
@@ -66,6 +70,11 @@ public class HexTile extends Polygon {
 
         updateShape();
     }
+
+    public ObjectProperty<Tile> tileProperty() {
+        return tile;
+    }
+
     // Ensure shape updates with scale
     private void updateShape() {
         getPoints().setAll(

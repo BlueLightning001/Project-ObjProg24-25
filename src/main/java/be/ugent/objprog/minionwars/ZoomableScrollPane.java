@@ -11,7 +11,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-// Credit to
+// Based on
 /*
 /   Hári, D. H. (2017, June 1). JavaFx 8 - Scaling / zooming ScrollPane relative to mouse position.
     Stack Overflow. Retrieved March 14, 2025, from https://stackoverflow.com/a/44314455
@@ -30,15 +30,16 @@ public class ZoomableScrollPane extends ScrollPane {
         this.zoomNode = new Group(target);
         setContent(outerNode(zoomNode));
 
+        // This makes it so the pane is only pannable with right click
         setPannable(false);
         zoomNode.setOnMousePressed(e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                setPannable(true);  // Enable panning
+                setPannable(true);
             }
         });
         zoomNode.setOnMouseReleased(e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                setPannable(false);  // Disable panning after release
+                setPannable(false);
             }
         });
         this.getStylesheets().add("/be/ugent/objprog/minionwars/css/scrollpane.css");
