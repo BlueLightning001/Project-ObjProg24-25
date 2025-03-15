@@ -1,5 +1,6 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.InfoCircleExample;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.minions.MinionTypeImage;
 import be.ugent.objprog.minionwars.models.MinionModel;
@@ -14,6 +15,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 
 public class MinionsTableView extends TableView<Minion> {
     public MinionsTableView(MinionModel model) {
@@ -23,22 +26,8 @@ public class MinionsTableView extends TableView<Minion> {
         System.out.println(model.getMinions());
         setItems(model.getMinions());
 
-        TableColumn<Minion, ImageView> minionIconCol = new TableColumn<>();
-        minionIconCol.setCellValueFactory(cell -> {
-            MinionTypeImage minionType;
-            try {
-                minionType = MinionTypeImage.valueOf(cell.getValue().getName().toUpperCase());
-            } catch (IllegalArgumentException | NullPointerException e) {
-                return new SimpleObjectProperty<>(null); // no image found
-            }
+        TableColumn<Minion, ImageView> minionIconCol = getMinionImageViewTableColumn();
 
-            Image image = cell.getValue().getMinionIcon();
-            ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(30); // Adjust as needed
-            imageView.setFitHeight(30);
-
-            return new SimpleObjectProperty<>(imageView);
-        });
 
         TableColumn<Minion, String> nameCol = new TableColumn<>();
         nameCol.setCellValueFactory(cell ->{
@@ -80,9 +69,43 @@ public class MinionsTableView extends TableView<Minion> {
         });
 
         getColumns().setAll(minionIconCol,nameCol,statsCol);
-        setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        // Adjust the column widths to fit the content
+        minionIconCol.prefWidthProperty().bind(widthProperty().multiply(0.2));
+        nameCol.prefWidthProperty().bind(widthProperty().multiply(0.6));
+        statsCol.prefWidthProperty().bind(widthProperty().multiply(0.2));
+
         getStylesheets().add(MinionsTableView.class.getResource("/be/ugent/objprog/minionwars/css/tableview.css").toExternalForm());
         getStyleClass().add("noheader");
+    }
+
+    private static TableColumn<Minion, ImageView> getMinionImageViewTableColumn() {
+        TableColumn<Minion, ImageView> minionIconCol = new TableColumn<>();
+        minionIconCol.setCellValueFactory(cell -> {
+
+            Image image = cell.getValue().getMinionIcon();
+            ImageView imageView = new ImageView(image);
+            return new SimpleObjectProperty<>(imageView);
+        });
+        minionIconCol.setCellFactory(column -> new TableCell<Minion, ImageView>() {
+            @Override
+            protected void updateItem(ImageView imageView, boolean empty) {
+                super.updateItem(imageView, empty);
+
+                if (empty || getTableRow() == null || getTableRow().getItem() == null || imageView == null) {
+                    setGraphic(null);
+                } else {
+                    // Creating the circle for the clip
+                    Circle circle = new Circle();
+                    circle.setFill(new ImagePattern(imageView.getImage()));
+                    circle.radiusProperty().bind(getTableColumn().prefWidthProperty().multiply(0.4));
+
+                    circle.setCenterY(getTableRow().getHeight() / 2);
+                    circle.setCenterX(getTableColumn().getWidth() / 2);
+                    setGraphic(circle);
+                }
+            }
+        });
+        return minionIconCol;
     }
 
 

@@ -8,7 +8,12 @@ import java.util.Map;
 
 public class EffectFactory {
     private final Map<String, EffectFactoryFunction> minionEffectsFactories = Map.of(
-            "heal", HealEffect::new  // Store constructor references correctly
+            "heal", HealEffect::new,
+            "poison", PoisonEffect::new,
+            "slow", SlowEffect::new,
+            "paralysis", ParalysisEffect::new,
+            "burn", BurnEffect::new,
+            "rage", RageEffect::new
     );
 
     public MinionEffect createEffect(String effectType, int value) {

@@ -1,7 +1,6 @@
 package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.ZoomableScrollPane;
-import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
@@ -11,7 +10,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -20,7 +18,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.SVGPath;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -36,7 +33,7 @@ public class GameView {
     private Label currentPlayerLabel;
     private Label currentPlayerCoinsLabel;
     private HBox currentPlayerHBox;
-    private PlayerMinionsTableView menuTable;
+    private MinionsTableView menuTable;
     private Button endTurnButton;
     private ZoomableScrollPane gamePane;
     private ButtonBar menuButtonBar;
@@ -64,7 +61,7 @@ public class GameView {
         coinIcon.setFitWidth(10);
 
 
-        menuTable = new PlayerMinionsTableView(minionModel);
+        menuTable = new MinionsTableView(minionModel);
 
         endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton")); // TODO
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
