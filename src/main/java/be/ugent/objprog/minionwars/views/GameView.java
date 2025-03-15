@@ -5,6 +5,8 @@ import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.tiles.TileGroupPane;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -38,7 +40,6 @@ public class GameView {
     private ZoomableScrollPane gamePane;
     private ButtonBar menuButtonBar;
     private Button centerBoardButton;
-    private double borderWidth = 5.0;
     private ResourceBundle bundle;
     private MinionModel minionModel;
 
@@ -56,17 +57,51 @@ public class GameView {
         currentPlayerHBox = new HBox();
         currentPlayerHBox.getChildren().addAll(currentPlayerLabel, currentPlayerCoinsLabel);
 
+        double fontScale = 0.1;
+
         ImageView coinIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/coin-FFB900.png"))));
         currentPlayerCoinsLabel.setGraphic(coinIcon);
         coinIcon.setFitHeight(10);
         coinIcon.setFitWidth(10);
 
+        // Listeners for player changes
         currentPlayerLabel.textProperty().bind(playerModel.currentPlayerProperty().get().nameProperty());
+        currentPlayerCoinsLabel.textProperty().bind(playerModel.currentPlayerProperty().get().moneyProperty().asString());
         playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
             if (newPlayer != null) {
                 currentPlayerLabel.textProperty().bind(newPlayer.nameProperty());
+                currentPlayerCoinsLabel.textProperty().bind(newPlayer.moneyProperty().asString());
             }
         });
+
+        currentPlayerLabel.setAlignment(Pos.CENTER);
+        currentPlayerCoinsLabel.setAlignment(Pos.CENTER_LEFT);
+
+        currentPlayerLabel.setStyle("-fx-border-color: blue; -fx-border-width: 5");
+        currentPlayerCoinsLabel.setStyle("-fx-border-color: green; -fx-border-width: 5");
+
+
+
+        // Make the labels take up all the available space
+        HBox.setHgrow(currentPlayerLabel, Priority.ALWAYS);
+        HBox.setHgrow(currentPlayerCoinsLabel, Priority.ALWAYS);
+        currentPlayerLabel.prefWidthProperty().bind(currentPlayerHBox.widthProperty().multiply(0.7));
+        currentPlayerCoinsLabel.prefWidthProperty().bind(currentPlayerHBox.widthProperty().multiply(0.3));
+        currentPlayerLabel.prefHeightProperty().bind(currentPlayerHBox.heightProperty());
+        currentPlayerCoinsLabel.prefHeightProperty().bind(currentPlayerHBox.heightProperty());
+        //currentPlayerLabel.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpx;", currentPlayerHBox.widthProperty().multiply(fontScale)));
+        //currentPlayerCoinsLabel.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpx;", currentPlayerHBox.widthProperty().multiply(fontScale)));
+        coinIcon.fitHeightProperty().bind(currentPlayerHBox.heightProperty().multiply(0.3));
+        coinIcon.fitWidthProperty().bind(coinIcon.fitHeightProperty());
+        currentPlayerHBox.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            // Only update font size after layout is settled
+            Platform.runLater(() -> {
+                double newFontSize = newWidth.doubleValue() * fontScale;
+                currentPlayerLabel.setStyle("-fx-font-size: " + newFontSize + "px;");
+                currentPlayerCoinsLabel.setStyle("-fx-font-size: " + (newFontSize * 0.8) + "px;");
+            });
+        });
+
 
         menuTable = new MinionsTableView(minionModel, locale);
 
@@ -93,7 +128,7 @@ public class GameView {
         ButtonBar.setButtonData(endTurnButton, ButtonBar.ButtonData.LEFT);
         ButtonBar.setButtonData(centerBoardButton, ButtonBar.ButtonData.RIGHT);
 
-        currentPlayerLabel.setPrefSize(menuContainer.getPrefWidth(), 50);
+
 
 
         // Bind gameTileGroupPane to gamePane size
@@ -101,12 +136,12 @@ public class GameView {
         gameTileGroupPane.prefHeightProperty().bind(gamePane.heightProperty());
 
         // Ensure menuContainer resizes properly
-        menuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.25)); // 25% of root width
+        menuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.30));
         menuContainer.prefHeightProperty().bind(root.heightProperty());
         currentPlayerHBox.setMaxWidth(Double.MAX_VALUE);
         currentPlayerHBox.setAlignment(Pos.CENTER_RIGHT);
         currentPlayerHBox.setSpacing(20);
-        currentPlayerHBox.setStyle("-fx-border-color: orange; -fx-border-width: 10px;");
+        currentPlayerHBox.setStyle("-fx-border-color: orange; -fx-border-width: 10px;"); //DEBUG
         menuTable.setMaxWidth(Double.MAX_VALUE);
         menuTable.setPrefHeight(Region.USE_COMPUTED_SIZE);
         VBox.setVgrow(menuTable, Priority.ALWAYS); // Make it take remaining space
@@ -120,7 +155,7 @@ public class GameView {
 
 
         // Bind gamePane size
-        gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.75)); // 75% of root width
+        gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.70));
         gamePane.prefHeightProperty().bind(root.heightProperty());
 
         // Bind root size to container size
