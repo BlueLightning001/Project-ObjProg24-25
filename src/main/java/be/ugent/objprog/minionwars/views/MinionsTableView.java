@@ -3,10 +3,14 @@ package be.ugent.objprog.minionwars.views;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.MinionModel;
+import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
@@ -29,57 +33,30 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MinionsTableView extends TableView<Minion> {
-    public MinionsTableView(MinionModel model, Locale locale) {
+    private ObservableList<Minion> allMinions;
+    private FilteredList<Minion> filteredMinions;
+    public MinionsTableView(PlayerModel playerModel,MinionModel model, Locale locale) {
         super();
         ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         setEditable(false);
         setTableMenuButtonVisible(false);
         System.out.println(model.getMinions());
-        setItems(model.getMinions());
+
+        allMinions = model.getMinions();
+
+        // filters based on minion cost and player money
+        filteredMinions = new FilteredList<>(allMinions, minion -> minion.getCost() <= playerModel.getCurrentPlayer().getMoney());
+
+        setItems(filteredMinions);
+
+        playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
+            filteredMinions.setPredicate(minion -> minion.getCost() <= newPlayer.getMoney());
+        });
 
         TableColumn<Minion, ImageView> minionIconCol = getMinionImageViewTableColumn();
 
 
-        TableColumn<Minion, String> nameCol = new TableColumn<>();
-        nameCol.setCellValueFactory(cell -> {
-            return new SimpleStringProperty(cell.getValue().getName());
-        });
-        nameCol.setCellFactory(column -> new TableCell<Minion, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null || item.isBlank()) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    setText(item);
-
-                    // Dynamically adjust font size
-                    ChangeListener<Number> resizeListener = (obs, oldSize, newSize) -> updateFontSize();
-
-                    widthProperty().addListener(resizeListener);
-                    tableRowProperty().addListener((obs, oldRow, newRow) -> {
-                        if (newRow != null) {
-                            newRow.heightProperty().addListener(resizeListener);
-                        }
-                    });
-
-                    updateFontSize();
-                    setAlignment(Pos.CENTER);
-                    setWrapText(true);
-
-                }
-            }
-
-
-            private void updateFontSize() {
-                TableRow<Minion> row = getTableRow();
-                if (row != null) {
-                    double fontSize = Math.min(getWidth() * 0.12, row.getHeight() * 0.5); // Scale factor
-                    setFont(Font.font("Monotype Corsiva", FontWeight.EXTRA_BOLD, fontSize));
-                }
-            }
-        });
+        TableColumn<Minion, String> nameCol = getMinionStringTableColumn();
 
 
         TableColumn<Minion, GridPane> statsCol = new TableColumn<>();
@@ -197,6 +174,37 @@ public class MinionsTableView extends TableView<Minion> {
 
         getStylesheets().add(MinionsTableView.class.getResource("/be/ugent/objprog/minionwars/css/tableview.css").toExternalForm());
         getStyleClass().add("noheader");
+    }
+
+    private TableColumn<Minion, String> getMinionStringTableColumn() {
+        TableColumn<Minion, String> nameCol = new TableColumn<>();
+        nameCol.setCellValueFactory(cell -> {
+            return new SimpleStringProperty(cell.getValue().getName());
+        });
+        nameCol.setCellFactory(column -> new TableCell<Minion, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || item.isBlank()) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setText(item);
+
+                    // Dynamically adjust font size
+                    TableRow<Minion> row = getTableRow();
+                    if (row != null) {
+                        fontProperty().bind(Bindings.createObjectBinding(() ->
+                                Font.font("Monotype Corsiva", FontWeight.EXTRA_BOLD, row.getWidth() * 0.08), row.widthProperty()));
+                    }
+
+                    setAlignment(Pos.CENTER);
+                    setWrapText(true);
+
+                }
+            }
+        });
+        return nameCol;
     }
 
     private static TableColumn<Minion, ImageView> getMinionImageViewTableColumn() {

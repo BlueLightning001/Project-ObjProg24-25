@@ -103,7 +103,7 @@ public class GameView {
         });
 
 
-        menuTable = new MinionsTableView(minionModel, locale);
+        menuTable = new MinionsTableView(playerModel,minionModel, locale);
 
         endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton")); // TODO
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
