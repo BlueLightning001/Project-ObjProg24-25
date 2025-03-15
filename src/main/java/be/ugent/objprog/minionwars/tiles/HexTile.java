@@ -5,6 +5,9 @@ import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -32,17 +35,32 @@ public class HexTile extends Polygon {
     private final ObjectProperty<Tile> tile;
     private final ObjectProperty<Player> currentPlayer; // Track the active player
     private Rectangle overlay; // Homebase overlay effect
-
+    private PlayerModel playerModel;
     public HexTile(double x, double y, Tile tile, PlayerModel playerModel, double scaleFactor) {
         this.tile = new SimpleObjectProperty<>(tile);
+        this.playerModel = playerModel;
         this.currentPlayer = playerModel.currentPlayerProperty();
         setScaleFactor(scaleFactor); // Ensure proper scaling
 
+        updateTileAppearance();
 
+        setStrokeWidth(1);
+        setStroke(Color.BLACK);
 
-        // Bind the fill property to change based on tile state
-        fillProperty().bind(Bindings.createObjectBinding(this::computeFill, this.tile, this.currentPlayer));
+        this.tile.addListener((obs, oldTile, newTile) -> {
+            updateTileAppearance();
+        });
 
+    }
+    public void updateTileAppearance() {
+        Image baseImage = new Image(getClass().getResource(tile.get().getImagePath()).toExternalForm());
+
+        if (tile.get().isHomeBase()) {
+            Color homebaseColor = playerModel.getPlayerColor(playerModel.getPlayers().get(tile.get().getHomebase() - 1).get());  // Get player’s assigned color
+            baseImage = applyHomebaseOverlay(baseImage, homebaseColor);
+        }
+
+        setFill(new ImagePattern(baseImage));
     }
 
     public Rectangle getOverlay() {
@@ -76,16 +94,26 @@ public class HexTile extends Polygon {
                 x + n, y - r * 0.5
         );
     }
+    private Image applyHomebaseOverlay(Image baseImage, Color overlayColor) {
+        int width = (int) baseImage.getWidth();
+        int height = (int) baseImage.getHeight();
 
+        // Create a Canvas to draw the blended image
+        Canvas canvas = new Canvas(width, height);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
 
-    private Paint computeFill() {
-        if (tile.get().isOccupied()) {
-            Minion minion = tile.get().getOccupant();
-            if (minion != null && minion.getOwner().equals(currentPlayer.get())) {
-                return new ImagePattern(minion.getMinionIcon());
-            }
-        }
-        return new ImagePattern(new Image(getClass().getResource(tile.get().getImagePath()).toExternalForm()));
+        // Draw the original image
+        gc.drawImage(baseImage, 0, 0, width, height);
+
+        // Apply the homebase color
+        gc.setFill(new Color(overlayColor.getRed(), overlayColor.getGreen(), overlayColor.getBlue(), 0.3)); // 50% transparency
+        gc.fillRect(0, 0, width, height);
+
+        // Convert Canvas to an Image
+        WritableImage blendedImage = new WritableImage(width, height);
+        canvas.snapshot(null, blendedImage);
+
+        return blendedImage;
     }
 }
 

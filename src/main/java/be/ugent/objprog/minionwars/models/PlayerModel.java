@@ -25,7 +25,7 @@ public class PlayerModel {
         player2 = new SimpleObjectProperty<>(new Player(null));
         playerColorMap = Map.of(
                 player1.get(), Color.BLUE,   // Player 1 -> Blue
-                player2.get(), Color.RED     // Player 2 -> Red
+                player2.get(), Color.YELLOW     // Player 2 -> Yellow
         );
         currentPlayer = new SimpleObjectProperty<>(null);
         turnCounter = new SimpleIntegerProperty(0);
