@@ -6,6 +6,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -14,6 +15,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -49,7 +51,7 @@ public class MinionsTableView extends TableView<Minion> {
 
                     // Dynamically adjust font size
                     ChangeListener<Number> resizeListener = (obs, oldSize, newSize) -> updateFontSize();
-                    
+
                     widthProperty().addListener(resizeListener);
                     tableRowProperty().addListener((obs, oldRow, newRow) -> {
                         if (newRow != null) {
@@ -75,15 +77,15 @@ public class MinionsTableView extends TableView<Minion> {
         });
 
 
-        TableColumn<Minion, VBox> statsCol = new TableColumn<>();
+        TableColumn<Minion, GridPane> statsCol = new TableColumn<>();
         // (returns empty property, since we don't use it directly)
         statsCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(null));
 
 
         statsCol.setCellFactory(column -> new TableCell<>() {
             @Override
-            protected void updateItem(VBox vbox, boolean empty) {
-                super.updateItem(vbox, empty);
+            protected void updateItem(GridPane gridPane, boolean empty) {
+                super.updateItem(gridPane, empty);
                 double iconScale = 0.2;
                 double fontScale = 0.15;
                 Minion minion = getTableRow() != null ? getTableRow().getItem() : null;
@@ -132,13 +134,29 @@ public class MinionsTableView extends TableView<Minion> {
                     defenseLabel.styleProperty().bind(
                             Bindings.format("-fx-font-size: %.2fpx;", getTableColumn().widthProperty().multiply(fontScale))
                     );
+                    // Range label
+                    Label rangeLabel = new Label();
+                    rangeLabel.textProperty().bind(Bindings.format("%d-%d", minion.getRange()[0], minion.getRange()[1]  ));
+                    ImageView rangeImageView  = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/range-119533.png"))));
+                    rangeLabel.setGraphic(rangeImageView);
 
+                    rangeImageView.setPreserveRatio(true);
+                    rangeImageView.fitHeightProperty().bind(getTableColumn().widthProperty().multiply(iconScale));
+                    rangeImageView.fitWidthProperty().bind(rangeImageView.fitHeightProperty());
+                    rangeLabel.styleProperty().bind(
+                            Bindings.format("-fx-font-size: %.2fpx;", getTableColumn().widthProperty().multiply(fontScale))
+                    );
 
-                    VBox statsVBox = new VBox(5, priceLabel, attackLabel, defenseLabel);
-                    statsVBox.setAlignment(Pos.CENTER_LEFT);
+                    GridPane statsGrid = new GridPane(5,5);
+                    statsGrid.setAlignment(Pos.CENTER_LEFT);
+                    statsGrid.add(priceLabel, 0, 0);
+                    statsGrid.add(attackLabel, 0, 1);
+                    statsGrid.add(defenseLabel, 1, 0);
+                    statsGrid.add(rangeLabel, 1, 1);
 
-                    setGraphic(statsVBox);
+                    setGraphic(statsGrid);
                     setAlignment(Pos.CENTER_LEFT);
+                    setPadding(new Insets(5));
                 }
             }
         });
@@ -169,7 +187,7 @@ public class MinionsTableView extends TableView<Minion> {
                 if (empty || getTableRow() == null || getTableRow().getItem() == null || imageView == null) {
                     setGraphic(null);
                 } else {
-                    // Creating the circle for the clip
+
                     Circle circle = new Circle();
                     circle.setFill(new ImagePattern(imageView.getImage()));
                     circle.radiusProperty().bind(getTableColumn().prefWidthProperty().multiply(0.35));
@@ -177,7 +195,8 @@ public class MinionsTableView extends TableView<Minion> {
                     circle.setCenterY(getTableRow().getHeight() / 2);
                     circle.setCenterX(getTableColumn().getWidth() / 2);
                     setGraphic(circle);
-                    setAlignment(Pos.CENTER);
+                    setAlignment(Pos.TOP_CENTER);
+
                 }
             }
         });
