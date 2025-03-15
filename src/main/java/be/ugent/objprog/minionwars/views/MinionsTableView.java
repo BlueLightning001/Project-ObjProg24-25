@@ -1,5 +1,6 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import javafx.beans.binding.Bindings;
@@ -147,12 +148,30 @@ public class MinionsTableView extends TableView<Minion> {
                             Bindings.format("-fx-font-size: %.2fpx;", getTableColumn().widthProperty().multiply(fontScale))
                     );
 
+                    // Effect symbol
+                    Label effectLabel = new Label();
+                    MinionEffect minionEffect = minion.getEffect();
+                    ImageView effectImageView;
+                    if (minionEffect != null) {
+                        effectImageView = new ImageView(minionEffect.getImage());
+                    } else {
+                        effectImageView = new ImageView();
+                    }
+
+                    effectLabel.setGraphic(effectImageView);
+                    effectImageView.setPreserveRatio(true);
+                    effectImageView.fitHeightProperty().bind(getTableColumn().widthProperty().multiply(iconScale));
+                    effectImageView.fitWidthProperty().bind(effectImageView.fitHeightProperty());
+
                     GridPane statsGrid = new GridPane(5,5);
                     statsGrid.setAlignment(Pos.CENTER_LEFT);
                     statsGrid.add(priceLabel, 0, 0);
                     statsGrid.add(attackLabel, 0, 1);
                     statsGrid.add(defenseLabel, 1, 0);
                     statsGrid.add(rangeLabel, 1, 1);
+                    if (effectImageView.getImage() != null) {
+                        statsGrid.add(effectLabel, 0, 2);
+                    }
 
                     setGraphic(statsGrid);
                     setAlignment(Pos.CENTER_LEFT);
