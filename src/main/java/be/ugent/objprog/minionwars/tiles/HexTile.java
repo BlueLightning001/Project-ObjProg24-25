@@ -1,6 +1,5 @@
 package be.ugent.objprog.minionwars.tiles;
 
-import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.beans.property.ObjectProperty;
@@ -8,21 +7,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
 import javafx.scene.image.Image;
 
 //For displaying the tiles
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 public class HexTile extends Polygon {
@@ -41,24 +31,19 @@ public class HexTile extends Polygon {
         this.playerModel = playerModel;
         this.currentPlayer = playerModel.currentPlayerProperty();
         setScaleFactor(scaleFactor); // Ensure proper scaling
-
-        updateTileAppearance();
-
+        Image baseImage = new Image(getClass().getResource(this.tile.get().getImagePath()).toExternalForm());
+        setFill(new ImagePattern(baseImage));
+        if (this.tile.get().isHomeBase()) {
+            Color homebaseColor = playerModel.getPlayerColor(playerModel.getPlayers().get(this.tile.get().getHomebase() - 1).get());  // Get player’s assigned color
+            baseImage = applyColorOverlay(baseImage, homebaseColor);
+        }
         setStrokeWidth(1);
         setStroke(Color.BLACK);
 
-        this.tile.addListener((obs, oldTile, newTile) -> {
-            updateTileAppearance();
-        });
 
     }
-    public void updateTileAppearance() {
+    public void updateTileAppearance() { //TODO
         Image baseImage = new Image(getClass().getResource(tile.get().getImagePath()).toExternalForm());
-
-        if (tile.get().isHomeBase()) {
-            Color homebaseColor = playerModel.getPlayerColor(playerModel.getPlayers().get(tile.get().getHomebase() - 1).get());  // Get player’s assigned color
-            baseImage = applyHomebaseOverlay(baseImage, homebaseColor);
-        }
 
         setFill(new ImagePattern(baseImage));
     }
@@ -94,7 +79,7 @@ public class HexTile extends Polygon {
                 x + n, y - r * 0.5
         );
     }
-    private Image applyHomebaseOverlay(Image baseImage, Color overlayColor) {
+    public Image applyColorOverlay(Image baseImage, Color overlayColor) {
         int width = (int) baseImage.getWidth();
         int height = (int) baseImage.getHeight();
 
