@@ -1,7 +1,6 @@
 package be.ugent.objprog.minionwars;
 
 import be.ugent.objprog.minionwars.effects.EffectFactory;
-import be.ugent.objprog.minionwars.effects.EffectVisitor;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.minions.MinionTypeImage;
@@ -23,21 +22,22 @@ import java.util.List;
 import java.util.Objects;
 
 public class JDOMReader {
-    private static String FILENAME = "/be/ugent/objprog/minionwars/configs/game-big.xml";
+    private String filename;
     private List<Minion> minionList;
     private List<Power> powers;
     private List<Tile> tiles;
     private List<Effect> effectList;
     private TileFactory tileFactory;
     private EffectFactory effectFactory;
-    public JDOMReader() {
+    public JDOMReader(String filename) {
+        this.filename = filename;
         tiles = new ArrayList<>();
         tileFactory = new TileFactory();
         effectFactory = new EffectFactory();
         minionList = new ArrayList<>();
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
-            Document document = saxBuilder.build(new File(Objects.requireNonNull(getClass().getResource(FILENAME)).getFile()));
+            Document document = saxBuilder.build(new File(Objects.requireNonNull(getClass().getResource(this.filename)).getFile()));
             // Get root element (configuration)
             Element root = document.getRootElement();
 
@@ -110,7 +110,7 @@ public class JDOMReader {
     }
 
     public static void main(String[] args) {
-        JDOMReader jdomReader = new JDOMReader();
+        JDOMReader jdomReader = new JDOMReader(args[0]);
         System.out.println(jdomReader.getTiles());
 
     }

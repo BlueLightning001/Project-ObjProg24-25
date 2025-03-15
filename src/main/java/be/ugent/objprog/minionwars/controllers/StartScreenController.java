@@ -1,5 +1,6 @@
 package be.ugent.objprog.minionwars.controllers;
 
+import be.ugent.objprog.minionwars.JDOMReader;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.views.GameView;
 import be.ugent.objprog.minionwars.views.StartScreenView;
@@ -23,7 +24,9 @@ public class StartScreenController {
     private Double prefStageWidth = null;
     private Double prefStageHeight = null;
     private Locale locale;
-    public StartScreenController(Stage stage, Locale locale) {
+    private JDOMReader reader;
+    public StartScreenController(Stage stage, Locale locale, JDOMReader reader) {
+        this.reader = reader;
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         this.model = new PlayerModel();
         this.view = new StartScreenView(model, locale);
@@ -99,7 +102,7 @@ public class StartScreenController {
     private void startGame() {
         boolean fullscreen = stage.isFullScreen();
 
-        GameController gameController = new GameController(stage,model,locale);
+        GameController gameController = new GameController(stage,model,locale,reader);
         Scene scene = new Scene(gameController.getView(), getView().getWidth(), getView().getHeight());
 
         scene.setOnKeyPressed(event -> {

@@ -15,8 +15,15 @@ public class MinionWars extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         Locale locale = Locale.getDefault();
-
-        StartScreenController controller = new StartScreenController(primaryStage,locale);
+        String configs = getParameters().getRaw().getFirst();
+        System.out.println(configs);
+        JDOMReader reader = new JDOMReader(configs);
+        if (reader == null) {
+            throw new RuntimeException("Reading config file failed");
+        } else {
+            System.out.println("READER: " + reader);
+        }
+        StartScreenController controller = new StartScreenController(primaryStage,locale,reader);
         Scene scene = new Scene(controller.getView(), controller.getView().getPrefWidth() , controller.getView().getPrefHeight());
         primaryStage.setTitle("Minion Wars");
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/minions/sword.png"))));
@@ -35,6 +42,6 @@ public class MinionWars extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }

@@ -20,9 +20,8 @@ public class GameController {
     private TileModel tileModel;
     private Stage stage;
 
-    public GameController(Stage stage,PlayerModel playerModel, Locale locale) {
+    public GameController(Stage stage,PlayerModel playerModel, Locale locale,JDOMReader reader) {
         this.stage = stage;
-        JDOMReader reader = new JDOMReader();
         this.playerModel = playerModel;
         this.minionModel = new MinionModel(reader);
         this.tileModel = new TileModel(reader);
