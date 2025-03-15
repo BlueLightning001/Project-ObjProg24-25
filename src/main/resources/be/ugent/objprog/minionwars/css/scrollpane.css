@@ -1,6 +1,7 @@
-.scroll-pane .viewport {
+.scroll-pane {
     -fx-background-color: black;
 }
-.scroll-pane {
-    -fx-background-color: black
+
+.scroll-pane .viewport {
+    -fx-background-color: black;
 }

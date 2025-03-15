@@ -13,6 +13,11 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -77,6 +82,8 @@ public class GameView {
         // gameTileGroupPane doesn't function without a Pane, but this is a workaround since
         // they cannot both reference each-other from constructor
         gameTileGroupPane.bindPane(gamePane);
+        gamePane.getStylesheets().add("/be/ugent/objprog/minionwars/css/scrollpane.css");
+
 
         menuContainer.getChildren().addAll(currentPlayerHBox, menuTable, menuButtonBar);
         menuButtonBar.setPrefSize(menuContainer.getPrefWidth(), 50);
@@ -125,6 +132,7 @@ public class GameView {
 
 
         this.container.setPrefSize(800, 480);
+
         this.container.getChildren().add(root);
 
         this.container.setOnKeyPressed(event -> {

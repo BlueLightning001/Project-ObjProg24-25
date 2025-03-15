@@ -42,7 +42,7 @@ public class ZoomableScrollPane extends ScrollPane {
                 setPannable(false);
             }
         });
-        this.getStylesheets().add("/be/ugent/objprog/minionwars/css/scrollpane.css");
+
 
 
         setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
