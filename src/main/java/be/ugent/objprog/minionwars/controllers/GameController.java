@@ -47,19 +47,22 @@ public class GameController {
         });
         view.getGameTileGroupPane().setOnMouseClicked(event -> {
             Object eventSource = event.getTarget();
-            if (eventSource instanceof HexTile && event.getButton() == MouseButton.PRIMARY) {
-                Tile tile = ((HexTile) eventSource).getTile();
+            if (eventSource instanceof HexTile hexTile && event.getButton() == MouseButton.PRIMARY) {
+                Tile tile = hexTile.getTile();
+
                 System.out.println("CLICKED ON TILE: " + tile);
                 //TODO handle game logic
                 Minion selectedMinion = view.getMinionsTableView().getSelectionModel().getSelectedItem();
                 Player currentPlayer = playerModel.getCurrentPlayer();
                 // Player wants to place minion
-                if ( selectedMinion != null) {
+                if ( selectedMinion != null && tile.isHomeBase() && tile.getHomebase() == currentPlayer.getHomeBaseID() && !tile.isOccupied()) {
                     currentPlayer.removeMoney(selectedMinion.getCost());
+                    System.out.println("PLAYER MONEY: " + currentPlayer.getMoney());
                     currentPlayer.addMinion(selectedMinion);
                     selectedMinion.setOwner(currentPlayer);
                     tile.setOccupant(selectedMinion);
-
+                    hexTile.updateTileAppearance();
+                    view.getMinionsTableView().getSelectionModel().clearSelection();
                 }
             }
         });

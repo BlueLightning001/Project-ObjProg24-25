@@ -11,9 +11,15 @@ public class Player {
     private final SimpleStringProperty name;
     private final SimpleIntegerProperty money;
     private final ObservableList<Minion> minions = FXCollections.observableArrayList();
-    public Player(String name) {
+    private int id;
+    public Player(String name, int id) {
         this.name = new SimpleStringProperty(name);
         this.money =new SimpleIntegerProperty(0);
+        this.id = id;
+    }
+
+    public int getHomeBaseID() {
+        return this.id;
     }
 
     public ObservableList<Minion> getMinions() {
@@ -52,6 +58,7 @@ public class Player {
         if (amount > this.money.get()) {
             throw new IllegalArgumentException("Player doesn't have enough money");
         }
+        money.set(money.get() - amount);
     }
     public void setMoney(int money) {
         this.money.set(money);

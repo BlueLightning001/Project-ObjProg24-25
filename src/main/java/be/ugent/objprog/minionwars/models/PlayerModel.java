@@ -21,8 +21,8 @@ public class PlayerModel {
     private final Map<Player, Color> playerColorMap ;
 
     public PlayerModel() {
-        player1 = new SimpleObjectProperty<>(new Player(null));
-        player2 = new SimpleObjectProperty<>(new Player(null));
+        player1 = new SimpleObjectProperty<>(new Player(null,1));
+        player2 = new SimpleObjectProperty<>(new Player(null,2));
         playerColorMap = Map.of(
                 player1.get(), Color.BLUE,   // Player 1 -> Blue
                 player2.get(), Color.YELLOW     // Player 2 -> Yellow

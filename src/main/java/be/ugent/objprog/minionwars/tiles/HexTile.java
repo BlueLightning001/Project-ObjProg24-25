@@ -44,12 +44,16 @@ public class HexTile extends Polygon {
     }
     public void updateTileAppearance() { //TODO
         Image baseImage = new Image(getClass().getResource(tile.get().getImagePath()).toExternalForm());
-        if (startPhase && this.tile.get().isHomeBase()) {
-            if ((tile.get().getHomebase() == 1 && currentPlayer.get().equals(playerModel.getPlayer1()) ||
+        if (startPhase) {
+            // players only see their own homebases
+            if (this.tile.get().isHomeBase() && (tile.get().getHomebase() == 1 && currentPlayer.get().equals(playerModel.getPlayer1()) ||
                     tile.get().getHomebase() == 2 && currentPlayer.get().equals(playerModel.getPlayer2())) ) {
                 System.out.println("HOMEBASE SHOWN: " + tile.get());
                 Color homebaseColor = playerModel.getPlayerColor(playerModel.getPlayers().get(this.tile.get().getHomebase() - 1).get());
                 baseImage = applyColorOverlay(baseImage, homebaseColor);
+                if (this.tile.get().isOccupied()) {
+                    baseImage = applyColorOverlay(tile.get().getOccupant().getMinionIcon(), homebaseColor);
+                }
             }
         }
         setFill(new ImagePattern(baseImage));

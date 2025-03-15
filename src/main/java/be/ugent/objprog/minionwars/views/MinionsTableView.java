@@ -8,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -46,11 +47,21 @@ public class MinionsTableView extends TableView<Minion> {
 
         // filters based on minion cost and player money
         filteredMinions = new FilteredList<>(allMinions, minion -> minion.getCost() <= playerModel.getCurrentPlayer().getMoney());
-
         setItems(filteredMinions);
 
+        // initial call to bind
+        if (playerModel.getCurrentPlayer() != null) {
+            playerModel.getCurrentPlayer().moneyProperty().addListener(this::moneyChanged);
+        }
         playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
-            filteredMinions.setPredicate(minion -> minion.getCost() <= newPlayer.getMoney());
+            if (oldPlayer != null) {
+                // Unbind old listener
+                oldPlayer.moneyProperty().removeListener(this::moneyChanged);
+            }
+            if (newPlayer != null) {
+                newPlayer.moneyProperty().addListener(this::moneyChanged);
+                this.moneyChanged(newPlayer.moneyProperty(),oldPlayer.getMoney(),newPlayer.getMoney());
+            }
         });
 
         TableColumn<Minion, ImageView> minionIconCol = getMinionImageViewTableColumn();
@@ -175,7 +186,10 @@ public class MinionsTableView extends TableView<Minion> {
         getStylesheets().add(MinionsTableView.class.getResource("/be/ugent/objprog/minionwars/css/tableview.css").toExternalForm());
         getStyleClass().add("noheader");
     }
-
+    private void moneyChanged(ObservableValue<? extends Number> obs, Number oldMoney, Number newMoney) {
+        filteredMinions.setPredicate(minion -> minion.getCost() <= newMoney.intValue());
+        refresh();
+    }
     private TableColumn<Minion, String> getMinionStringTableColumn() {
         TableColumn<Minion, String> nameCol = new TableColumn<>();
         nameCol.setCellValueFactory(cell -> {
