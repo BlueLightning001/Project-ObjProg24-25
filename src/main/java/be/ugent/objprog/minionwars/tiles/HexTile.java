@@ -26,28 +26,37 @@ public class HexTile extends Polygon {
     private final ObjectProperty<Player> currentPlayer; // Track the active player
     private Rectangle overlay; // Homebase overlay effect
     private PlayerModel playerModel;
+    private boolean startPhase = true;
     public HexTile(double x, double y, Tile tile, PlayerModel playerModel, double scaleFactor) {
         this.tile = new SimpleObjectProperty<>(tile);
         this.playerModel = playerModel;
         this.currentPlayer = playerModel.currentPlayerProperty();
         setScaleFactor(scaleFactor); // Ensure proper scaling
-        Image baseImage = new Image(getClass().getResource(this.tile.get().getImagePath()).toExternalForm());
-        setFill(new ImagePattern(baseImage));
-        if (this.tile.get().isHomeBase()) {
-            Color homebaseColor = playerModel.getPlayerColor(playerModel.getPlayers().get(this.tile.get().getHomebase() - 1).get());  // Get player’s assigned color
-            baseImage = applyColorOverlay(baseImage, homebaseColor);
-        }
+
+
+        updateTileAppearance();
         setStrokeWidth(1);
         setStroke(Color.BLACK);
 
-
+        this.tile.addListener((obs, oldTile, newTile) -> {
+            updateTileAppearance();
+        });
     }
     public void updateTileAppearance() { //TODO
         Image baseImage = new Image(getClass().getResource(tile.get().getImagePath()).toExternalForm());
-
+        if (startPhase && this.tile.get().isHomeBase()) {
+            if ((tile.get().getHomebase() == 1 && currentPlayer.get().equals(playerModel.getPlayer1()) ||
+                    tile.get().getHomebase() == 2 && currentPlayer.get().equals(playerModel.getPlayer2())) ) {
+                System.out.println("HOMEBASE SHOWN: " + tile.get());
+                Color homebaseColor = playerModel.getPlayerColor(playerModel.getPlayers().get(this.tile.get().getHomebase() - 1).get());
+                baseImage = applyColorOverlay(baseImage, homebaseColor);
+            }
+        }
         setFill(new ImagePattern(baseImage));
     }
-
+    public void endStartPhase() {
+        startPhase = false;
+    }
     public Rectangle getOverlay() {
         return overlay;
     }

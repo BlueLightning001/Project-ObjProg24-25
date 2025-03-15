@@ -23,6 +23,11 @@ public class TileGroupPane extends Pane {
     }
 
     private ZoomableScrollPane boundPane;
+
+    public List<HexTile> getHexTiles() {
+        return hexTiles;
+    }
+
     private final List<HexTile> hexTiles = new ArrayList<>();
     private final ExecutorService resizeExecutor = Executors.newSingleThreadExecutor();
 

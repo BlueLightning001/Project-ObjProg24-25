@@ -38,6 +38,9 @@ public class GameController {
         view.getEndTurnButton().setOnAction(event -> {
             playerModel.nextPlayer();
             view.getMinionsTableView().getSelectionModel().clearSelection();
+            view.getGameTileGroupPane().getHexTiles()
+                    .forEach(HexTile::updateTileAppearance);
+
         });
         stage.setOnCloseRequest(event -> {
             view.getGameTileGroupPane().shutdown();// Releases resources from other threads
