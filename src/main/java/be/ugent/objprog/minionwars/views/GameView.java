@@ -149,7 +149,6 @@ public class GameView {
         currentPlayerHBox.setMaxWidth(Double.MAX_VALUE);
         currentPlayerHBox.setAlignment(Pos.CENTER_RIGHT);
         currentPlayerHBox.setSpacing(20);
-        currentPlayerHBox.setStyle("-fx-border-color: orange; -fx-border-width: 10px;"); //DEBUG
         menuTable.setMaxWidth(Double.MAX_VALUE);
         menuTable.setPrefHeight(Region.USE_COMPUTED_SIZE);
         VBox.setVgrow(menuTable, Priority.ALWAYS); // Make it take remaining space
@@ -184,6 +183,10 @@ public class GameView {
                 resetGameGroupPosition();
             }
         });
+    }
+
+    public MinionsTableView getMinionsTableView() {
+        return menuTable;
     }
 
     public void resetGameGroupPosition() {

@@ -2,6 +2,7 @@ package be.ugent.objprog.minionwars.minions;
 
 import be.ugent.objprog.minionwars.effects.EffectVisitor;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
+import be.ugent.objprog.minionwars.models.Player;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
@@ -19,6 +20,7 @@ public class Minion {
     protected Integer[] range;
     protected MinionEffect effect;
     protected Image minionIcon;
+    protected Player owner = null;
     public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {
         this.type = new SimpleStringProperty(type);
         this.name = new SimpleStringProperty(name);
@@ -30,7 +32,12 @@ public class Minion {
         this.effect = effect;
         this.minionIcon = minionIcon;
     }
-
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+    public Player getOwner() {
+        return owner;
+    }
     public void applyEffectLogic(MinionEffect effect) {
         effect.applyEffect(this);
     }

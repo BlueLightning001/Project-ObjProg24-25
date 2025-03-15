@@ -44,6 +44,10 @@ public abstract class Tile {
         return homebase;
     }
 
+    public boolean isHomeBase() {
+        return homebase.get() != 0;
+    }
+
     public void setHomebase(int homebase) {
         this.homebase.set(homebase);
     }

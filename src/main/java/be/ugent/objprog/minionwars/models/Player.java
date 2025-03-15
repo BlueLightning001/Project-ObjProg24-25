@@ -48,6 +48,11 @@ public class Player {
     public int getMoney() {
         return money.get();
     }
+    public void removeMoney(int amount) {
+        if (amount > this.money.get()) {
+            throw new IllegalArgumentException("Player doesn't have enough money");
+        }
+    }
     public void setMoney(int money) {
         this.money.set(money);
     }
