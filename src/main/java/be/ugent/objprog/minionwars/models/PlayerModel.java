@@ -1,10 +1,12 @@
 package be.ugent.objprog.minionwars.models;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.List;
+import java.util.Random;
 
 public class PlayerModel {
     private static final int MIN_START_BUDGET = 10;
@@ -13,6 +15,7 @@ public class PlayerModel {
     private final SimpleObjectProperty<Player> player2 = new SimpleObjectProperty<>(new Player(null));
     private final List<ObjectProperty<Player>> players = List.of(player1, player2);
     private final SimpleIntegerProperty startBudget = new SimpleIntegerProperty(MIN_START_BUDGET);
+    private final SimpleBooleanProperty player1AtPlay = new SimpleBooleanProperty(new Random().nextBoolean()); // random first player that starts
 
     public boolean allPlayersHaveNames() {
         return player1.get() != null && player2.get() != null &&

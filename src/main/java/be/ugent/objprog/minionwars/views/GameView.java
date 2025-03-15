@@ -35,7 +35,7 @@ public class GameView {
     private Label currentPlayerLabel;
     private Label currentPlayerCoinsLabel;
     private HBox currentPlayerHBox;
-    private TableView<Minion> menuTable;
+    private PlayerMinionsTableView menuTable;
     private Button endTurnButton;
     private ZoomableScrollPane gamePane;
     private ButtonBar menuButtonBar;
@@ -61,7 +61,8 @@ public class GameView {
         coinIcon.setFitWidth(10);
 
 
-        menuTable = new TableView<>();
+        menuTable = new PlayerMinionsTableView(minionModel);
+
         endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton")); // TODO
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
 
@@ -109,6 +110,7 @@ public class GameView {
         currentPlayerHBox.prefHeightProperty().bind(root.heightProperty().multiply(0.1));
 
 
+
         // Bind gamePane size
         gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.75)); // 75% of root width
         gamePane.prefHeightProperty().bind(root.heightProperty());
@@ -130,6 +132,10 @@ public class GameView {
                 resetGameGroupPosition();
             }
         });
+    }
+
+    public Button getEndTurnButton() {
+        return endTurnButton;
     }
 
     public void resetGameGroupPosition() {

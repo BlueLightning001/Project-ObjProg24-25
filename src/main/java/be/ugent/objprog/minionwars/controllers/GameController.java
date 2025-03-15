@@ -1,5 +1,7 @@
 package be.ugent.objprog.minionwars.controllers;
 
+import be.ugent.objprog.minionwars.JDOMReader;
+import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.views.GameView;
@@ -12,6 +14,7 @@ import java.util.Locale;
 
 public class GameController {
     private final Locale locale;
+    private final MinionModel minionModel;
     private GameView view;
     private PlayerModel playerModel;
     private TileModel tileModel;
@@ -19,8 +22,10 @@ public class GameController {
 
     public GameController(Stage stage,PlayerModel playerModel, Locale locale) {
         this.stage = stage;
+        JDOMReader reader = new JDOMReader();
         this.playerModel = playerModel;
-        this.tileModel = new TileModel();
+        this.minionModel = new MinionModel(reader);
+        this.tileModel = new TileModel(reader);
         this.locale = locale;
         this.view = new GameView(playerModel,tileModel,locale);
         view.resetGameGroupPosition();

@@ -99,7 +99,7 @@ public class StartScreenController {
     private void startGame() {
         boolean fullscreen = stage.isFullScreen();
 
-        GameController gameController = new GameController(model,locale);
+        GameController gameController = new GameController(stage,model,locale);
         Scene scene = new Scene(gameController.getView(), getView().getWidth(), getView().getHeight());
 
         scene.setOnKeyPressed(event -> {

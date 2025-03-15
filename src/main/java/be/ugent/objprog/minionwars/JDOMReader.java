@@ -1,9 +1,11 @@
 package be.ugent.objprog.minionwars;
 
+import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.powers.Power;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.TileFactory;
+import javafx.collections.ObservableList;
 import javafx.scene.effect.Effect;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -27,7 +29,7 @@ public class JDOMReader {
     public JDOMReader() {
         tiles = new ArrayList<>();
         tileFactory = new TileFactory();
-        // Step 3: Read and parse the XML file using SAXBuilder
+        minionList = new ArrayList<>();
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
             Document document = saxBuilder.build(new File(Objects.requireNonNull(getClass().getResource(FILENAME)).getFile()));
@@ -38,7 +40,19 @@ public class JDOMReader {
             Element minionsElement = root.getChild("minions");
             if (minionsElement != null) {
                 for (Element minionElement : minionsElement.getChildren()) {
-                    // Process minions (TODO)
+                    String type = minionElement.getName();
+                    String name = minionElement.getAttributeValue("name");
+                    int cost = Integer.parseInt(minionElement.getAttributeValue("cost"));
+                    int movement = Integer.parseInt(minionElement.getAttributeValue("movement"));
+                    int range = Integer.parseInt(minionElement.getAttributeValue("range"));
+                    int attack = Integer.parseInt(minionElement.getAttributeValue("attack"));
+                    int defence = Integer.parseInt(minionElement.getAttributeValue("defence"));
+                    // Optional
+                    String effect = minionElement.getAttributeValue("effect");
+                    String effectValueAttr = minionElement.getAttributeValue("effect-value");
+                    int effectValue = effectValueAttr != null ? Integer.parseInt(effectValueAttr) : 0;
+                    MinionEffect minionEffect ;//TODO effect factory
+
                 }
             }
 
@@ -54,7 +68,7 @@ public class JDOMReader {
             Element fieldElement = root.getChild("field");
             if (fieldElement != null) {
                 for (Element tileElement : fieldElement.getChildren()) {
-                    String tileType = tileElement.getName(); // Element name (e.g., "dirt", "forest")
+                    String tileType = tileElement.getName();
                     int x = Integer.parseInt(tileElement.getAttributeValue("x"));
                     int y = Integer.parseInt(tileElement.getAttributeValue("y"));
                     // Optional: Handle "homebase" attribute
@@ -84,6 +98,10 @@ public class JDOMReader {
         JDOMReader jdomReader = new JDOMReader();
         System.out.println(jdomReader.getTiles());
 
+    }
+
+    public List<Minion> getMinions() {
+        return minionList;
     }
 
     public List<Tile> getTiles() {

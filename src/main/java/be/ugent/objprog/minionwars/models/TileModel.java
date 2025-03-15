@@ -3,8 +3,6 @@ package be.ugent.objprog.minionwars.models;
 import be.ugent.objprog.minionwars.JDOMReader;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.VoidTile;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +15,14 @@ public class TileModel {
     private final List<Tile> initialTiles;
     private Tile[][] tileGrid;
 
-    public TileModel() {
+    public TileModel(JDOMReader reader) {
         this.initialTiles = new ArrayList<>();
-        initializeTiles();
+        initializeTiles(reader);
         initializeTileGrid();
 
     }
 
-    public void initializeTiles() {
-        JDOMReader jdomReader = new JDOMReader();
+    public void initializeTiles(JDOMReader jdomReader) {
         System.out.println(jdomReader.getTiles());
         initialTiles.addAll(jdomReader.getTiles());
 
