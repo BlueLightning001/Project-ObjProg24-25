@@ -129,6 +129,14 @@ public class GameView {
         ButtonBar.setButtonData(centerBoardButton, ButtonBar.ButtonData.RIGHT);
 
 
+        centerBoardButton.prefHeightProperty().bind(menuButtonBar.heightProperty().multiply(0.3));
+        endTurnButton.prefHeightProperty().bind(menuButtonBar.heightProperty().multiply(0.3));
+
+        endTurnButton.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpx;", endTurnButton.widthProperty().multiply(fontScale)));
+        centerBoardButton.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpx;", centerBoardButton.widthProperty().multiply(fontScale)));
+        menuButtonBar.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        menuButtonBar.setMaxWidth(Double.MAX_VALUE);
+        menuButtonBar.buttonMinWidthProperty().bind(menuButtonBar.widthProperty().multiply(0.3));
 
 
         // Bind gameTileGroupPane to gamePane size
