@@ -96,7 +96,7 @@ public class Minion {
 
     @Override
     public String toString() {
-        return type.get().toUpperCase() + ":  NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + Arrays.toString(getRange());
+        return type.get().toUpperCase() + ":  NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + Arrays.toString(getRange()) + ", IMAGE: " + minionIcon;
     }
 
     public String getName() {

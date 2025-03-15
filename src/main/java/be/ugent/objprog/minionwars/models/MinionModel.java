@@ -12,6 +12,7 @@ public class MinionModel {
 
     public MinionModel(JDOMReader reader) {
         minions = FXCollections.observableArrayList();
+        System.out.println(reader.getMinions());
         setMinions(reader.getMinions());
     }
     public ObservableList<Minion> getMinions() {

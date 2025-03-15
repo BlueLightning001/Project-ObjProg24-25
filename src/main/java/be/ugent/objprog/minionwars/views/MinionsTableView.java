@@ -4,7 +4,6 @@ import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.minions.MinionTypeImage;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
@@ -15,17 +14,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.NumberStringConverter;
 
-import java.util.Objects;
-
-public class PlayerMinionsTableView extends TableView<Minion> {
-    public PlayerMinionsTableView(MinionModel model) {
+public class MinionsTableView extends TableView<Minion> {
+    public MinionsTableView(MinionModel model) {
         super();
         setEditable(false);
         setTableMenuButtonVisible(false);
-
-
+        System.out.println(model.getMinions());
+        setItems(model.getMinions());
 
         TableColumn<Minion, ImageView> minionIconCol = new TableColumn<>();
         minionIconCol.setCellValueFactory(cell -> {
@@ -67,7 +63,7 @@ public class PlayerMinionsTableView extends TableView<Minion> {
                     setGraphic(null);
                 } else {
                     Label priceLabel = new Label();
-                    priceLabel.textProperty().bind(Bindings.format("Cost: %.0f", minion.costProperty()));
+                    priceLabel.textProperty().bind(Bindings.format("Cost: %d", minion.costProperty()));
 
                     Label attackLabel = new Label();
                     attackLabel.textProperty().bind(Bindings.format("Attack: %d", minion.attackProperty()));
@@ -82,6 +78,11 @@ public class PlayerMinionsTableView extends TableView<Minion> {
                 }
             }
         });
+
+        getColumns().setAll(minionIconCol,nameCol,statsCol);
+        setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        getStylesheets().add(MinionsTableView.class.getResource("/be/ugent/objprog/minionwars/css/tableview.css").toExternalForm());
+        getStyleClass().add("noheader");
     }
 
 

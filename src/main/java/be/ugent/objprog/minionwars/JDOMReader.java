@@ -49,7 +49,7 @@ public class JDOMReader {
                     String name = minionElement.getAttributeValue("name");
                     int cost = Integer.parseInt(minionElement.getAttributeValue("cost"));
                     int movement = Integer.parseInt(minionElement.getAttributeValue("movement"));
-                    int[] range = Arrays.stream(minionElement.getAttributeValue("range").split(" ")).sequential().mapToInt(Integer::parseInt).toArray();
+                    Integer[] range = Arrays.stream(minionElement.getAttributeValue("range").split(" ")).sequential().map(Integer::parseInt).toArray(Integer[]::new);
                     int attack = Integer.parseInt(minionElement.getAttributeValue("attack"));
                     int defence = Integer.parseInt(minionElement.getAttributeValue("defence"));
                     // Optional
@@ -62,7 +62,11 @@ public class JDOMReader {
                     } else {
                         minionEffect = null;
                     }
-                    Image minionIcon = new Image(MinionTypeImage);
+                    // Get the image for the type
+                    MinionTypeImage minionImage = MinionTypeImage.valueOf(type.toUpperCase().replace("-","_"));
+                    System.out.println(type.toUpperCase().replace("-","_"));
+                    System.out.println(minionImage.getImagePath());
+                    Image minionIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream(minionImage.getImagePath())));
                     minionList.add(new Minion(type,name,cost,movement,range,attack,defence,minionEffect, minionIcon) );
                 }
             }

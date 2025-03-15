@@ -8,8 +8,8 @@ public enum MinionTypeImage {
     ARCHER("/be/ugent/objprog/minionwars/images/minions/archer.png"),
     SCOUT("/be/ugent/objprog/minionwars/images/minions/scout.png"),
     CAVALRY("/be/ugent/objprog/minionwars/images/minions/cavalry.png"),
-    MOUNTED_ARCHER("/be/ugent/objprog/minionwars/images/minions/mounted_archer.png"),
-    HEAVY_CAVALRY("/be/ugent/objprog/minionwars/images/minions/heavy_cavalry.png"),
+    MOUNTED_ARCHER("/be/ugent/objprog/minionwars/images/minions/mounted-archer.png"),
+    HEAVY_CAVALRY("/be/ugent/objprog/minionwars/images/minions/heavy-cavalry.png"),
     CATAPULT("/be/ugent/objprog/minionwars/images/minions/catapult.png"),
     TREBUCHET("/be/ugent/objprog/minionwars/images/minions/trebuchet.png");
 
