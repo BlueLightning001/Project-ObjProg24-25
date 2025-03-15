@@ -27,7 +27,7 @@ public class GameController {
         this.minionModel = new MinionModel(reader);
         this.tileModel = new TileModel(reader);
         this.locale = locale;
-        this.view = new GameView(playerModel,tileModel,locale);
+        this.view = new GameView(minionModel,playerModel,tileModel,locale);
         view.resetGameGroupPosition();
 
         view.getEndTurnButton().setOnAction(event -> {

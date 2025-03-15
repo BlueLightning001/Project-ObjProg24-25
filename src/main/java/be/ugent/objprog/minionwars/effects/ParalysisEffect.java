@@ -10,6 +10,6 @@ public class ParalysisEffect extends MinionEffect {
 
     @Override
     public void applyEffect(Minion m) {
-
+        System.out.println("Paralysis " + m.getName() + ", value: " + value);
     }
 }

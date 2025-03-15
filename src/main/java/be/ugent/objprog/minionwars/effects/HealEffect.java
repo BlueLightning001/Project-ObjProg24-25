@@ -9,6 +9,6 @@ public class HealEffect extends MinionEffect {
 
     @Override
     public void applyEffect(Minion m) {
-
+        System.out.println("Healing " + m.getName() + ", value: " + value);
     }
 }

@@ -2,25 +2,25 @@ package be.ugent.objprog.minionwars.minions;
 
 import be.ugent.objprog.minionwars.effects.EffectVisitor;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
-import be.ugent.objprog.minionwars.effects.MinionEffect;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.effect.Effect;
+import javafx.scene.image.Image;
 
 import java.util.Arrays;
 
 
-public abstract class Minion {
+public class Minion {
+    protected final SimpleStringProperty type;
     protected final SimpleStringProperty name;
     protected final SimpleIntegerProperty cost;
     protected final SimpleIntegerProperty movement;
-    protected Integer[] range;
     protected final SimpleIntegerProperty attack;
     protected final SimpleIntegerProperty defence;
+    protected Integer[] range;
     protected MinionEffect effect;
-    protected MinionTypeImage minionType;
-
-    public Minion(String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, MinionTypeImage type) {
+    protected Image minionIcon;
+    public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {
+        this.type = new SimpleStringProperty(type);
         this.name = new SimpleStringProperty(name);
         this.cost = new SimpleIntegerProperty(cost);
         this.movement = new SimpleIntegerProperty(movement);
@@ -28,7 +28,11 @@ public abstract class Minion {
         this.attack = new SimpleIntegerProperty(attack);
         this.defence = new SimpleIntegerProperty(defence);
         this.effect = effect;
-        this.minionType = type;
+        this.minionIcon = minionIcon;
+    }
+
+    public void applyEffectLogic(MinionEffect effect) {
+        effect.applyEffect(this);
     }
 
     public SimpleIntegerProperty attackProperty() {
@@ -41,7 +45,7 @@ public abstract class Minion {
 
     public void decreaseDefence(int value) {
         if (this.defence.get() < value) {
-            throw  new IllegalArgumentException("Defence too low " + defence.get());
+            throw new IllegalArgumentException("Defence too low " + defence.get());
         }
         this.defence.set(this.defence.get() - value);
     }
@@ -56,14 +60,6 @@ public abstract class Minion {
 
     public void setAttack(int attack) {
         this.attack.set(attack);
-    }
-
-    public int getCost() {
-        return cost.get();
-    }
-
-    public void setCost(int cost) {
-        this.cost.set(cost);
     }
 
     public int getDefence() {
@@ -82,20 +78,45 @@ public abstract class Minion {
         this.effect = effect;
     }
 
-    public int getMovement() {
-        return movement.get();
+    public Image getMinionIcon() {
+        return minionIcon;
     }
 
-    public void setMovement(int movement) {
-        this.movement.set(movement);
+    public String getType() {
+        return type.get();
+    }
+
+    public SimpleIntegerProperty movementProperty() {
+        return movement;
+    }
+
+    public SimpleStringProperty nameProperty() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return type.get().toUpperCase() + ":  NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + Arrays.toString(getRange());
     }
 
     public String getName() {
         return name.get();
     }
 
-    public void setName(String name) {
-        this.name.set(name);
+    public int getCost() {
+        return cost.get();
+    }
+
+    public void setCost(int cost) {
+        this.cost.set(cost);
+    }
+
+    public int getMovement() {
+        return movement.get();
+    }
+
+    public void setMovement(int movement) {
+        this.movement.set(movement);
     }
 
     public Integer[] getRange() {
@@ -106,22 +127,11 @@ public abstract class Minion {
         this.range = range;
     }
 
-    public SimpleIntegerProperty movementProperty() {
-        return movement;
+    public void setName(String name) {
+        this.name.set(name);
     }
 
-    public SimpleStringProperty nameProperty() {
-        return name;
-    }
-    // Accept method for Visitor
-    //TODO remove individual minion classes if deemed unnecessary
-    public abstract void applyEffect(EffectVisitor effectVisitor);
-
-    public void applyEffectLogic(MinionEffect effect) {
-        effect.applyEffect(this);
-    }
-    @Override
-    public String toString() {
-        return minionType.toString() + ", NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + Arrays.toString(getRange());
+    public SimpleStringProperty typeProperty() {
+        return type;
     }
 }

@@ -2,6 +2,7 @@ package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.minions.Minion;
+import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.tiles.TileGroupPane;
@@ -41,8 +42,10 @@ public class GameView {
     private ButtonBar menuButtonBar;
     private Button centerBoardButton;
     private double borderWidth = 5.0;
-    ResourceBundle bundle;
-    public GameView(PlayerModel playerModel, TileModel tileModel, Locale locale) {
+    private ResourceBundle bundle;
+    private MinionModel minionModel;
+    public GameView(MinionModel minionModel,PlayerModel playerModel, TileModel tileModel, Locale locale) {
+        this.minionModel = minionModel;
         this.playerModel = playerModel;
         this.locale = locale;
         bundle = ResourceBundle.getBundle("/be/ugent/objprog/minionwars/lang/messages", locale);

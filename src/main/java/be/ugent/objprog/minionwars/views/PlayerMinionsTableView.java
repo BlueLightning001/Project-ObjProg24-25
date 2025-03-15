@@ -36,8 +36,7 @@ public class PlayerMinionsTableView extends TableView<Minion> {
                 return new SimpleObjectProperty<>(null); // no image found
             }
 
-            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(minionType.getImagePath())));
-
+            Image image = cell.getValue().getMinionIcon();
             ImageView imageView = new ImageView(image);
             imageView.setFitWidth(30); // Adjust as needed
             imageView.setFitHeight(30);

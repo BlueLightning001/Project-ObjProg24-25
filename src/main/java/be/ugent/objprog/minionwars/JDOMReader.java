@@ -1,12 +1,15 @@
 package be.ugent.objprog.minionwars;
 
+import be.ugent.objprog.minionwars.effects.EffectFactory;
+import be.ugent.objprog.minionwars.effects.EffectVisitor;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
+import be.ugent.objprog.minionwars.minions.MinionTypeImage;
 import be.ugent.objprog.minionwars.powers.Power;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.TileFactory;
-import javafx.collections.ObservableList;
 import javafx.scene.effect.Effect;
+import javafx.scene.image.Image;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -15,6 +18,7 @@ import org.jdom2.input.SAXBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,10 +29,11 @@ public class JDOMReader {
     private List<Tile> tiles;
     private List<Effect> effectList;
     private TileFactory tileFactory;
-
+    private EffectFactory effectFactory;
     public JDOMReader() {
         tiles = new ArrayList<>();
         tileFactory = new TileFactory();
+        effectFactory = new EffectFactory();
         minionList = new ArrayList<>();
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
@@ -44,15 +49,21 @@ public class JDOMReader {
                     String name = minionElement.getAttributeValue("name");
                     int cost = Integer.parseInt(minionElement.getAttributeValue("cost"));
                     int movement = Integer.parseInt(minionElement.getAttributeValue("movement"));
-                    int range = Integer.parseInt(minionElement.getAttributeValue("range"));
+                    int[] range = Arrays.stream(minionElement.getAttributeValue("range").split(" ")).sequential().mapToInt(Integer::parseInt).toArray();
                     int attack = Integer.parseInt(minionElement.getAttributeValue("attack"));
                     int defence = Integer.parseInt(minionElement.getAttributeValue("defence"));
                     // Optional
-                    String effect = minionElement.getAttributeValue("effect");
+                    String effectType = minionElement.getAttributeValue("effect");
                     String effectValueAttr = minionElement.getAttributeValue("effect-value");
                     int effectValue = effectValueAttr != null ? Integer.parseInt(effectValueAttr) : 0;
-                    MinionEffect minionEffect ;//TODO effect factory
-
+                    MinionEffect minionEffect;
+                    if (effectType != null) {
+                        minionEffect  = effectFactory.createEffect(effectType, effectValue);
+                    } else {
+                        minionEffect = null;
+                    }
+                    Image minionIcon = new Image(MinionTypeImage);
+                    minionList.add(new Minion(type,name,cost,movement,range,attack,defence,minionEffect, minionIcon) );
                 }
             }
 
