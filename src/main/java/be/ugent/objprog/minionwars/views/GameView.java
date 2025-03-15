@@ -66,7 +66,7 @@ public class GameView {
         coinIcon.setFitWidth(10);
 
 
-        menuTable = new MinionsTableView(minionModel);
+        menuTable = new MinionsTableView(minionModel,locale);
 
         endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton")); // TODO
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));

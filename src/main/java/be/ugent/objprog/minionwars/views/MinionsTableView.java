@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -23,11 +24,14 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class MinionsTableView extends TableView<Minion> {
-    public MinionsTableView(MinionModel model) {
+    public MinionsTableView(MinionModel model, Locale locale) {
         super();
+        ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         setEditable(false);
         setTableMenuButtonVisible(false);
         System.out.println(model.getMinions());
@@ -149,7 +153,7 @@ public class MinionsTableView extends TableView<Minion> {
                     );
 
                     // Effect symbol
-                    Label effectLabel = new Label();
+                    Label effectLabel = new Label(bundle.getString("gameScreen.minionTableView.effectLabel"));
                     MinionEffect minionEffect = minion.getEffect();
                     ImageView effectImageView;
                     if (minionEffect != null) {
@@ -162,6 +166,10 @@ public class MinionsTableView extends TableView<Minion> {
                     effectImageView.setPreserveRatio(true);
                     effectImageView.fitHeightProperty().bind(getTableColumn().widthProperty().multiply(iconScale));
                     effectImageView.fitWidthProperty().bind(effectImageView.fitHeightProperty());
+                    effectLabel.setContentDisplay(ContentDisplay.RIGHT);
+                    effectLabel.styleProperty().bind(
+                            Bindings.format("-fx-font-size: %.2fpx;", getTableColumn().widthProperty().multiply(fontScale))
+                    );
 
                     GridPane statsGrid = new GridPane(5,5);
                     statsGrid.setAlignment(Pos.CENTER_LEFT);
@@ -171,6 +179,7 @@ public class MinionsTableView extends TableView<Minion> {
                     statsGrid.add(rangeLabel, 1, 1);
                     if (effectImageView.getImage() != null) {
                         statsGrid.add(effectLabel, 0, 2);
+                        GridPane.setColumnSpan(effectLabel,2);
                     }
 
                     setGraphic(statsGrid);
