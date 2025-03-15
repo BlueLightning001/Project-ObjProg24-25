@@ -13,11 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -46,7 +41,8 @@ public class GameView {
     private double borderWidth = 5.0;
     private ResourceBundle bundle;
     private MinionModel minionModel;
-    public GameView(MinionModel minionModel,PlayerModel playerModel, TileModel tileModel, Locale locale) {
+
+    public GameView(MinionModel minionModel, PlayerModel playerModel, TileModel tileModel, Locale locale) {
         this.minionModel = minionModel;
         this.playerModel = playerModel;
         this.locale = locale;
@@ -56,17 +52,23 @@ public class GameView {
         root = new HBox();
         menuContainer = new VBox();
         currentPlayerLabel = new Label("Current Player");
-        currentPlayerCoinsLabel = new Label("TEST");
+        currentPlayerCoinsLabel = new Label("currentPlayerCoins");
         currentPlayerHBox = new HBox();
         currentPlayerHBox.getChildren().addAll(currentPlayerLabel, currentPlayerCoinsLabel);
-        currentPlayerCoinsLabel.setStyle("-fx-border-color: green; -fx-border-width: 10px;");
+
         ImageView coinIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/coin-FFB900.png"))));
         currentPlayerCoinsLabel.setGraphic(coinIcon);
         coinIcon.setFitHeight(10);
         coinIcon.setFitWidth(10);
 
+        currentPlayerLabel.textProperty().bind(playerModel.currentPlayerProperty().get().nameProperty());
+        playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
+            if (newPlayer != null) {
+                currentPlayerLabel.textProperty().bind(newPlayer.nameProperty());
+            }
+        });
 
-        menuTable = new MinionsTableView(minionModel,locale);
+        menuTable = new MinionsTableView(minionModel, locale);
 
         endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton")); // TODO
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
@@ -117,7 +119,6 @@ public class GameView {
         currentPlayerHBox.prefHeightProperty().bind(root.heightProperty().multiply(0.1));
 
 
-
         // Bind gamePane size
         gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.75)); // 75% of root width
         gamePane.prefHeightProperty().bind(root.heightProperty());
@@ -142,10 +143,6 @@ public class GameView {
         });
     }
 
-    public Button getEndTurnButton() {
-        return endTurnButton;
-    }
-
     public void resetGameGroupPosition() {
         gameTileGroupPane.setTranslateX(0);
         gameTileGroupPane.setTranslateY(0);
@@ -155,6 +152,10 @@ public class GameView {
         if (boundPane != null) {
             boundPane.resetScale();
         }
+    }
+
+    public Button getEndTurnButton() {
+        return endTurnButton;
     }
 
     public TileGroupPane getGameTileGroupPane() {

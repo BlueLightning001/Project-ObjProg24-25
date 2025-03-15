@@ -31,7 +31,7 @@ public class GameController {
         view.resetGameGroupPosition();
 
         view.getEndTurnButton().setOnAction(event -> {
-            endGame();
+            playerModel.nextPlayer();
         });
         stage.setOnCloseRequest(event -> {
             view.getGameTileGroupPane().shutdown();// Releases resources from other threads
