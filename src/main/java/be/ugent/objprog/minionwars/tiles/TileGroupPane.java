@@ -1,9 +1,11 @@
 package be.ugent.objprog.minionwars.tiles;
 
 import be.ugent.objprog.minionwars.ZoomableScrollPane;
+import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +17,19 @@ public class TileGroupPane extends Pane {
     private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
     private double tileScaleFactor = 1.0;
     private final Tile[][] tileGridModel;
-
+    private final PlayerModel playerModel;
     public ZoomableScrollPane getBoundPane() {
         return boundPane;
     }
 
     private ZoomableScrollPane boundPane;
     private final List<HexTile> hexTiles = new ArrayList<>();
-
     private final ExecutorService resizeExecutor = Executors.newSingleThreadExecutor();
 
-    public TileGroupPane(TileModel tileModel) {
+    public TileGroupPane(TileModel tileModel, PlayerModel playerModel) {
         this.tileGridModel = tileModel.getTileGrid();
-        initializeTiles();  // Create the tiles ONCE
+        this.playerModel = playerModel;
+        initializeTiles();  // Create the tiles once
     }
 
     public void bindPane(ZoomableScrollPane gamePane) {
@@ -42,7 +44,7 @@ public class TileGroupPane extends Pane {
         for (int i = 0; i < tileGridModel.length; i++) {
             for (int j = 0; j < tileGridModel[i].length; j++) {
                 Tile tile = tileGridModel[i][j];
-                HexTile hexTile = new HexTile(0, 0, tile, tileScaleFactor);
+                HexTile hexTile = new HexTile(0, 0, tile, playerModel ,tileScaleFactor);
                 hexTiles.add(hexTile);
             }
         }

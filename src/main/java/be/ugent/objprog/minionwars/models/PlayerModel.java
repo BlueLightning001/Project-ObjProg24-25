@@ -3,8 +3,10 @@ package be.ugent.objprog.minionwars.models;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.paint.Color;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class PlayerModel {
@@ -16,10 +18,15 @@ public class PlayerModel {
     private final SimpleIntegerProperty startBudget;
     private final SimpleObjectProperty<Player> currentPlayer ;  // random first player that starts
     private final SimpleIntegerProperty turnCounter;
+    private final Map<Player, Color> playerColorMap ;
 
     public PlayerModel() {
         player1 = new SimpleObjectProperty<>(new Player(null));
         player2 = new SimpleObjectProperty<>(new Player(null));
+        playerColorMap = Map.of(
+                player1.get(), Color.BLUE,   // Player 1 -> Blue
+                player2.get(), Color.RED     // Player 2 -> Red
+        );
         currentPlayer = new SimpleObjectProperty<>(null);
         turnCounter = new SimpleIntegerProperty(0);
         players = List.of(player1, player2);
@@ -107,6 +114,9 @@ public class PlayerModel {
 
     public SimpleIntegerProperty startBudgetProperty() {
         return startBudget;
+    }
+    public Color getPlayerColor(Player player) {
+        return playerColorMap.get(player);
     }
 
     @Override

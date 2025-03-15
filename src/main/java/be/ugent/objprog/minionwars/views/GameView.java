@@ -112,7 +112,7 @@ public class GameView {
         centerBoardButton.setOnAction(event -> resetGameGroupPosition());
 
         menuButtonBar = new ButtonBar();
-        gameTileGroupPane = new TileGroupPane(tileModel);
+        gameTileGroupPane = new TileGroupPane(tileModel,playerModel);
 
 
         gamePane = new ZoomableScrollPane(gameTileGroupPane);

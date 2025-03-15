@@ -48,6 +48,10 @@ public abstract class Tile {
         return homebase.get() != 0;
     }
 
+    public boolean isOccupied() {
+        return occupant.get() != null;
+    }
+
     public void setHomebase(int homebase) {
         this.homebase.set(homebase);
     }
@@ -58,7 +62,7 @@ public abstract class Tile {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "(" + xCoord + ", " + yCoord + ") ( Occupant: " + occupant.get()  +")";
+        return this.getClass().getSimpleName() + "(" + xCoord + ", " + yCoord + ") ( Occupant: " + occupant.get()  +") ( homebase: " + homebase.get() + ")" ;
     }
 
 }
