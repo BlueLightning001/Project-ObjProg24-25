@@ -4,8 +4,8 @@ import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,26 +15,43 @@ import java.util.concurrent.Executors;
 public class TileGroupPane extends Pane {
     private static final double BASE_R = 20;
     private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
-    private double tileScaleFactor = 1.0;
     private final Tile[][] tileGridModel;
     private final PlayerModel playerModel;
-    public ZoomableScrollPane getBoundPane() {
-        return boundPane;
-    }
-
-    private ZoomableScrollPane boundPane;
-
-    public List<HexTile> getHexTiles() {
-        return hexTiles;
-    }
-
     private final List<HexTile> hexTiles = new ArrayList<>();
     private final ExecutorService resizeExecutor = Executors.newSingleThreadExecutor();
+    private double tileScaleFactor = 1.0;
+    private SimpleObjectProperty<HexTile> selectedHexTile;
+    private ZoomableScrollPane boundPane;
 
     public TileGroupPane(TileModel tileModel, PlayerModel playerModel) {
         this.tileGridModel = tileModel.getTileGrid();
         this.playerModel = playerModel;
+        this.selectedHexTile = new SimpleObjectProperty<>(null);
         initializeTiles();  // Create the tiles once
+
+        selectedHexTileProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue != null) {
+                oldValue.setSelected(false);
+            }
+            if (newValue != null) {
+                newValue.setSelected(true);
+            }
+        });
+    }
+
+    private void initializeTiles() {
+        for (int i = 0; i < tileGridModel.length; i++) {
+            for (int j = 0; j < tileGridModel[i].length; j++) {
+                Tile tile = tileGridModel[i][j];
+                HexTile hexTile = new HexTile(0, 0, tile, playerModel, tileScaleFactor);
+                hexTiles.add(hexTile);
+            }
+        }
+        Platform.runLater(() -> getChildren().setAll(hexTiles)); // Add to UI
+    }
+
+    public SimpleObjectProperty<HexTile> selectedHexTileProperty() {
+        return selectedHexTile;
     }
 
     public void bindPane(ZoomableScrollPane gamePane) {
@@ -43,17 +60,6 @@ public class TileGroupPane extends Pane {
         boundPane.heightProperty().addListener((obs, oldVal, newVal) -> adjustTileSizeAsync());
 
         adjustTileSizeAsync(); // Initial resize
-    }
-
-    private void initializeTiles() {
-        for (int i = 0; i < tileGridModel.length; i++) {
-            for (int j = 0; j < tileGridModel[i].length; j++) {
-                Tile tile = tileGridModel[i][j];
-                HexTile hexTile = new HexTile(0, 0, tile, playerModel ,tileScaleFactor);
-                hexTiles.add(hexTile);
-            }
-        }
-        Platform.runLater(() -> getChildren().setAll(hexTiles)); // Add to UI
     }
 
     private void adjustTileSizeAsync() {
@@ -95,6 +101,22 @@ public class TileGroupPane extends Pane {
                 }
             });
         });
+    }
+
+    public ZoomableScrollPane getBoundPane() {
+        return boundPane;
+    }
+
+    public List<HexTile> getHexTiles() {
+        return hexTiles;
+    }
+
+    public HexTile getSelectedHexTile() {
+        return selectedHexTile.get();
+    }
+
+    public void setSelectedHexTile(HexTile selectedHexTile) {
+        this.selectedHexTile.set(selectedHexTile);
     }
 
     public void shutdown() {

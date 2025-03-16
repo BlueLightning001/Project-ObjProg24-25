@@ -60,6 +60,9 @@ public class Player {
         }
         money.set(money.get() - amount);
     }
+    public void addMoney(int amount) {
+        this.money.set(money.get() + amount);
+    }
     public void setMoney(int money) {
         this.money.set(money);
     }

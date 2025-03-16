@@ -10,9 +10,11 @@ import be.ugent.objprog.minionwars.tiles.HexTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.GameView;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -38,8 +40,12 @@ public class GameController {
         view.getEndTurnButton().setOnAction(event -> {
             playerModel.nextPlayer();
             view.getMinionsTableView().getSelectionModel().clearSelection();
-            view.getGameTileGroupPane().getHexTiles()
-                    .forEach(HexTile::updateTileAppearance);
+            view.getGameTileGroupPane().getHexTiles().stream()
+                    .filter(hexTile -> hexTile.getTile().getHomebase() == playerModel.getCurrentPlayer().getHomeBaseID())
+                    .forEach(hexTile -> {
+                        Color playerColor = playerModel.getPlayerColor(playerModel.getCurrentPlayer()); // Get the player's color
+                        hexTile.highlight(playerColor); // Highlight tile
+                    });
 
         });
         stage.setOnCloseRequest(event -> {
@@ -61,8 +67,23 @@ public class GameController {
                     currentPlayer.addMinion(selectedMinion);
                     selectedMinion.setOwner(currentPlayer);
                     tile.setOccupant(selectedMinion);
-                    hexTile.updateTileAppearance();
                     view.getMinionsTableView().getSelectionModel().clearSelection();
+                } else if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
+                    view.getGameTileGroupPane().setSelectedHexTile(hexTile);
+                }
+
+            }
+        });
+        view.getGameTileGroupPane().setOnKeyPressed(event -> {
+            Object eventSource = event.getTarget();
+            if (eventSource instanceof HexTile hexTile && event.getCode() == KeyCode.DELETE ) {
+                Tile tile = hexTile.getTile();
+                Player currentPlayer = playerModel.getCurrentPlayer();
+                Minion occupant = tile.getOccupant();
+                if (tile.isOccupied() && occupant.getOwner().equals(currentPlayer)) {
+                    tile.setOccupant(null);
+                    currentPlayer.addMoney(occupant.getCost());
+
                 }
             }
         });

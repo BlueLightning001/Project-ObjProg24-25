@@ -9,6 +9,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 import java.text.MessageFormat;
@@ -38,9 +39,28 @@ public class StartScreenController {
     }
 
     private void setupBindings() {
-        view.getPlayer1TextField().textProperty().bindBidirectional(model.player1Property().get().nameProperty());
-        view.getPlayer2TextField().textProperty().bindBidirectional(model.player2Property().get().nameProperty());
+        view.getPlayer1TextField().textProperty().bindBidirectional(model.player1Property().get().nameProperty(), new TrimStringConverter());
+        view.getPlayer2TextField().textProperty().bindBidirectional(model.player2Property().get().nameProperty(), new TrimStringConverter());
         view.getMoneyTextField().textProperty().bindBidirectional(model.startBudgetProperty(), new NumberStringConverter());
+    }
+    private static class TrimStringConverter extends StringConverter<String> {
+
+        @Override
+        public String toString(String object) {
+            return object != null ? object.trim() : "";
+        }
+
+        /**
+         * Converts the string provided into an object defined by the specific converter.
+         * Format of the string and type of the resulting object is defined by the specific converter.
+         *
+         * @param string the {@code String} to convert
+         * @return an object representation of the string passed in.
+         */
+        @Override
+        public String fromString(String string) {
+            return string != null ? string.trim() : "";
+        }
     }
 
     private void setupListeners() {

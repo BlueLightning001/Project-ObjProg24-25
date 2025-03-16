@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -172,6 +173,7 @@ public class GameView {
         root.setPadding(new Insets(20));
         root.getChildren().addAll(menuContainer, gamePane);
         root.setSpacing(20);
+
 
 
         this.container.setPrefSize(800, 480);
