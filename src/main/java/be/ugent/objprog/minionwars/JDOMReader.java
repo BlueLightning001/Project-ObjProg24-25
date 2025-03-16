@@ -29,7 +29,7 @@ public class JDOMReader {
     private List<Effect> effectList;
     private TileFactory tileFactory;
     private EffectFactory effectFactory;
-    public JDOMReader(String filename) {
+    public JDOMReader(String filename) throws IOException {
         this.filename = filename;
         tiles = new ArrayList<>();
         tileFactory = new TileFactory();
@@ -104,16 +104,11 @@ public class JDOMReader {
                 }
             }
 
-        } catch (JDOMException | IOException e) {
-            e.printStackTrace();
+        } catch (Exception e ) {
+            throw new IOException("Config file not found: " + filename);
         }
     }
 
-    public static void main(String[] args) {
-        JDOMReader jdomReader = new JDOMReader(args[0]);
-        System.out.println(jdomReader.getTiles());
-
-    }
 
     public List<Minion> getMinions() {
         return minionList;
