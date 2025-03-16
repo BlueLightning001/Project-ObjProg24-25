@@ -35,7 +35,6 @@ public class HexTile extends Polygon {
     private boolean startPhase = true;
     private final PlayerModel playerModel;
     private Color highlightColor = Color.TRANSPARENT;
-    private  Image currentImage;
     private SimpleBooleanProperty selected;
     private final static int DEFAULT_STROKE = 1;
     private final static Color DEFAULT_STROKE_COLOR = Color.BLACK;
@@ -52,7 +51,6 @@ public class HexTile extends Polygon {
         this.playerModel = playerModel;
         this.currentPlayer = playerModel.currentPlayerProperty();
         this.baseImage = new Image(getClass().getResource(this.tile.get().getImagePath()).toExternalForm());
-        this.currentImage = this.baseImage;
         this.selected = new SimpleBooleanProperty(false);
         setScaleFactor(scaleFactor);
         setStrokeWidth(DEFAULT_STROKE);
@@ -98,7 +96,7 @@ public class HexTile extends Polygon {
     /** Updates tile appearance using a Canvas to apply color overlays and highlighting. */
     private void updateTileAppearance() {
         Image finalImage = baseImage;
-
+            //TODO
         if (startPhase && tile.get().isHomeBase()) {
             Player homePlayer = playerModel.getPlayers().get(tile.get().getHomebase() - 1).get();
             if (homePlayer.equals(currentPlayer.get())) {
@@ -108,12 +106,13 @@ public class HexTile extends Polygon {
                     finalImage = applyColorOverlay(tile.get().getOccupant().getMinionIcon(), homebaseColor);
                 }
             }
+        } else {
+            highlightColor = Color.TRANSPARENT;
         }
 
         if (highlightColor != Color.TRANSPARENT) {
             finalImage = applyColorOverlay(finalImage, highlightColor);
         }
-        currentImage = finalImage;
         setFill(new ImagePattern(finalImage));
     }
 

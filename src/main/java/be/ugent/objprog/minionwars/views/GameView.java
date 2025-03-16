@@ -4,6 +4,7 @@ import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
+import be.ugent.objprog.minionwars.tiles.HexTile;
 import be.ugent.objprog.minionwars.tiles.TileGroupPane;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -58,6 +59,12 @@ public class GameView {
         currentPlayerHBox = new HBox();
         currentPlayerHBox.getChildren().addAll(currentPlayerLabel, currentPlayerCoinsLabel);
 
+        playerModel.turnCounterProperty().addListener((observable, oldValue, newValue) -> {
+           if (newValue.intValue() >= 2) {
+               changeGamePhase();
+           }
+        });
+
         double fontScale = 0.1;
 
         ImageView coinIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/coin-FFB900.png"))));
@@ -106,7 +113,7 @@ public class GameView {
 
         menuTable = new MinionsTableView(playerModel,minionModel, locale);
 
-        endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton")); // TODO
+        endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton"));
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
 
 
@@ -185,6 +192,11 @@ public class GameView {
                 resetGameGroupPosition();
             }
         });
+    }
+
+    public void changeGamePhase() { //TODO !!
+        getGameTileGroupPane().getHexTiles().forEach( HexTile::endStartPhase);
+        menuContainer.getChildren().setAll(endTurnButton);
     }
 
     public MinionsTableView getMinionsTableView() {

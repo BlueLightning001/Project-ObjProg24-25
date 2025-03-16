@@ -35,6 +35,8 @@ public class GameController {
         this.view = new GameView(minionModel,playerModel,tileModel,locale);
         view.resetGameGroupPosition();
         view.getEndTurnButton().setOnAction(event -> {
+
+
             playerModel.nextPlayer();
             view.getMinionsTableView().getSelectionModel().clearSelection();
             view.getGameTileGroupPane().getHexTiles().stream()
@@ -43,7 +45,8 @@ public class GameController {
                         Color playerColor = playerModel.getPlayerColor(playerModel.getCurrentPlayer()); // Get the player's color
                         hexTile.highlight(playerColor); // Highlight tile
                     });
-            view.getGameTileGroupPane().getSelectedHexTile().setSelected(false);
+           view.getGameTileGroupPane().setSelectedHexTile(null);
+
 
         });
         stage.setOnCloseRequest(event -> {

@@ -18,6 +18,7 @@ public class TileGroupPane extends Pane {
     private final Tile[][] tileGridModel;
     private final PlayerModel playerModel;
     private final List<HexTile> hexTiles = new ArrayList<>();
+    private final HexTile[][] hexTileGrid;
     private final ExecutorService resizeExecutor = Executors.newSingleThreadExecutor();
     private double tileScaleFactor = 1.0;
     private SimpleObjectProperty<HexTile> selectedHexTile;
@@ -27,6 +28,7 @@ public class TileGroupPane extends Pane {
         this.tileGridModel = tileModel.getTileGrid();
         this.playerModel = playerModel;
         this.selectedHexTile = new SimpleObjectProperty<>(null);
+        hexTileGrid = new HexTile[tileGridModel.length][tileGridModel[0].length];
         initializeTiles();  // Create the tiles once
 
         selectedHexTileProperty().addListener((observable, oldValue, newValue) -> {
@@ -45,6 +47,7 @@ public class TileGroupPane extends Pane {
                 Tile tile = tileGridModel[i][j];
                 HexTile hexTile = new HexTile(0, 0, tile, playerModel, tileScaleFactor);
                 hexTiles.add(hexTile);
+                hexTileGrid[i][j] = hexTile;
             }
         }
         Platform.runLater(() -> getChildren().setAll(hexTiles)); // Add to UI

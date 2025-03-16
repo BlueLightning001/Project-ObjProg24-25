@@ -16,13 +16,13 @@ public class PlayerModel {
     private final SimpleObjectProperty<Player> player2;
     private final List<SimpleObjectProperty<Player>> players;
     private final SimpleIntegerProperty startBudget;
-    private final SimpleObjectProperty<Player> currentPlayer ;  // random first player that starts
+    private final SimpleObjectProperty<Player> currentPlayer;  // random first player that starts
     private final SimpleIntegerProperty turnCounter;
-    private final Map<Player, Color> playerColorMap ;
+    private final Map<Player, Color> playerColorMap;
 
     public PlayerModel() {
-        player1 = new SimpleObjectProperty<>(new Player(null,1));
-        player2 = new SimpleObjectProperty<>(new Player(null,2));
+        player1 = new SimpleObjectProperty<>(new Player(null, 1));
+        player2 = new SimpleObjectProperty<>(new Player(null, 2));
         playerColorMap = Map.of(
                 player1.get(), Color.BLUE,   // Player 1 -> Blue
                 player2.get(), Color.YELLOW     // Player 2 -> Yellow
@@ -30,7 +30,7 @@ public class PlayerModel {
         currentPlayer = new SimpleObjectProperty<>(null);
         turnCounter = new SimpleIntegerProperty(0);
         players = List.of(player1, player2);
-        currentPlayer.set(players.get(new Random().nextInt( 2)).get());
+        currentPlayer.set(players.get(new Random().nextInt(2)).get());
         startBudget = new SimpleIntegerProperty(MIN_START_BUDGET);
     }
 
@@ -44,15 +44,13 @@ public class PlayerModel {
                 !player1.get().getName().isBlank() && !player2.get().getName().isBlank();
     }
 
-    public void nextPlayer() {
-        if (currentPlayer.get() == player1.get()) {
-            currentPlayer.set(player2.get());
-        } else {
-            currentPlayer.set(player1.get());
-        }
-        turnCounter.set(turnCounter.get() + 1); // To show how many turns you played after the game ends
+    public SimpleObjectProperty<Player> currentPlayerProperty() {
+        return currentPlayer;
     }
 
+    public Player getCurrentPlayer() {
+        return currentPlayer.get();
+    }
 
     public int getMaxStartBudget() {
         return MAX_START_BUDGET;
@@ -70,12 +68,16 @@ public class PlayerModel {
         return player2.get();
     }
 
-    public Player getCurrentPlayer() {
-        return currentPlayer.get();
+    public Color getPlayerColor(Player player) {
+        return playerColorMap.get(player);
     }
 
     public List<SimpleObjectProperty<Player>> getPlayers() {
         return players;
+    }
+
+    public int getTurnCounter() {
+        return turnCounter.get();
     }
 
     public void giveStartBudget() {
@@ -88,16 +90,21 @@ public class PlayerModel {
         return budget >= MIN_START_BUDGET && budget <= MAX_START_BUDGET;
     }
 
+    public void nextPlayer() {
+        if (currentPlayer.get() == player1.get()) {
+            currentPlayer.set(player2.get());
+        } else {
+            currentPlayer.set(player1.get());
+        }
+        turnCounter.set(turnCounter.get() + 1); // To show how many turns you played after the game ends
+    }
+
     public ObjectProperty<Player> player1Property() {
         return player1;
     }
 
     public ObjectProperty<Player> player2Property() {
         return player2;
-    }
-
-    public SimpleObjectProperty<Player> currentPlayerProperty() {
-        return currentPlayer;
     }
 
     public boolean playersHaveDistinctNames() {
@@ -115,9 +122,6 @@ public class PlayerModel {
     public SimpleIntegerProperty startBudgetProperty() {
         return startBudget;
     }
-    public Color getPlayerColor(Player player) {
-        return playerColorMap.get(player);
-    }
 
     @Override
     public String toString() {
@@ -130,5 +134,9 @@ public class PlayerModel {
 
     public void setStartBudget(int budget) {
         startBudget.set(budget);
+    }
+
+    public SimpleIntegerProperty turnCounterProperty() {
+        return turnCounter;
     }
 }
