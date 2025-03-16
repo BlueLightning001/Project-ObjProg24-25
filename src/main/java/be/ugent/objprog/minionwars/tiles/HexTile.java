@@ -83,9 +83,13 @@ public class HexTile extends Polygon {
         this.selected.addListener((obs, oldSelected, newSelected) -> {
             if (newSelected) {
                 this.setStyle("-fx-border-color: cyan;");
+                System.out.println("Selected: " + tile.get());
+
             } else {
                 this.setStyle("-fx-border-color: black;");
+                System.out.println("Unselected: " + tile.get());
             }
+
         });
     }
 

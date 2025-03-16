@@ -46,6 +46,7 @@ public class GameController {
                         Color playerColor = playerModel.getPlayerColor(playerModel.getCurrentPlayer()); // Get the player's color
                         hexTile.highlight(playerColor); // Highlight tile
                     });
+            view.getGameTileGroupPane().getSelectedHexTile().setSelected(false);
 
         });
         stage.setOnCloseRequest(event -> {

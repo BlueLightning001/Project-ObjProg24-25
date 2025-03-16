@@ -116,7 +116,13 @@ public class TileGroupPane extends Pane {
     }
 
     public void setSelectedHexTile(HexTile selectedHexTile) {
-        this.selectedHexTile.set(selectedHexTile);
+        if (this.selectedHexTile.get() != null) {
+            this.selectedHexTile.get().setSelected(false);
+        }
+        if (selectedHexTile != null) {
+            this.selectedHexTile.set(selectedHexTile);
+            this.selectedHexTile.get().setSelected(true);
+        }
     }
 
     public void shutdown() {
