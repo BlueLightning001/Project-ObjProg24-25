@@ -37,6 +37,8 @@ public class HexTile extends Polygon {
     private Color highlightColor = Color.TRANSPARENT;
     private  Image currentImage;
     private SimpleBooleanProperty selected;
+    private final static int DEFAULT_STROKE = 1;
+    private final static Color DEFAULT_STROKE_COLOR = Color.BLACK;
     public boolean isSelected() {
         return selected.get();
     }
@@ -53,7 +55,7 @@ public class HexTile extends Polygon {
         this.currentImage = this.baseImage;
         this.selected = new SimpleBooleanProperty(false);
         setScaleFactor(scaleFactor);
-        setStrokeWidth(1);
+        setStrokeWidth(DEFAULT_STROKE);
         setStroke(Color.BLACK);
 
         setupListeners();
@@ -82,11 +84,11 @@ public class HexTile extends Polygon {
         tile.get().occupantProperty().addListener((obs, oldOccupant, newOccupant) -> updateTileAppearance());
         this.selected.addListener((obs, oldSelected, newSelected) -> {
             if (newSelected) {
-                this.setStyle("-fx-border-color: cyan;");
+                this.setStroke(Color.CYAN); // Highlight border
                 System.out.println("Selected: " + tile.get());
 
             } else {
-                this.setStyle("-fx-border-color: black;");
+                this.setStroke(DEFAULT_STROKE_COLOR);
                 System.out.println("Unselected: " + tile.get());
             }
 

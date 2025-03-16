@@ -85,17 +85,23 @@ public class TileGroupPane extends Pane {
             double xOffset = (paneWidth - totalWidth) / 2;
             double yOffset = (paneHeight - totalHeight) / 2;
 
+            // VERY LAGGY !!
             Platform.runLater(() -> {
-                tileScaleFactor = newScaleFactor; // Update scale factor
+                tileScaleFactor = newScaleFactor;
 
                 for (HexTile hexTile : hexTiles) {
                     Tile tile = hexTile.getTile();
-                    int i = tile.getXCoord();  // Assuming Tile has X/Y coordinates
+                    int i = tile.getXCoord();
                     int j = tile.getYCoord();
                     double xCoord = i * tileWidth + (j % 2) * n + xOffset;
                     double yCoord = j * tileHeight * 0.75 + yOffset;
-                    hexTile.setTranslateX(xCoord);
-                    hexTile.setTranslateY(yCoord);
+                    double spacing = 3;
+
+                    double newX = xCoord + spacing * i;
+                    double newY = yCoord + spacing * j;
+
+                    hexTile.setTranslateX(newX);
+                    hexTile.setTranslateY(newY);
                     hexTile.setScaleX(newScaleFactor);
                     hexTile.setScaleY(newScaleFactor);
                 }
@@ -116,13 +122,18 @@ public class TileGroupPane extends Pane {
     }
 
     public void setSelectedHexTile(HexTile selectedHexTile) {
-        if (this.selectedHexTile.get() != null) {
-            this.selectedHexTile.get().setSelected(false);
+        if (selectedHexTile != null && selectedHexTile.equals(this.selectedHexTile.get())){
+            this.selectedHexTile.set(null);
+        } else {
+            if (this.selectedHexTile.get() != null) {
+                this.selectedHexTile.get().setSelected(false);
+            }
+            if (selectedHexTile != null) {
+                this.selectedHexTile.set(selectedHexTile);
+                this.selectedHexTile.get().setSelected(true);
+            }
         }
-        if (selectedHexTile != null) {
-            this.selectedHexTile.set(selectedHexTile);
-            this.selectedHexTile.get().setSelected(true);
-        }
+
     }
 
     public void shutdown() {
