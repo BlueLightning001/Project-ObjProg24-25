@@ -31,6 +31,7 @@ public class TileGroupPane extends Pane {
         hexTileGrid = new HexTile[tileGridModel.length][tileGridModel[0].length];
         initializeTiles();  // Create the tiles once
 
+        // Update tiles to match selection
         selectedHexTileProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != null) {
                 oldValue.setSelected(false);
@@ -39,6 +40,8 @@ public class TileGroupPane extends Pane {
                 newValue.setSelected(true);
             }
         });
+
+
     }
 
     private void initializeTiles() {
@@ -125,16 +128,14 @@ public class TileGroupPane extends Pane {
     }
 
     public void setSelectedHexTile(HexTile selectedHexTile) {
-        if (selectedHexTile != null && selectedHexTile.equals(this.selectedHexTile.get())){
+        if (selectedHexTile == null || selectedHexTile.equals(this.selectedHexTile.get())){
             this.selectedHexTile.set(null);
         } else {
             if (this.selectedHexTile.get() != null) {
                 this.selectedHexTile.get().setSelected(false);
             }
-            if (selectedHexTile != null) {
-                this.selectedHexTile.set(selectedHexTile);
-                this.selectedHexTile.get().setSelected(true);
-            }
+            this.selectedHexTile.set(selectedHexTile);
+            this.selectedHexTile.get().setSelected(true);
         }
 
     }

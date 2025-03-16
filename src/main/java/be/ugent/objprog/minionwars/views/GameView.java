@@ -59,11 +59,6 @@ public class GameView {
         currentPlayerHBox = new HBox();
         currentPlayerHBox.getChildren().addAll(currentPlayerLabel, currentPlayerCoinsLabel);
 
-        playerModel.turnCounterProperty().addListener((observable, oldValue, newValue) -> {
-           if (newValue.intValue() >= 2) {
-               changeGamePhase();
-           }
-        });
 
         double fontScale = 0.1;
 

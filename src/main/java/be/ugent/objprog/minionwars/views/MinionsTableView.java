@@ -4,6 +4,7 @@ import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,6 +42,21 @@ public class MinionsTableView extends TableView<Minion> {
         ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         setEditable(false);
         setTableMenuButtonVisible(false);
+        Label placeHolder = new Label(bundle.getString("gameScreen.minionTableView.placeholder"));
+        placeHolder.setWrapText(true);
+
+
+        placeHolder.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            // Only update font size after layout is settled
+            Platform.runLater(() -> {
+                double newFontSize = newWidth.doubleValue() * .1;
+                placeHolder.setStyle("-fx-font-size: " + newFontSize + "px;");
+            });
+        });
+
+        placeHolder.setAlignment(Pos.CENTER);
+
+        setPlaceholder(placeHolder);
         System.out.println(model.getMinions());
 
         allMinions = model.getMinions();

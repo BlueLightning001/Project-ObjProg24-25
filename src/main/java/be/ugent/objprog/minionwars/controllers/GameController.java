@@ -35,8 +35,6 @@ public class GameController {
         this.view = new GameView(minionModel,playerModel,tileModel,locale);
         view.resetGameGroupPosition();
         view.getEndTurnButton().setOnAction(event -> {
-
-
             playerModel.nextPlayer();
             view.getMinionsTableView().getSelectionModel().clearSelection();
             view.getGameTileGroupPane().getHexTiles().stream()
@@ -52,13 +50,22 @@ public class GameController {
         stage.setOnCloseRequest(event -> {
             view.getGameTileGroupPane().shutdown();// Releases resources from other threads
         });
+
+        // TODO game logic
+
+        // PHASE 2
+        view.getMinionsTableView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            // Unselect the tile when selecting a minion
+            if (newValue != null) {
+                view.getGameTileGroupPane().setSelectedHexTile(null);  // Deselect any selected tile
+            }
+        });
+
         view.getGameTileGroupPane().setOnMouseClicked(event -> {
             Object eventSource = event.getTarget();
             if (eventSource instanceof HexTile hexTile && event.getButton() == MouseButton.PRIMARY) {
                 Tile tile = hexTile.getTile();
-
-                System.out.println("CLICKED ON TILE: " + tile);
-                //TODO handle game logic
+                System.out.println("CLICKED: " + tile);
                 Minion selectedMinion = view.getMinionsTableView().getSelectionModel().getSelectedItem();
                 Player currentPlayer = playerModel.getCurrentPlayer();
                 // Player wants to place minion
@@ -68,11 +75,13 @@ public class GameController {
                     currentPlayer.addMinion(selectedMinion);
                     selectedMinion.setOwner(currentPlayer);
                     tile.setOccupant(selectedMinion);
-                    view.getMinionsTableView().getSelectionModel().clearSelection();
+
+                    // Select the tile
                 } else if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
+                    System.out.println("SELECTED: " + hexTile.getTile());
                     view.getGameTileGroupPane().setSelectedHexTile(hexTile);
                 }
-
+                    view.getMinionsTableView().getSelectionModel().clearSelection();
             }
         });
         getView().setOnKeyPressed(event -> {
@@ -95,7 +104,20 @@ public class GameController {
 
             }
         });
+        playerModel.turnCounterProperty().addListener((observable, oldValue, newValue) -> {
+           if (newValue.intValue() == 2 ){
+              startnextPhase();
+           }
+        });
     }
+
+    private void startnextPhase() {
+        stage.close();
+        return;
+//        System.out.println("STARTING NEXT PHASE");
+//        view.changeGamePhase();
+    }
+
     public void endGame(){
         //TODO launch new game
         view.getGameTileGroupPane().shutdown();

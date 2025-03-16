@@ -64,8 +64,6 @@ public class JDOMReader {
                     }
                     // Get the image for the type
                     MinionTypeImage minionImage = MinionTypeImage.valueOf(type.toUpperCase().replace("-","_"));
-                    System.out.println(type.toUpperCase().replace("-","_"));
-                    System.out.println(minionImage.getImagePath());
                     Image minionIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream(minionImage.getImagePath())));
                     minionList.add(new Minion(type,name,cost,movement,range,attack,defence,minionEffect, minionIcon) );
                 }
