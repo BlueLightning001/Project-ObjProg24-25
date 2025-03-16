@@ -49,7 +49,7 @@ public class GameView {
         this.minionModel = minionModel;
         this.playerModel = playerModel;
         this.locale = locale;
-        bundle = ResourceBundle.getBundle("/be/ugent/objprog/minionwars/lang/messages", locale);
+        bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         container = new StackPane();
         root = new HBox();

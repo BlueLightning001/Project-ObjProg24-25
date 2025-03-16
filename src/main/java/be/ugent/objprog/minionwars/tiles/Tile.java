@@ -52,6 +52,10 @@ public abstract class Tile {
         return occupant.get() != null;
     }
 
+    public boolean isTraversable() {
+        return traversable;
+    }
+
     public void setHomebase(int homebase) {
         this.homebase.set(homebase);
     }

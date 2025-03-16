@@ -15,11 +15,14 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class JDOMReader {
     private String filename;
@@ -37,8 +40,28 @@ public class JDOMReader {
         minionList = new ArrayList<>();
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
-            Document document = saxBuilder.build(new File(Objects.requireNonNull(getClass().getResource(this.filename)).getFile()));
-            // Get root element (configuration)
+            Document document = null;
+
+            File file = new File(filename);
+
+            if (file.exists()) {
+                System.out.println("Loading config from disk: " + filename);
+                document = saxBuilder.build(file);
+            } else {
+                // Ask the user if they want to fallback to stored configs
+                System.out.println("Config file not found on disk: " + filename);
+                System.out.println("Searching classpath instead");
+
+                InputStream inputStream = getClass().getResourceAsStream(filename);
+                if (inputStream == null) {
+                    throw new FileNotFoundException("Config file not found in classpath: " + filename);
+                }
+                System.out.println("Loading config from classpath...");
+                document = saxBuilder.build(inputStream);
+
+            }
+
+            // Get root element configuration>
             Element root = document.getRootElement();
 
             // Process <minions>
@@ -94,7 +117,7 @@ public class JDOMReader {
                 }
             }
 
-// Process <effects>
+            // Process <effects>
             Element effectsElement = root.getChild("effects");
             if (effectsElement != null) {
                 for (Element effectElement : effectsElement.getChildren()) {
@@ -103,7 +126,7 @@ public class JDOMReader {
             }
 
         } catch (Exception e ) {
-            throw new IOException("Config file not found: " + filename);
+            throw new IOException(e.getMessage());
         }
     }
 

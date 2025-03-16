@@ -69,7 +69,8 @@ public class GameController {
                 Minion selectedMinion = view.getMinionsTableView().getSelectionModel().getSelectedItem();
                 Player currentPlayer = playerModel.getCurrentPlayer();
                 // Player wants to place minion
-                if ( selectedMinion != null && tile.isHomeBase() && tile.getHomebase() == currentPlayer.getHomeBaseID() && !tile.isOccupied()) {
+                if ( selectedMinion != null && tile.isHomeBase() && tile.getHomebase() == currentPlayer.getHomeBaseID()
+                        && !tile.isOccupied() && tile.isTraversable()) {
                     currentPlayer.removeMoney(selectedMinion.getCost());
                     System.out.println("PLAYER MONEY: " + currentPlayer.getMoney());
                     currentPlayer.addMinion(selectedMinion);
@@ -84,6 +85,7 @@ public class GameController {
                     view.getMinionsTableView().getSelectionModel().clearSelection();
             }
         });
+        // Logic for deleting minion
         getView().setOnKeyPressed(event -> {
             Object eventSource = event.getTarget();
             System.out.println(eventSource);
@@ -112,7 +114,7 @@ public class GameController {
     }
 
     private void startnextPhase() {
-        stage.close();
+        endGame();
         return;
 //        System.out.println("STARTING NEXT PHASE");
 //        view.changeGamePhase();

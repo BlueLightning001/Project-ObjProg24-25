@@ -29,7 +29,10 @@ import java.util.Objects;
 public class MinionWars extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
+        Locale.setDefault(new Locale("nl", "BE"));
+
         Locale locale = Locale.getDefault();
+
         List<String> configs = getParameters().getRaw();
         if (configs.isEmpty() || configs.getFirst().isBlank()) {
             System.err.println("Required game config is missing.");

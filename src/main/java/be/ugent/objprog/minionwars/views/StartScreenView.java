@@ -47,7 +47,6 @@ public class StartScreenView {
     public StartScreenView(PlayerModel model, Locale locale) {
         this.model = model;
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
-
         Font labelFont = Font.font("Monotype Corsiva", FontWeight.BOLD, 20);
         DropShadow shadow = createDropShadow();
 
