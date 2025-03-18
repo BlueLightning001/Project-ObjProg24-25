@@ -1,8 +1,9 @@
-package be.ugent.objprog.minionwars.tiles;
+package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
+import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Pane;

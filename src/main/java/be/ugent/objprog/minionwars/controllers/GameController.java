@@ -7,7 +7,7 @@ import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
-import be.ugent.objprog.minionwars.tiles.HexTile;
+import be.ugent.objprog.minionwars.views.HexTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.GameView;
 import javafx.scene.input.KeyCode;

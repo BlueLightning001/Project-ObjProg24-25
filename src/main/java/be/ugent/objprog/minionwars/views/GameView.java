@@ -4,24 +4,25 @@ import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
-import be.ugent.objprog.minionwars.tiles.HexTile;
-import be.ugent.objprog.minionwars.tiles.TileGroupPane;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -124,12 +125,15 @@ public class GameView {
         gameTileGroupPane.bindPane(gamePane);
         gamePane.getStylesheets().add("/be/ugent/objprog/minionwars/css/scrollpane.css");
 
+        Separator separator = new Separator(Orientation.HORIZONTAL);
+        separator.setStyle("-fx-background-color: black;");
 
-        menuContainer.getChildren().addAll(currentPlayerHBox, menuTable, menuButtonBar);
+        menuContainer.getChildren().addAll(currentPlayerHBox,separator, menuTable, menuButtonBar);
         menuButtonBar.setPrefSize(menuContainer.getPrefWidth(), 50);
         menuButtonBar.getButtons().addAll(endTurnButton, centerBoardButton);
         ButtonBar.setButtonData(endTurnButton, ButtonBar.ButtonData.LEFT);
         ButtonBar.setButtonData(centerBoardButton, ButtonBar.ButtonData.RIGHT);
+
 
 
         centerBoardButton.prefHeightProperty().bind(menuButtonBar.heightProperty().multiply(0.3));

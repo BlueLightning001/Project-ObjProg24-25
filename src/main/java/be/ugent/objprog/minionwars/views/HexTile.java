@@ -1,7 +1,8 @@
-package be.ugent.objprog.minionwars.tiles;
+package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
+import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,15 +15,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.image.Image;
 
 //For displaying the tiles
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Polygon;
+
 
 public class HexTile extends Polygon {
     private static final double BASE_R = 20;
