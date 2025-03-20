@@ -1,27 +1,45 @@
 package be.ugent.objprog.minionwars.models;
 
 import be.ugent.objprog.minionwars.JDOMReader;
+import be.ugent.objprog.minionwars.tiles.DirtTile;
+import be.ugent.objprog.minionwars.tiles.ForestTile;
+import be.ugent.objprog.minionwars.tiles.MountainTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.VoidTile;
+import be.ugent.objprog.minionwars.tiles.WaterTile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class TileModel {
+    private final Map<Class<? extends Tile>, String> tileNames = new HashMap<>();
     public List<Tile> getInitialTiles() {
         return initialTiles;
     }
-
+    private ResourceBundle bundle;
     private final List<Tile> initialTiles;
     private Tile[][] tileGrid;
 
-    public TileModel(JDOMReader reader) {
+    public TileModel(JDOMReader reader, Locale locale) {
         this.initialTiles = new ArrayList<>();
         initializeTiles(reader);
         initializeTileGrid();
 
-    }
+        bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
+        tileNames.put(DirtTile.class, bundle.getString("tiles.dirtTile"));
+        tileNames.put(WaterTile.class, bundle.getString("tiles.waterTile"));
+        tileNames.put(MountainTile.class, bundle.getString("tiles.mountainTile"));
+        tileNames.put(VoidTile.class, bundle.getString("tiles.voidTile"));
+        tileNames.put(ForestTile.class, bundle.getString("tiles.forestTile"));
+    }
+    public String getTileName(Class<? extends Tile> tileClass) {
+        return tileNames.getOrDefault(tileClass, bundle.getString("tiles.unknownTile"));
+    }
     public void initializeTiles(JDOMReader jdomReader) {
         System.out.println(jdomReader.getTiles());
         initialTiles.addAll(jdomReader.getTiles());

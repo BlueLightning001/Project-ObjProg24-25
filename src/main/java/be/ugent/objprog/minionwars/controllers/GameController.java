@@ -30,7 +30,7 @@ public class GameController {
         this.stage = stage;
         this.playerModel = playerModel;
         this.minionModel = new MinionModel(reader);
-        this.tileModel = new TileModel(reader);
+        this.tileModel = new TileModel(reader,locale);
         this.locale = locale;
         this.view = new GameView(minionModel,playerModel,tileModel,locale);
         view.resetGameGroupPosition();
@@ -68,23 +68,30 @@ public class GameController {
                 System.out.println("CLICKED: " + tile);
                 Minion selectedMinion = view.getMinionsTableView().getSelectionModel().getSelectedItem();
                 Player currentPlayer = playerModel.getCurrentPlayer();
-                // Player wants to place minion
-                if ( selectedMinion != null && tile.isHomeBase() && tile.getHomebase() == currentPlayer.getHomeBaseID()
-                        && !tile.isOccupied() && tile.isTraversable()) {
-                    currentPlayer.removeMoney(selectedMinion.getCost());
-                    System.out.println("PLAYER MONEY: " + currentPlayer.getMoney());
-                    currentPlayer.addMinion(selectedMinion);
-                    selectedMinion.setOwner(currentPlayer);
-                    tile.setOccupant(selectedMinion);
 
-                    // Select the tile
+                // Player wants to place a minion
+                if (selectedMinion != null && tile.isHomeBase() && tile.getHomebase() == currentPlayer.getHomeBaseID()
+                        && !tile.isOccupied() && tile.isTraversable()) {
+                    // Create a new instance of the minion
+                    Minion newMinion = selectedMinion.clone();
+                    newMinion.setOwner(currentPlayer);
+
+                    // Deduct money and place minion
+                    currentPlayer.removeMoney(newMinion.getCost());
+                    System.out.println("PLAYER MONEY: " + currentPlayer.getMoney());
+                    currentPlayer.addMinion(newMinion);
+                    tile.setOccupant(newMinion);
+
                 } else if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
+                    // Select the tile
                     System.out.println("SELECTED: " + hexTile.getTile());
                     view.getGameTileGroupPane().setSelectedHexTile(hexTile);
                 }
-                    view.getMinionsTableView().getSelectionModel().clearSelection();
+
+                view.getMinionsTableView().getSelectionModel().clearSelection();
             }
         });
+
         // Logic for deleting minion
         getView().setOnKeyPressed(event -> {
             Object eventSource = event.getTarget();
@@ -117,10 +124,14 @@ public class GameController {
     }
 
     private void startnextPhase() {
-        endGame();
-        return;
-//        System.out.println("STARTING NEXT PHASE");
-//        view.changeGamePhase();
+        System.out.println("STARTING NEXT PHASE");
+//        view.getGameTileGroupPane().setOnMouseClicked(event -> {
+//           Object eventSource = event.getTarget();
+//           if (eventSource instanceof HexTile hexTile && event.getButton() == MouseButton.PRIMARY) {
+//
+//           }
+//        });
+        view.changeGamePhase();
     }
 
     public void endGame(){

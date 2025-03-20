@@ -89,8 +89,8 @@ public class HexTile extends Polygon {
     /** Updates tile appearance using a Canvas to apply color overlays and highlighting. */
     private void updateTileAppearance() {
         Image finalImage = baseImage;
-            //TODO
-        // Only current player can see the minions in startphasze
+
+        // During the start phase, only the current player sees minions on their home base
         if (startPhase && tile.get().isHomeBase()) {
             Player homePlayer = playerModel.getPlayers().get(tile.get().getHomebase() - 1).get();
             if (homePlayer.equals(currentPlayer.get())) {
@@ -100,19 +100,23 @@ public class HexTile extends Polygon {
                     finalImage = applyColorOverlay(tile.get().getOccupant().getMinionIcon(), homebaseColor);
                 }
             }
-            // All tiles now visible for everyone, highlight own tiles in cyan,
-            // and enemies tiles in red borders
-        } else if (!startPhase){
+        } else if (!startPhase) {
+            // After start phase, show all minions
+            if (tile.get().isOccupied()) {
+                finalImage = tile.get().getOccupant().getMinionIcon();
+                // Determine border color based on ownership
+                Player homePlayer = playerModel.getCurrentPlayer();
+                if (!homePlayer.equals(tile.get().getOccupant().getOwner())) {
+                    setStroke(Color.RED); // Red border for enemy tiles
+                }
+            }
 
-        } else {
-            highlightColor = Color.TRANSPARENT;
+
         }
 
-        if (highlightColor != Color.TRANSPARENT) {
-            finalImage = applyColorOverlay(finalImage, highlightColor);
-        }
         setFill(new ImagePattern(finalImage));
     }
+
 
     public void endStartPhase() {
         startPhase = false;

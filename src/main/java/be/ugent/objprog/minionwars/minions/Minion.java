@@ -10,6 +10,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -28,7 +30,7 @@ public class Minion {
     private MinionEffect effect;
     private Image minionIcon;
     private Player owner = null;  //TODO REMOVE UNNECESSARY PROPERTIES AND REPLACE THEM WITH NORMAL VALUES
-    private ObservableList<Effect> statusAilments = FXCollections.observableArrayList();
+    private ObservableList<MinionEffect> statusAilments = FXCollections.observableArrayList();
     private boolean moved = false;
     private boolean attacked = false;
 
@@ -59,9 +61,9 @@ public class Minion {
         attacked = false;
     }
     public boolean hasActions(){
-        return moved || attacked;
+        return !moved || !attacked;
     }
-    public void addStatusAilment(Effect effect) {
+    public void addStatusAilment(MinionEffect effect) {
         statusAilments.add(effect);
     }
 
@@ -124,7 +126,7 @@ public class Minion {
         this.owner = owner;
     }
 
-    public ObservableList<Effect> getStatusAilments() {
+    public ObservableList<MinionEffect> getStatusAilments() {
         return statusAilments;
     }
 
@@ -162,7 +164,7 @@ public class Minion {
 
     @Override
     public String toString() {
-        return type.get().toUpperCase() + ":  NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", IMAGE: " + minionIcon;
+        return type.get().toUpperCase() + ":  NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", OWNER: " + owner;
     }
 
     public String getName() {
@@ -200,4 +202,17 @@ public class Minion {
     public SimpleStringProperty typeProperty() {
         return type;
     }
+    @Override
+    public Minion clone() {
+         try {
+            return new Minion(this.type.get(),this.name.get(), this.cost.get(), this.movement.get(),
+                    List.of(this.range.getFirst(),this.range.getLast()).toArray(new Integer[2]),
+                    this.attack.get(), this.defence.get(), this.effect,
+                    this.minionIcon);
+        } catch (Exception e) {
+            throw new AssertionError("Cloning failed", e); // Should never happen
+        }
+    }
+
+
 }

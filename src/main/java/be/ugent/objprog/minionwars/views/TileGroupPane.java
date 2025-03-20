@@ -45,6 +45,8 @@ public class TileGroupPane extends Pane {
 
     }
 
+
+
     private void initializeTiles() {
         for (int i = 0; i < tileGridModel.length; i++) {
             for (int j = 0; j < tileGridModel[i].length; j++) {
