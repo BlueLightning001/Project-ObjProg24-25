@@ -64,7 +64,9 @@ public class Minion {
         return !moved || !attacked;
     }
     public void addStatusAilment(MinionEffect effect) {
+        statusAilments.removeIf(e -> e.getClass().equals(effect.getClass()) && e.getValue() <= effect.getValue()); // "Refreshes" the statusAilment if it is higher
         statusAilments.add(effect);
+        System.out.println(statusAilments);
     }
 
     public void applyEffectLogic(MinionEffect effect) {
@@ -201,6 +203,14 @@ public class Minion {
 
     public SimpleStringProperty typeProperty() {
         return type;
+    }
+    public void reduceAilmentValue() {
+        for (MinionEffect minionEffect : statusAilments) {
+            minionEffect.reduceValue();
+            if (minionEffect.getValue() <= 0) {
+                statusAilments.remove(minionEffect);
+            }
+        }
     }
     @Override
     public Minion clone() {

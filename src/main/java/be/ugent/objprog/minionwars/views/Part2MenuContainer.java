@@ -1,6 +1,7 @@
 package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.effects.MinionEffect;
+import be.ugent.objprog.minionwars.effects.PoisonEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.Player;
@@ -26,7 +27,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Scale;
@@ -54,6 +57,7 @@ public class Part2MenuContainer extends VBox {
     private Label attackStatLabel = new Label();
     private Label defenseStatLabel = new Label();
     private Label ailmentsStatLabel = new Label();
+
     public Part2MenuContainer(PlayerModel playerModel, MinionModel minionModel,TileModel tileModel, TileGroupPane tileGroupPane, Locale locale) {
         this.playerModel = playerModel;
         this.minionModel = minionModel;
@@ -139,12 +143,13 @@ public class Part2MenuContainer extends VBox {
 
         // Line below current player box
         Separator separator = new Separator(Orientation.HORIZONTAL);
-        separator.setStyle("-fx-border-color: black; -fx-border-width: 2");
+        separator.setStyle("-fx-background-color: black;");
 
         //// Minion Display Box
         minionDisplay.prefWidthProperty().bind(widthProperty());
 
         minionsIcon.setRadius(30);
+        minionsIcon.setFill(Color.TRANSPARENT);
 
         // Add everything together
         minionDisplay.add(minionsIcon, 0, 0);
@@ -233,12 +238,9 @@ public class Part2MenuContainer extends VBox {
         //DEBUG //TODO
         setStyle("-fx-border-color: green; -fx-border-width: 2");
         currentPlayerHBox.setStyle("-fx-border-color: red; -fx-border-width: 2");
-        minionDisplay.setStyle("-fx-border-color: blue; -fx-border-width: 2");
-        minionDisplay.setGridLinesVisible(true);
-        statsDisplay.setStyle("-fx-border-color: orange; -fx-border-width: 5");
-        statsDisplay.setGridLinesVisible(true);
 
-        getNodeByRowColumnIndex(0, 2, minionDisplay).setStyle("-fx-border-width: 2 0 0 0; -fx-border-color: #050505;");
+
+        getNodeByRowColumnIndex(1, 0, statsDisplay).setStyle("-fx-border-width: 2 0 0 0; -fx-border-color: #050505;");
         getChildren().addAll(currentPlayerHBox,separator,minionDisplay);
 
         // Set vertical grow priority for contained elements.
@@ -256,12 +258,11 @@ public class Part2MenuContainer extends VBox {
         if (hexTile != null) {
             Minion minion = hexTile.getTile().getOccupant();
             if (minion == null) {
-                minionsIcon.setFill(null);
-                minionsLabel.setText("");
-                attackStatLabel.setText("");
-                defenseStatLabel.setText("");
-                ailmentsStatLabel.setText("");
+                clearLabels();
+                minionDisplay.setVisible(false);
             } else {
+                minion.addStatusAilment(new PoisonEffect(3));
+                minionDisplay.setVisible(true);
                 // Set the minion icon for the minionsIcon using an ImagePattern
                 ImagePattern pattern = new ImagePattern(minion.getMinionIcon());
                 minionsIcon.setFill(pattern);
@@ -298,22 +299,30 @@ public class Part2MenuContainer extends VBox {
                         effectImageView.fitHeightProperty().bind(ailmentsStatLabel.heightProperty().multiply(0.8));
                         effectsBox.getChildren().add(effectImageView);
                     }
-                    // Optionally, set some text in the label or leave it blank if you only need the icons
                     ailmentsStatLabel.setText("");
                     ailmentsStatLabel.setGraphic(effectsBox);
                 }
             }
             tileNameLabel.setText(MessageFormat.format(bundle.getString("menuPart2.tileNameText"),tileModel.getTileName(hexTile.getTile().getClass())));
         } else {
-            minionsIcon.setFill(null);
-            minionsLabel.setText("");
-            attackStatLabel.setText("");
-            defenseStatLabel.setText("");
-            ailmentsStatLabel.setText("");
-            tileNameLabel.setText("");
+            clearLabels();
+            minionDisplay.setVisible(false);
         }
 
     }
+
+    private void clearLabels() {
+        minionsIcon.setFill(Color.TRANSPARENT);
+        minionsLabel.setText("");
+        attackStatLabel.setText("");
+        attackStatLabel.setGraphic(null);
+        defenseStatLabel.setText("");
+        defenseStatLabel.setGraphic(null);
+        ailmentsStatLabel.setText("");
+        ailmentsStatLabel.setGraphic(null);
+        tileNameLabel.setText("");
+    }
+
     public Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
         for (Node node : gridPane.getChildren()) {
             if (GridPane.getRowIndex(node) != null && javafx.scene.layout.GridPane.getColumnIndex(node) != null

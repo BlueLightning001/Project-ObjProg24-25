@@ -9,9 +9,11 @@ import java.util.ResourceBundle;
 
 public abstract class MinionEffect {
     protected Image image = null;
+    protected final int baseValue;
     protected SimpleIntegerProperty value = new SimpleIntegerProperty();
 
     public MinionEffect(int value) {
+        this.baseValue = value;
         this.value.set(value);
     }
     public String getName(Locale locale) {
@@ -28,6 +30,9 @@ public abstract class MinionEffect {
 
     //TODO implement each effect
     public abstract void applyEffect(Minion minion);
+    public void reduceValue() {
+        this.value.set(this.value.get() - 1);
+    }
 
     public int getValue() {
         return value.get();
