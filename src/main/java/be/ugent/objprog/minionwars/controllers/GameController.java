@@ -34,6 +34,7 @@ public class GameController {
         this.locale = locale;
         this.view = new GameView(minionModel,playerModel,tileModel,locale);
         view.resetGameGroupPosition();
+        //TODO PREVENT PLAYING WITHOUT ANY MINIONS
         view.getEndTurnButton().setOnAction(event -> {
             playerModel.nextPlayer();
             view.getMinionsTableView().getSelectionModel().clearSelection();

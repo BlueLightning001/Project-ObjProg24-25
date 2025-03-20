@@ -8,18 +8,28 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.transform.Scale;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -37,7 +47,7 @@ public class Part2MenuContainer extends VBox {
     private Label currentPlayerMinionsUsedLabel;
     private ResourceBundle bundle;
     private GridPane minionDisplay = new GridPane();
-    private ImageView minionsIcon = new ImageView();
+    private Circle minionsIcon = new Circle();
     private Label minionsLabel = new Label();
     private Label tileNameLabel = new Label();
     private GridPane statsDisplay = new GridPane();
@@ -132,25 +142,101 @@ public class Part2MenuContainer extends VBox {
         separator.setStyle("-fx-border-color: black; -fx-border-width: 2");
 
         //// Minion Display Box
+        minionDisplay.prefWidthProperty().bind(widthProperty());
+
+        minionsIcon.setRadius(30);
 
         // Add everything together
-        statsDisplay.add(attackStatLabel,0,0);
-        statsDisplay.add(defenseStatLabel,1,0);
-        statsDisplay.add(ailmentsStatLabel,0,1);
-        GridPane.setColumnSpan(ailmentsStatLabel,2);
-
         minionDisplay.add(minionsIcon, 0, 0);
         GridPane.setRowSpan(minionsIcon, 2);
-        minionDisplay.add(minionsLabel, 1, 0);
-        GridPane.setColumnSpan(minionsLabel, 2);
-        minionDisplay.add(tileNameLabel, 1, 0);
-        GridPane.setColumnSpan(tileNameLabel, 2);
+        minionsIcon.setCenterY(minionDisplay.getHeight() / 2);
+        minionsIcon.setCenterX(minionDisplay.getWidth() * 0.15 / 2);
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(20);
         minionDisplay.add(statsDisplay, 2, 0);
         GridPane.setRowSpan(statsDisplay, 2);
+        ColumnConstraints col3 = new ColumnConstraints();
+        col3.setPercentWidth(25);
 
+
+        // Add labels
+        statsDisplay.add(attackStatLabel, 0, 0);
+        attackStatLabel.setAlignment(Pos.CENTER);
+        attackStatLabel.setTextAlignment(TextAlignment.CENTER);
+        GridPane.setHalignment(attackStatLabel, HPos.CENTER);
+        GridPane.setValignment(attackStatLabel, VPos.CENTER);
+
+        statsDisplay.add(defenseStatLabel, 1, 0);
+        defenseStatLabel.setAlignment(Pos.CENTER);
+        defenseStatLabel.setTextAlignment(TextAlignment.CENTER);
+        GridPane.setHalignment(defenseStatLabel, HPos.CENTER);
+        GridPane.setValignment(defenseStatLabel, VPos.CENTER);
+
+        statsDisplay.add(ailmentsStatLabel, 0, 1);
+        ailmentsStatLabel.setAlignment(Pos.CENTER);
+        ailmentsStatLabel.setTextAlignment(TextAlignment.CENTER);
+        GridPane.setColumnSpan(ailmentsStatLabel, 2);
+        GridPane.setHalignment(ailmentsStatLabel, HPos.CENTER);
+        GridPane.setValignment(ailmentsStatLabel, VPos.CENTER);
+
+        minionDisplay.add(minionsLabel, 1, 0);
+        minionsLabel.setAlignment(Pos.CENTER);
+        minionsLabel.setTextAlignment(TextAlignment.CENTER);
+        GridPane.setHalignment(minionsLabel, HPos.CENTER);
+        GridPane.setValignment(minionsLabel, VPos.CENTER);
+
+        minionDisplay.add(tileNameLabel, 1, 1);
+        tileNameLabel.setAlignment(Pos.CENTER);
+        tileNameLabel.setTextAlignment(TextAlignment.CENTER);
+        GridPane.setHalignment(tileNameLabel, HPos.CENTER);
+        GridPane.setValignment(tileNameLabel, VPos.CENTER);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(55);
+
+        attackStatLabel.setStyle("-fx-font-weight: bolder; -fx-font-size: 18");
+        defenseStatLabel.setStyle("-fx-font-weight: bolder; -fx-font-size: 18");
+        ailmentsStatLabel.setStyle("-fx-font-weight: bolder; -fx-font-size: 18");
+        minionsLabel.setStyle("-fx-font-weight: bolder; -fx-font-size: 18");
+        tileNameLabel.setStyle("-fx-font-weight: bolder; -fx-font-size: 18");
+
+
+        statsDisplay.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        GridPane.setHgrow(statsDisplay, Priority.ALWAYS);
+        GridPane.setVgrow(statsDisplay, Priority.ALWAYS);
+        ColumnConstraints statCol1 = new ColumnConstraints();
+        statCol1.setPercentWidth(50);
+        ColumnConstraints statCol2 = new ColumnConstraints();
+        statCol2.setPercentWidth(50);
+        statsDisplay.getColumnConstraints().addAll(statCol1, statCol2);
+
+        RowConstraints row1 = new RowConstraints();
+        row1.setPercentHeight(50); // 50% of available height
+        RowConstraints row2 = new RowConstraints();
+        row2.setPercentHeight(50);
+        minionDisplay.getRowConstraints().setAll(row1, row2);
+
+
+        RowConstraints statsRow1 = new RowConstraints();
+        statsRow1.setPercentHeight(50);
+        RowConstraints statsRow2 = new RowConstraints();
+        statsRow2.setPercentHeight(50);
+        statsDisplay.getRowConstraints().setAll(statsRow1, statsRow2);
+
+        minionDisplay.getColumnConstraints().addAll(col1, col2, col3);
+
+        System.out.println("MINION CHILD: " + minionDisplay.getChildren());
+        System.out.println("STATS CHILD: " + statsDisplay.getChildren());
         tileGroupPane.selectedHexTileProperty().addListener((obs, oldTile, newTile) -> {
             setSelected(newTile);
         });
+
+        //DEBUG //TODO
+        setStyle("-fx-border-color: green; -fx-border-width: 2");
+        currentPlayerHBox.setStyle("-fx-border-color: red; -fx-border-width: 2");
+        minionDisplay.setStyle("-fx-border-color: blue; -fx-border-width: 2");
+        minionDisplay.setGridLinesVisible(true);
+        statsDisplay.setStyle("-fx-border-color: orange; -fx-border-width: 5");
+        statsDisplay.setGridLinesVisible(true);
 
         getNodeByRowColumnIndex(0, 2, minionDisplay).setStyle("-fx-border-width: 2 0 0 0; -fx-border-color: #050505;");
         getChildren().addAll(currentPlayerHBox,separator,minionDisplay);
@@ -162,7 +248,7 @@ public class Part2MenuContainer extends VBox {
 
         // Height ratios
 //        menuTable.prefHeightProperty().bind(this.heightProperty().multiply(0.8));
-//        menuButtonBar.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
+        minionDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
         currentPlayerHBox.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
 
     }
@@ -170,32 +256,56 @@ public class Part2MenuContainer extends VBox {
         if (hexTile != null) {
             Minion minion = hexTile.getTile().getOccupant();
             if (minion == null) {
-                minionsIcon.setImage(null);
+                minionsIcon.setFill(null);
                 minionsLabel.setText("");
                 attackStatLabel.setText("");
                 defenseStatLabel.setText("");
                 ailmentsStatLabel.setText("");
             } else {
-                minionsIcon.setImage(minion.getMinionIcon());
+                // Set the minion icon for the minionsIcon using an ImagePattern
+                ImagePattern pattern = new ImagePattern(minion.getMinionIcon());
+                minionsIcon.setFill(pattern);
                 minionsLabel.setText(minion.getName());
-                attackStatLabel.textProperty().bind(minion.attackProperty().asString());
-                defenseStatLabel.textProperty().bind(minion.defenceProperty().asString());
-                if (minion.getStatusAilments().isEmpty()){
+
+                // Attack stat setup
+                attackStatLabel.setText("" + minion.getAttack());
+                ImageView attackImageView = new ImageView(new Image(getClass().getResourceAsStream(
+                        "/be/ugent/objprog/minionwars/images/icons/attack-D60000.png")));
+                attackImageView.setPreserveRatio(true);
+                // Bind attack image's height to a fraction of the attack label's height
+                attackImageView.fitHeightProperty().bind(attackStatLabel.heightProperty().multiply(0.8));
+                attackStatLabel.setGraphic(attackImageView);
+
+                // Defense stat setup
+                defenseStatLabel.setText("" + minion.getDefence());
+                ImageView defenseImageView = new ImageView(new Image(getClass().getResourceAsStream(
+                        "/be/ugent/objprog/minionwars/images/icons/health-D60000.png")));
+                defenseImageView.setPreserveRatio(true);
+                defenseImageView.fitHeightProperty().bind(defenseStatLabel.heightProperty().multiply(0.8));
+                defenseStatLabel.setGraphic(defenseImageView);
+
+                // Effects setup
+                if (minion.getStatusAilments().isEmpty()) {
                     ailmentsStatLabel.setText("");
                     ailmentsStatLabel.setGraphic(null);
                 } else {
-                    HBox ailmentsDisplay = new HBox();
-                    ailmentsDisplay.setAlignment(Pos.CENTER_LEFT);
+                    // Create an HBox to hold all effect icons
+                    HBox effectsBox = new HBox(5);
+                    effectsBox.setAlignment(Pos.CENTER);
                     for (MinionEffect effect : minion.getStatusAilments()) {
-                        ImageView imageView = new ImageView();
-                        imageView.setImage(effect.getImage());
-                        ailmentsDisplay.getChildren().add(imageView);
+                        ImageView effectImageView = new ImageView(effect.getImage());
+                        effectImageView.setPreserveRatio(true);
+                        effectImageView.fitHeightProperty().bind(ailmentsStatLabel.heightProperty().multiply(0.8));
+                        effectsBox.getChildren().add(effectImageView);
                     }
+                    // Optionally, set some text in the label or leave it blank if you only need the icons
+                    ailmentsStatLabel.setText("");
+                    ailmentsStatLabel.setGraphic(effectsBox);
                 }
             }
             tileNameLabel.setText(MessageFormat.format(bundle.getString("menuPart2.tileNameText"),tileModel.getTileName(hexTile.getTile().getClass())));
         } else {
-            minionsIcon.setImage(null);
+            minionsIcon.setFill(null);
             minionsLabel.setText("");
             attackStatLabel.setText("");
             defenseStatLabel.setText("");
