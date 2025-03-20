@@ -129,7 +129,6 @@ public class SelectedMinionDisplay extends GridPane {
                 clearLabels();
                 setVisible(false);
             } else {
-                minion.addStatusAilment(new PoisonEffect(3));
                 setVisible(true);
                 minionsIcon.setFill(new ImagePattern(minion.getMinionIcon()));
                 minionsLabel.setText(minion.getName());

@@ -5,7 +5,6 @@ import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -44,11 +43,12 @@ public class CurrentPlayerDisplay extends HBox {
         currentPlayerMinionsUsedLabel.textProperty().bind(
                 Bindings.createStringBinding(() -> {
                     Player currentPlayer = playerModel.getCurrentPlayer();
-                    long activeMinions = currentPlayer.getMinions().stream()
-                            .filter(Minion::hasActions)
+                    long usedMinions = currentPlayer.getMinions().stream()
+                            .filter(minion -> !minion.hasActions())
                             .count();
+
                     int totalMinions = currentPlayer.getMinions().size();
-                    return activeMinions + "/" + totalMinions;
+                    return usedMinions + "/" + totalMinions;
                 }, playerModel.getCurrentPlayer().getMinions())
         );
 
