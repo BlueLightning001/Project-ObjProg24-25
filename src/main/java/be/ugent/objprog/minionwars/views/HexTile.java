@@ -90,6 +90,7 @@ public class HexTile extends Polygon {
     private void updateTileAppearance() {
         Image finalImage = baseImage;
             //TODO
+        // Only current player can see the minions in startphasze
         if (startPhase && tile.get().isHomeBase()) {
             Player homePlayer = playerModel.getPlayers().get(tile.get().getHomebase() - 1).get();
             if (homePlayer.equals(currentPlayer.get())) {
@@ -99,6 +100,10 @@ public class HexTile extends Polygon {
                     finalImage = applyColorOverlay(tile.get().getOccupant().getMinionIcon(), homebaseColor);
                 }
             }
+            // All tiles now visible for everyone, highlight own tiles in cyan,
+            // and enemies tiles in red borders
+        } else if (!startPhase){
+
         } else {
             highlightColor = Color.TRANSPARENT;
         }

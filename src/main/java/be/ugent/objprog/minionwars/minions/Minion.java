@@ -1,43 +1,70 @@
 package be.ugent.objprog.minionwars.minions;
 
-import be.ugent.objprog.minionwars.effects.EffectVisitor;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.models.Player;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 
-import java.util.Arrays;
+import java.util.List;
 
 
 public class Minion {
-    protected final SimpleStringProperty type;
-    protected final SimpleStringProperty name;
-    protected final SimpleIntegerProperty cost;
-    protected final SimpleIntegerProperty movement;
-    protected final SimpleIntegerProperty attack;
-    protected final SimpleIntegerProperty defence;
-    protected Integer[] range;
-    protected MinionEffect effect;
-    protected Image minionIcon;
-    protected Player owner = null;
+    private final SimpleStringProperty type;
+    private final SimpleStringProperty name;
+    private final SimpleIntegerProperty cost;
+    private final SimpleIntegerProperty movement;
+    private final SimpleIntegerProperty attack;
+    private final SimpleIntegerProperty defence;
+    private final int baseDefence;
+    private final int baseAttack;
+    private final int baseMovement;
+    private final Integer[] baseRange;
+    private ObservableList<Integer> range;
+    private MinionEffect effect;
+    private Image minionIcon;
+    private Player owner = null;  //TODO REMOVE UNNECESSARY PROPERTIES AND REPLACE THEM WITH NORMAL VALUES
+    private ObservableList<Effect> statusAilments = FXCollections.observableArrayList();
+    private boolean moved = false;
+    private boolean attacked = false;
+
     public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {
         this.type = new SimpleStringProperty(type);
         this.name = new SimpleStringProperty(name);
         this.cost = new SimpleIntegerProperty(cost);
         this.movement = new SimpleIntegerProperty(movement);
-        this.range = range;
+        this.range = new SimpleListProperty<>(FXCollections.observableArrayList(range));
+        this.baseRange = range;
+        this.baseMovement = movement;
         this.attack = new SimpleIntegerProperty(attack);
         this.defence = new SimpleIntegerProperty(defence);
+        this.baseDefence = defence;
+        this.baseAttack = attack;
         this.effect = effect;
         this.minionIcon = minionIcon;
     }
-    public void setOwner(Player owner) {
-        this.owner = owner;
+
+    public void addDefence(int value) {
+        this.defence.set(this.defence.get() + value);
+        if (this.defence.get() > baseDefence) {
+            this.defence.set(baseDefence);
+        }
     }
-    public Player getOwner() {
-        return owner;
+    public void resetActions(){
+        moved = false;
+        attacked = false;
     }
+    public boolean hasActions(){
+        return moved || attacked;
+    }
+    public void addStatusAilment(Effect effect) {
+        statusAilments.add(effect);
+    }
+
     public void applyEffectLogic(MinionEffect effect) {
         effect.applyEffect(this);
     }
@@ -89,8 +116,36 @@ public class Minion {
         return minionIcon;
     }
 
+    public Player getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    public ObservableList<Effect> getStatusAilments() {
+        return statusAilments;
+    }
+
     public String getType() {
         return type.get();
+    }
+
+    public boolean isAttacked() {
+        return attacked;
+    }
+
+    public void setAttacked(boolean attacked) {
+        this.attacked = attacked;
+    }
+
+    public boolean isMoved() {
+        return moved;
+    }
+
+    public void setMoved(boolean moved) {
+        this.moved = moved;
     }
 
     public SimpleIntegerProperty movementProperty() {
@@ -101,9 +156,13 @@ public class Minion {
         return name;
     }
 
+    public void removeStatusAilment(Effect effect) {
+        statusAilments.remove(effect);
+    }
+
     @Override
     public String toString() {
-        return type.get().toUpperCase() + ":  NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + Arrays.toString(getRange()) + ", IMAGE: " + minionIcon;
+        return type.get().toUpperCase() + ":  NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", IMAGE: " + minionIcon;
     }
 
     public String getName() {
@@ -126,12 +185,12 @@ public class Minion {
         this.movement.set(movement);
     }
 
-    public Integer[] getRange() {
-        return range;
+    public List<Integer> getRange() {
+        return range.stream().toList();
     }
 
     public void setRange(Integer[] range) {
-        this.range = range;
+        this.range.setAll(range);
     }
 
     public void setName(String name) {

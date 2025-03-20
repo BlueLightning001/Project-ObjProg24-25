@@ -145,7 +145,7 @@ public class MinionsTableView extends TableView<Minion> {
                     );
                     // Range label
                     Label rangeLabel = new Label();
-                    rangeLabel.textProperty().bind(Bindings.format("%d-%d", minion.getRange()[0], minion.getRange()[1]  ));
+                    rangeLabel.textProperty().bind(Bindings.format("%d-%d", minion.getRange().getFirst(), minion.getRange().getLast()  ));
                     ImageView rangeImageView  = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/range-119533.png"))));
                     rangeLabel.setGraphic(rangeImageView);
 

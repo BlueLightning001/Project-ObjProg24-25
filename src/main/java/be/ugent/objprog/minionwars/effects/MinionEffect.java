@@ -1,14 +1,15 @@
 package be.ugent.objprog.minionwars.effects;
 
 import be.ugent.objprog.minionwars.minions.Minion;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.image.Image;
 
 public abstract class MinionEffect {
     protected Image image = null;
-    protected int value;
+    protected SimpleIntegerProperty value = new SimpleIntegerProperty();
 
     public MinionEffect(int value) {
-        this.value = value;
+        this.value.set(value);
     }
 
     public Image getImage() {
@@ -23,6 +24,9 @@ public abstract class MinionEffect {
     public abstract void applyEffect(Minion minion);
 
     public int getValue() {
+        return value.get();
+    }
+    public SimpleIntegerProperty valueProperty() {
         return value;
     }
 }

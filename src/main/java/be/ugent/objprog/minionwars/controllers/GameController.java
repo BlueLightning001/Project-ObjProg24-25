@@ -89,6 +89,9 @@ public class GameController {
         getView().setOnKeyPressed(event -> {
             Object eventSource = event.getTarget();
             System.out.println(eventSource);
+            if (event.getCode() == KeyCode.R) {
+                view.resetGameGroupPosition();
+            }
             if (eventSource instanceof ZoomableScrollPane pane && event.getCode() == KeyCode.DELETE) {
                 HexTile selectedHexTile = view.getGameTileGroupPane().getSelectedHexTile();
                 Tile tileToDelete = null;

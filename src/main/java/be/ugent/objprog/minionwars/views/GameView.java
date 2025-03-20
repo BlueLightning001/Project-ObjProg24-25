@@ -77,12 +77,6 @@ public class GameView {
         this.container.setPrefSize(800, 480);
 
         this.container.getChildren().add(root);
-
-        this.container.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.R) {
-                resetGameGroupPosition();
-            }
-        });
     }
 
     public void changeGamePhase() { //TODO !!
