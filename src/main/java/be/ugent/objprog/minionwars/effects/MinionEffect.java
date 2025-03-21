@@ -65,6 +65,10 @@ public abstract class MinionEffect {
     public SimpleIntegerProperty valueProperty() {
         return value;
     }
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " [baseDuration=" + baseDuration + ", duration=" + duration + ", value=" + value + "]";
+    }
 }
 
 

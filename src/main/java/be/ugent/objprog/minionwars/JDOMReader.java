@@ -72,6 +72,7 @@ public class JDOMReader {
 
                     MinionEffect effect = effectFactory.createEffect(effectType, baseDuration, effectValue);
                     effectList.add(effect);
+                    System.out.println("Adding effect template: " + effect.toString());
                 }
             }
 
@@ -92,10 +93,11 @@ public class JDOMReader {
                     String effectType = minionElement.getAttributeValue("effect");
                     MinionEffect minionEffect = null;
                     if (effectType != null) {
+                        int effectValue = Integer.parseInt(minionElement.getAttributeValue("effect-value"));
                         minionEffect = effectList.stream()
                                 .filter(e -> e.getClass().getSimpleName().equalsIgnoreCase(effectType + "Effect"))
                                 .findFirst()
-                                .map(e -> effectFactory.createEffect(effectType, e.getDuration(), e.getValue()))
+                                .map(e -> effectFactory.createEffect(effectType, e.getDuration(), effectValue))
                                 .orElse(null);
                     }
 
