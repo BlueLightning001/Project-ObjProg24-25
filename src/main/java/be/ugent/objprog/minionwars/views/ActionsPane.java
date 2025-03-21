@@ -26,27 +26,29 @@ public class ActionsPane extends TabPane {
     private Button attackButton;
     private Button specialAttackButton;
     private Button healButton;
+    private final Tab moveTab;
+    private final Tab attackTab;
+    private final Tab specialTab;
     public ActionsPane(Locale locale) {
         super();
         this.locale = locale;
 
 
         //// Moving
-        Tab moveTab = getMoveTab();
+        moveTab = getMoveTab();
 
         //// Attacking
-        Tab attackTab = getAttackTab();
+        attackTab = getAttackTab();
 
         //// Special Moves
-        Tab specialTab = new Tab("Special");
+        specialTab = new Tab("Special");
         TableView<Power> powerTableView = new TableView<>();
 
         //TODO
 
         setTabDragPolicy(TabDragPolicy.FIXED);
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-        setVisible(false);
-        getTabs().addAll(moveTab,attackTab,specialTab);
+        getTabs().setAll(specialTab);
     }
 
     private Tab getAttackTab() {
@@ -134,13 +136,12 @@ public class ActionsPane extends TabPane {
     public void updateSelected(HexTile hexTile) {
         if (hexTile != null) {
             if (hexTile.getTile().isOccupied()){
-                setVisible(true);
+               getTabs().setAll(moveTab,attackTab,specialTab);
             } else {
-                System.out.println("TILE NOT OCCUPIED");
-                setVisible(false);
+                getTabs().setAll(specialTab);
             }
         } else {
-            setVisible(false);
+            getTabs().setAll(specialTab);
         }
     }
 }

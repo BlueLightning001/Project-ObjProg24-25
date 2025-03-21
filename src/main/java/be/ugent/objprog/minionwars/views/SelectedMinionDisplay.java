@@ -7,6 +7,7 @@ import be.ugent.objprog.minionwars.effects.PoisonEffect;
 import be.ugent.objprog.minionwars.effects.RageEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.TileModel;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.HPos;
@@ -53,13 +54,17 @@ public class SelectedMinionDisplay extends GridPane {
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         setUpLayout();
+        updateSelected(null);
+
+
     }
 
     private void setUpLayout() {
         VBox.setVgrow(this,Priority.SOMETIMES);
         setMinHeight(60);
+        setPrefHeight(70);
         setGridLinesVisible(true); //TODO debug
-        setMaxHeight(150);
+        setMaxHeight(70);
         // Set up minion display
         minionsIcon.setRadius(30);
         minionsIcon.setFill(Color.TRANSPARENT);
@@ -90,13 +95,13 @@ public class SelectedMinionDisplay extends GridPane {
         getColumnConstraints().addAll(col1, col2, col3);
 
         RowConstraints row1 = new RowConstraints();
-        row1.setPercentHeight(35);
+        row1.setPercentHeight(50);
         row1.setMaxHeight(30);
         RowConstraints row2 = new RowConstraints();
-        row2.setPercentHeight(35);
+        row2.setPercentHeight(50);
         row2.setMaxHeight(30);
         RowConstraints row3 = new RowConstraints();
-        row3.setPercentHeight(30);
+        row3.setPercentHeight(0);
         row3.setMaxHeight(50);
         getRowConstraints().setAll(row1, row2, row3);
 
