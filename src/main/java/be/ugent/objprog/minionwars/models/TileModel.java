@@ -7,6 +7,7 @@ import be.ugent.objprog.minionwars.tiles.MountainTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.VoidTile;
 import be.ugent.objprog.minionwars.tiles.WaterTile;
+import be.ugent.objprog.minionwars.views.HexTile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +46,45 @@ public class TileModel {
         initialTiles.addAll(jdomReader.getTiles());
 
     }
+    public int hexDistance(Tile a, Tile b) {
+        int q1 = a.getXCoord();
+        int r1 = a.getYCoord() - (a.getXCoord() - (a.getXCoord() % 2)) / 2;
+
+        int q2 = b.getXCoord();
+        int r2 = b.getYCoord() - (b.getXCoord() - (b.getXCoord() % 2)) / 2;
+
+        int s1 = -q1 - r1;
+        int s2 = -q2 - r2;
+
+        return (Math.abs(q1 - q2) + Math.abs(r1 - r2) + Math.abs(s1 - s2)) / 2;
+    }
+
+    public List<Tile> getTilesInRadius(Tile centerTile, int radius) {
+        List<Tile> tilesInRadius = new ArrayList<>();
+
+        int centerX = centerTile.getXCoord();
+        int centerY = centerTile.getYCoord();
+
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                int newX = centerX + dx;
+                int newY = centerY + dy;
+
+                // Bounds check
+                if (newX >= 0 && newX < tileGrid.length && newY >= 0 && newY < tileGrid[newX].length) {
+                    Tile candidate = tileGrid[newX][newY];
+
+                    // Check if within hex radius
+                    if (hexDistance(centerTile, candidate) <= radius) {
+                        tilesInRadius.add(candidate);
+                    }
+                }
+            }
+        }
+        return tilesInRadius;
+    }
+
+
 
     // Initialize the tile grid based on the tiles list
     private void initializeTileGrid() {

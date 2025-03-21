@@ -3,6 +3,7 @@ package be.ugent.objprog.minionwars.views;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
+import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,6 +15,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
 import javafx.scene.image.Image;
+
+import java.util.List;
 
 //For displaying the tiles
 
@@ -32,6 +35,11 @@ public class HexTile extends Polygon {
     private SimpleBooleanProperty selected;
     private final static int DEFAULT_STROKE = 1;
     private final static Color DEFAULT_STROKE_COLOR = Color.BLACK;
+    private final TileModel tileModel;
+    public List<Tile> getTilesInRadius(int radius) {
+        return tileModel.getTilesInRadius(this.getTile(),radius);
+    }
+
     public boolean isSelected() {
         return selected.get();
     }
@@ -40,7 +48,8 @@ public class HexTile extends Polygon {
         return selected;
     }
 
-    public HexTile(double x, double y, Tile tile, PlayerModel playerModel, double scaleFactor) {
+    public HexTile(double x, double y, Tile tile, PlayerModel playerModel, double scaleFactor, TileModel tileModel) {
+        this.tileModel = tileModel;
         this.tile = new SimpleObjectProperty<>(tile);
         this.playerModel = playerModel;
         this.currentPlayer = playerModel.currentPlayerProperty();

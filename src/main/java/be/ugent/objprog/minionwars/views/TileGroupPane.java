@@ -24,8 +24,10 @@ public class TileGroupPane extends Pane {
     private double tileScaleFactor = 1.0;
     private SimpleObjectProperty<HexTile> selectedHexTile;
     private ZoomableScrollPane boundPane;
+    private TileModel tileModel;
 
     public TileGroupPane(TileModel tileModel, PlayerModel playerModel) {
+        this.tileModel = tileModel;
         this.tileGridModel = tileModel.getTileGrid();
         this.playerModel = playerModel;
         this.selectedHexTile = new SimpleObjectProperty<>(null);
@@ -51,7 +53,7 @@ public class TileGroupPane extends Pane {
         for (int i = 0; i < tileGridModel.length; i++) {
             for (int j = 0; j < tileGridModel[i].length; j++) {
                 Tile tile = tileGridModel[i][j];
-                HexTile hexTile = new HexTile(0, 0, tile, playerModel, tileScaleFactor);
+                HexTile hexTile = new HexTile(0, 0, tile, playerModel, tileScaleFactor, tileModel);
                 hexTiles.add(hexTile);
                 hexTileGrid[i][j] = hexTile;
             }
