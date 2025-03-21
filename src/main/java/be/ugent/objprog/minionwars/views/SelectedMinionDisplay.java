@@ -84,7 +84,7 @@ public class SelectedMinionDisplay extends GridPane {
     private void setupStatLabel(Label label) {
         label.setAlignment(Pos.CENTER);
         label.setTextAlignment(TextAlignment.CENTER);
-        label.setStyle("-fx-font-weight: bolder; -fx-font-size: 18");
+        label.setStyle("-fx-font-weight: bolder; -fx-font-size: 15");
         GridPane.setHalignment(label, HPos.CENTER);
         GridPane.setValignment(label, VPos.CENTER);
     }
@@ -114,6 +114,7 @@ public class SelectedMinionDisplay extends GridPane {
         statsGrid.add(defenseStatLabel, 1, 0);
         statsGrid.add(ailmentsStatLabel, 0, 1);
 
+
         GridPane.setColumnSpan(ailmentsStatLabel, 2);
 
         getNodeByRowColumnIndex(1, 0, statsGrid).setStyle("-fx-border-width: 2 0 0 0; -fx-border-color: #050505;");
@@ -136,7 +137,7 @@ public class SelectedMinionDisplay extends GridPane {
                 attackStatLabel.setText("" + minion.getAttack());
                 attachStatIcon(attackStatLabel, "/be/ugent/objprog/minionwars/images/icons/attack-D60000.png");
 
-                defenseStatLabel.setText("" + minion.getDefence());
+                defenseStatLabel.setText(minion.getDefence() + "/" + minion.getBaseDefence() );
                 attachStatIcon(defenseStatLabel, "/be/ugent/objprog/minionwars/images/icons/health-D60000.png");
 
                 if (minion.getStatusAilments().isEmpty()) {

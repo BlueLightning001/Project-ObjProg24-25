@@ -56,6 +56,11 @@ public class Minion {
             this.defence.set(baseDefence);
         }
     }
+
+    public int getBaseDefence() {
+        return baseDefence;
+    }
+
     public void resetActions(){
         moved = false;
         attacked = false;

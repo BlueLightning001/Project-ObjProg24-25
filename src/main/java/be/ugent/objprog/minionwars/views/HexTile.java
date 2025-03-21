@@ -1,5 +1,6 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.tiles.Tile;
@@ -79,7 +80,11 @@ public class HexTile extends Polygon {
                 System.out.println("Selected: " + tile.get());
 
             } else {
-                this.setStroke(DEFAULT_STROKE_COLOR);
+                if (startPhase || (this.getTile().isOccupied() && playerModel.getCurrentPlayer().equals(this.getTile().getOccupant().getOwner()))){
+                    this.setStroke(DEFAULT_STROKE_COLOR);
+                } else {
+                    this.setStroke(Color.RED);
+                }
                 System.out.println("Unselected: " + tile.get());
             }
 

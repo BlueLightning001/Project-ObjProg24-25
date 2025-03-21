@@ -132,6 +132,8 @@ public class GameController {
 //
 //           }
 //        });
+        stage.setMinWidth(650);
+        stage.setMinHeight(400);
         view.changeGamePhase();
     }
 

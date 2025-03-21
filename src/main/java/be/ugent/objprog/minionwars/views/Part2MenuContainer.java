@@ -17,6 +17,7 @@ public class Part2MenuContainer extends VBox {
     private TileGroupPane tileGroupPane;
     private TileModel tileModel;
     private CurrentPlayerDisplay currentPlayerDisplay;
+    private ActionsPane actionsPane;
 
     private ResourceBundle bundle;
     private SelectedMinionDisplay selectedMinionDisplay;
@@ -43,6 +44,11 @@ public class Part2MenuContainer extends VBox {
         selectedMinionDisplay = new SelectedMinionDisplay(tileModel, locale);
 
 
+        //// Actions Tabs
+        actionsPane =  new ActionsPane(locale);
+
+
+        // Listeners
         tileGroupPane.selectedHexTileProperty().addListener((obs, oldTile, newTile) -> {
             setSelected(newTile);
         });
@@ -53,7 +59,7 @@ public class Part2MenuContainer extends VBox {
 
 
 
-        getChildren().addAll(this.currentPlayerDisplay,separator,selectedMinionDisplay);
+        getChildren().addAll(this.currentPlayerDisplay,separator,selectedMinionDisplay,actionsPane);
 
         // Set vertical grow priority for contained elements.
 //        VBox.setVgrow(currentPlayerDisplay, Priority.ALWAYS);
@@ -61,13 +67,14 @@ public class Part2MenuContainer extends VBox {
 //        VBox.setVgrow(menuButtonBar, Priority.ALWAYS);
 
         // Height ratios
-//        menuTable.prefHeightProperty().bind(this.heightProperty().multiply(0.8));
+        actionsPane.prefHeightProperty().bind(this.heightProperty().multiply(0.7));
         selectedMinionDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
         this.currentPlayerDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
 
     }
     public void setSelected(HexTile hexTile){
             selectedMinionDisplay.updateSelected(hexTile);
+            actionsPane.updateSelected(hexTile);
         }
 
 }

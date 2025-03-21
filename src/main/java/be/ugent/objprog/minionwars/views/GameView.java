@@ -7,6 +7,7 @@ import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -96,6 +97,14 @@ public class GameView {
         this.root.getChildren().clear();
         part2MenuContainer = new Part2MenuContainer(playerModel, minionModel, tileModel, gameTileGroupPane, locale);
         this.root.getChildren().addAll(part2MenuContainer, gamePane);
+
+        part2MenuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.30));
+        part2MenuContainer.prefHeightProperty().bind(root.heightProperty());
+
+        gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.70));
+        gamePane.prefHeightProperty().bind(root.heightProperty());
+
+
     }
 
     public TileGroupPane getGameTileGroupPane() {

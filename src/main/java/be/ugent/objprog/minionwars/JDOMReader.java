@@ -48,7 +48,6 @@ public class JDOMReader {
                 System.out.println("Loading config from disk: " + filename);
                 document = saxBuilder.build(file);
             } else {
-                // Ask the user if they want to fallback to stored configs
                 System.out.println("Config file not found on disk: " + filename);
                 System.out.println("Searching classpath instead");
 
