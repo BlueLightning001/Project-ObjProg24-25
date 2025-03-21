@@ -48,7 +48,7 @@ public class Minion {
         this.minionIcon = minionIcon;
     }
 
-    public void addDefence(int value) {
+    public void heal(int value) {
         this.defence.set(this.defence.get() + value);
         if (this.defence.get() > baseDefence) {
             this.defence.set(baseDefence);
@@ -73,7 +73,9 @@ public class Minion {
     }
 
     public void applyEffectLogic(MinionEffect effect) {
-        effect.applyEffect(this);
+        if (effect != null) {
+            effect.applyEffect(this);
+        }
     }
 
     public SimpleIntegerProperty attackProperty() {

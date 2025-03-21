@@ -1,10 +1,11 @@
 package be.ugent.objprog.minionwars.powers;
 
+import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.views.HexTile;
 
 public class LightningPower extends Power{
-    public LightningPower(int radius, int value) {
-        super(radius,value  );
+    public LightningPower(int radius, int value, MinionEffect effect) {
+        super(radius,value, effect  );
     }
 
     @Override
