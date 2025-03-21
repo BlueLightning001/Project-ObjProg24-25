@@ -40,6 +40,7 @@ public class ActionsPane extends TabPane {
         //// Special Moves
         Tab specialTab = new Tab("Special");
         TableView<Power> powerTableView = new TableView<>();
+
         //TODO
 
         setTabDragPolicy(TabDragPolicy.FIXED);

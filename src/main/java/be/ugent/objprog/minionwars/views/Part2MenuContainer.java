@@ -44,6 +44,7 @@ public class Part2MenuContainer extends VBox {
         selectedMinionDisplay = new SelectedMinionDisplay(tileModel, locale);
 
 
+
         //// Actions Tabs
         actionsPane =  new ActionsPane(locale);
 
