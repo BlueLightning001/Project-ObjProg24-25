@@ -7,11 +7,9 @@ import be.ugent.objprog.minionwars.minions.MinionTypeImage;
 import be.ugent.objprog.minionwars.powers.Power;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.TileFactory;
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
@@ -22,22 +20,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Scanner;
 
 public class JDOMReader {
-    private String filename;
-    private List<Minion> minionList;
-    private List<Power> powers;
-    private List<Tile> tiles;
-    private List<Effect> effectList;
-    private TileFactory tileFactory;
-    private EffectFactory effectFactory;
+    private final String filename;
+    private final List<Minion> minionList;
+    private  List<Power> powers;
+    private final List<Tile> tiles;
+    private final List<MinionEffect> effectList;
+    private final TileFactory tileFactory;
+    private final EffectFactory effectFactory;
     public JDOMReader(String filename) throws IOException {
         this.filename = filename;
         tiles = new ArrayList<>();
         tileFactory = new TileFactory();
         effectFactory = new EffectFactory();
         minionList = new ArrayList<>();
+        effectList = new ArrayList<>();
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
             Document document = null;
@@ -63,6 +61,21 @@ public class JDOMReader {
             // Get root element configuration>
             Element root = document.getRootElement();
 
+            // Process <effects>
+            Element effectsElement = root.getChild("effects");
+            if (effectsElement != null) {
+                for (Element effectElement : effectsElement.getChildren()) {
+                    String effectType = effectElement.getName();
+                    int baseDuration = Integer.parseInt(effectElement.getAttributeValue("duration"));
+                    String effectValueAttr = effectElement.getAttributeValue("value");
+                    int effectValue = (effectValueAttr != null) ? Integer.parseInt(effectValueAttr) : 0;
+
+                    MinionEffect effect = effectFactory.createEffect(effectType, baseDuration, effectValue);
+                    effectList.add(effect);
+                }
+            }
+
+
             // Process <minions>
             Element minionsElement = root.getChild("minions");
             if (minionsElement != null) {
@@ -74,20 +87,22 @@ public class JDOMReader {
                     Integer[] range = Arrays.stream(minionElement.getAttributeValue("range").split(" ")).sequential().map(Integer::parseInt).toArray(Integer[]::new);
                     int attack = Integer.parseInt(minionElement.getAttributeValue("attack"));
                     int defence = Integer.parseInt(minionElement.getAttributeValue("defence"));
-                    // Optional
+
+                    // Optional effect
                     String effectType = minionElement.getAttributeValue("effect");
-                    String effectValueAttr = minionElement.getAttributeValue("effect-value");
-                    int effectValue = effectValueAttr != null ? Integer.parseInt(effectValueAttr) : 0;
-                    MinionEffect minionEffect;
+                    MinionEffect minionEffect = null;
                     if (effectType != null) {
-                        minionEffect  = effectFactory.createEffect(effectType, effectValue);
-                    } else {
-                        minionEffect = null;
+                        minionEffect = effectList.stream()
+                                .filter(e -> e.getClass().getSimpleName().equalsIgnoreCase(effectType + "Effect"))
+                                .findFirst()
+                                .map(e -> effectFactory.createEffect(effectType, e.getDuration(), e.getValue()))
+                                .orElse(null);
                     }
+
                     // Get the image for the type
-                    MinionTypeImage minionImage = MinionTypeImage.valueOf(type.toUpperCase().replace("-","_"));
+                    MinionTypeImage minionImage = MinionTypeImage.valueOf(type.toUpperCase().replace("-", "_"));
                     Image minionIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream(minionImage.getImagePath())));
-                    minionList.add(new Minion(type,name,cost,movement,range,attack,defence,minionEffect, minionIcon) );
+                    minionList.add(new Minion(type, name, cost, movement, range, attack, defence, minionEffect, minionIcon));
                 }
             }
 
@@ -116,19 +131,15 @@ public class JDOMReader {
                 }
             }
 
-            // Process <effects>
-            Element effectsElement = root.getChild("effects");
-            if (effectsElement != null) {
-                for (Element effectElement : effectsElement.getChildren()) {
-                    // Process effects (TODO)
-                }
-            }
 
-        } catch (Exception e ) {
+        } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
     }
 
+    public List<MinionEffect> getEffectList() {
+        return effectList;
+    }
 
     public List<Minion> getMinions() {
         return minionList;

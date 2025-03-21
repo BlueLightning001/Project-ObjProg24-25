@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class HealEffect extends MinionEffect {
 
-    public HealEffect(int value) {
-        super(value);
+    public HealEffect(int duration,int value) {
+        super(duration,value);
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/effects/heal.png")));
     }
 

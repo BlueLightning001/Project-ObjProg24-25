@@ -10,8 +10,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -211,7 +209,7 @@ public class Minion {
     }
     public void reduceAilmentValue() {
         for (MinionEffect minionEffect : statusAilments) {
-            minionEffect.reduceValue();
+            minionEffect.reduceDuration();
             if (minionEffect.getValue() <= 0) {
                 statusAilments.remove(minionEffect);
             }

@@ -1,12 +1,15 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.powers.Power;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -36,6 +39,7 @@ public class ActionsPane extends TabPane {
 
         //// Special Moves
         Tab specialTab = new Tab("Special");
+        TableView<Power> powerTableView = new TableView<>();
         //TODO
 
         setTabDragPolicy(TabDragPolicy.FIXED);
