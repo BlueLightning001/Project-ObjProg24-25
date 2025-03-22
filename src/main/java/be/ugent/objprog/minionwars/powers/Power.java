@@ -5,14 +5,16 @@ import be.ugent.objprog.minionwars.effects.ParalysisEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.HexTile;
+import javafx.scene.image.Image;
 
 import java.util.List;
 
-// TODO MAYBE ONE CLASS WITH OPTIONAL EFFECT
+
 public abstract class Power {
     protected final int radius;
     protected final int value;
     protected final MinionEffect effect;
+    protected Image image = null;
     public Power(int radius, int value, MinionEffect effect) {
         this.radius = radius;
         this.value = value;
@@ -24,5 +26,6 @@ public abstract class Power {
     }
     public int getRadius() { return radius; }
 
+    //TODO ALL IMPLEMENTATIONS
     public abstract void apply(HexTile center);
 }

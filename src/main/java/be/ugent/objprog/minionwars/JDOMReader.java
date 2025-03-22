@@ -5,6 +5,7 @@ import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.minions.MinionTypeImage;
 import be.ugent.objprog.minionwars.powers.Power;
+import be.ugent.objprog.minionwars.powers.PowerFactory;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.TileFactory;
 import javafx.scene.image.Image;
@@ -24,18 +25,21 @@ import java.util.Objects;
 public class JDOMReader {
     private final String filename;
     private final List<Minion> minionList;
-    private  List<Power> powers;
     private final List<Tile> tiles;
     private final List<MinionEffect> effectList;
     private final TileFactory tileFactory;
     private final EffectFactory effectFactory;
+    private final PowerFactory powerFactory;
+    private final List<Power> powers;
     public JDOMReader(String filename) throws IOException {
         this.filename = filename;
         tiles = new ArrayList<>();
         tileFactory = new TileFactory();
         effectFactory = new EffectFactory();
+        powerFactory = new PowerFactory();
         minionList = new ArrayList<>();
         effectList = new ArrayList<>();
+        powers = new ArrayList<>();
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
             Document document = null;
@@ -112,7 +116,20 @@ public class JDOMReader {
             Element powersElement = root.getChild("powers");
             if (powersElement != null) {
                 for (Element powerElement : powersElement.getChildren()) {
-                    // Process powers (TODO)
+                    String powerType = powerElement.getName();
+                    int radius = Integer.parseInt(powerElement.getAttributeValue("radius"));
+                    int value = Integer.parseInt(powerElement.getAttributeValue("value"));
+                    String effectType = powerElement.getAttributeValue("effect");
+                    MinionEffect minionEffect = null;
+                    if (effectType != null) {
+                        int effectValue = Integer.parseInt(powerElement.getAttributeValue("effect-value"));
+                        minionEffect = effectList.stream()
+                                .filter(e -> e.getClass().getSimpleName().equalsIgnoreCase(effectType + "Effect"))
+                                .findFirst()
+                                .map(e -> effectFactory.createEffect(effectType, e.getDuration(), effectValue))
+                                .orElse(null);
+                    }
+                    powers.add(powerFactory.createPower(powerType, radius, value, minionEffect));
                 }
             }
 
@@ -143,8 +160,16 @@ public class JDOMReader {
         return effectList;
     }
 
+    public List<Minion> getMinionList() {
+        return minionList;
+    }
+
     public List<Minion> getMinions() {
         return minionList;
+    }
+
+    public List<Power> getPowers() {
+        return powers;
     }
 
     public List<Tile> getTiles() {

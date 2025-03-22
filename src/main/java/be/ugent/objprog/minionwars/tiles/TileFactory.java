@@ -18,6 +18,7 @@ public class TileFactory {
         System.out.println("Creating tile " + type + " at " + x + ", " + y + ", hb: " + homebase );
         return factoryFunction.create(x, y,homebase);
     }
+    @FunctionalInterface
     public interface TileFactoryFunction {
         Tile create(int x, int y,int homebase);
     }

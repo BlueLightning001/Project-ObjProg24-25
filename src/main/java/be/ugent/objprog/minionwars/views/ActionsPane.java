@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
@@ -42,7 +43,7 @@ public class ActionsPane extends TabPane {
 
         //// Special Moves
         specialTab = new Tab("Special");
-        TableView<Power> powerTableView = new TableView<>();
+        ListView<Power> powerTableView = new ListView<>();
 
         //TODO
 
