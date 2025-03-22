@@ -1,25 +1,28 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.powers.Power;
 import javafx.application.Platform;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TableView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Box;
 
 import java.util.Locale;
 
 public class ActionsPane extends TabPane {
+    private final PowerModel powerModel;
     private Locale locale;
     private double font = 15;
     private double error = 50; //%
@@ -30,10 +33,10 @@ public class ActionsPane extends TabPane {
     private final Tab moveTab;
     private final Tab attackTab;
     private final Tab specialTab;
-    public ActionsPane(Locale locale) {
+    public ActionsPane(PowerModel powerModel, Locale locale) {
         super();
         this.locale = locale;
-
+        this.powerModel = powerModel;
 
         //// Moving
         moveTab = getMoveTab();
@@ -43,8 +46,49 @@ public class ActionsPane extends TabPane {
 
         //// Special Moves
         specialTab = new Tab("Special");
-        ListView<Power> powerTableView = new ListView<>();
+        ListView<Power> powerListView = new ListView<>(this.powerModel.getPowers());
+        powerListView.setCellFactory(listView -> new ListCell<>() {
+            private final Label nameLabel = new Label();
+            private final Label descriptionLabel = new Label();
+            private final ImageView powerIcon = new ImageView();
+            private final Separator separator = new Separator();
+            private final HBox cellContainer = new HBox(powerIcon, nameLabel,separator, descriptionLabel);
+            {
+                separator.setOrientation(Orientation.VERTICAL);
 
+                nameLabel.setStyle("-fx-font-weight: bold;");
+                descriptionLabel.setStyle("-fx-font-size: 12;");
+                descriptionLabel.setWrapText(true);
+                powerIcon.setFitWidth(32);
+                powerIcon.setFitHeight(32);
+                cellContainer.setSpacing(5);
+
+                // Limit description label width
+                descriptionLabel.setMaxWidth(200);
+                descriptionLabel.setPrefWidth(200);
+                descriptionLabel.setMinWidth(100);
+
+                HBox.setHgrow(descriptionLabel, Priority.NEVER);
+            }
+
+            @Override
+            protected void updateItem(Power power, boolean empty) {
+                super.updateItem(power, empty);
+
+                if (empty || power == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    nameLabel.setText(power.getName(locale));
+                descriptionLabel.setText(power.getDescription(locale));
+                    powerIcon.setImage(power.getImage());
+
+                    setGraphic(cellContainer);
+                }
+            }
+        });
+
+        specialTab.setContent(powerListView);
         //TODO
 
         setTabDragPolicy(TabDragPolicy.FIXED);

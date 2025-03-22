@@ -2,6 +2,7 @@ package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
+import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Separator;
@@ -12,20 +13,22 @@ import java.util.ResourceBundle;
 
 public class Part2MenuContainer extends VBox {
     private final Locale locale;
-    private MinionModel minionModel;
-    private PlayerModel playerModel;
-    private TileGroupPane tileGroupPane;
-    private TileModel tileModel;
+    private final MinionModel minionModel;
+    private final PlayerModel playerModel;
+    private final TileGroupPane tileGroupPane;
+    private final TileModel tileModel;
+    private final PowerModel powerModel;
     private CurrentPlayerDisplay currentPlayerDisplay;
     private ActionsPane actionsPane;
 
     private ResourceBundle bundle;
     private SelectedMinionDisplay selectedMinionDisplay;
-    public Part2MenuContainer(PlayerModel playerModel, MinionModel minionModel,TileModel tileModel, TileGroupPane tileGroupPane, Locale locale) {
+    public Part2MenuContainer(PlayerModel playerModel, MinionModel minionModel, TileModel tileModel, PowerModel powerModel, TileGroupPane tileGroupPane, Locale locale) {
         this.playerModel = playerModel;
         this.minionModel = minionModel;
         this.tileGroupPane = tileGroupPane;
         this.tileModel = tileModel;
+        this.powerModel = powerModel;
         this.locale = locale;
 
         // Load the resource bundle.
@@ -46,7 +49,7 @@ public class Part2MenuContainer extends VBox {
 
 
         //// Actions Tabs
-        actionsPane =  new ActionsPane(locale);
+        actionsPane =  new ActionsPane(powerModel, locale);
 
 
         // Listeners

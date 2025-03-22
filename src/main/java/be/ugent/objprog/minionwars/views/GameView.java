@@ -3,6 +3,7 @@ package be.ugent.objprog.minionwars.views;
 import be.ugent.objprog.minionwars.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
+import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -29,10 +30,12 @@ public class GameView {
     private Button centerBoardButton;
     private ResourceBundle bundle;
     private MinionModel minionModel;
-    public GameView(MinionModel minionModel, PlayerModel playerModel, TileModel tileModel, Locale locale) {
+    private PowerModel powerModel;
+    public GameView(MinionModel minionModel, PlayerModel playerModel, TileModel tileModel, PowerModel powerModel, Locale locale) {
         this.minionModel = minionModel;
         this.playerModel = playerModel;
         this.tileModel = tileModel;
+        this.powerModel = powerModel;
         this.locale = locale;
         bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
@@ -95,7 +98,7 @@ public class GameView {
     public void changeGamePhase() { //TODO !!
         getGameTileGroupPane().getHexTiles().forEach(HexTile::endStartPhase);
         this.root.getChildren().clear();
-        part2MenuContainer = new Part2MenuContainer(playerModel, minionModel, tileModel, gameTileGroupPane, locale);
+        part2MenuContainer = new Part2MenuContainer(playerModel, minionModel, tileModel,powerModel ,gameTileGroupPane, locale);
         this.root.getChildren().addAll(part2MenuContainer, gamePane);
 
         part2MenuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.30));

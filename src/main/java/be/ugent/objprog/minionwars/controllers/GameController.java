@@ -6,6 +6,7 @@ import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
+import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.views.HexTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
@@ -23,16 +24,18 @@ public class GameController {
     private final MinionModel minionModel;
     private GameView view;
     private PlayerModel playerModel;
-    private TileModel tileModel;
+    private final TileModel tileModel;
     private Stage stage;
+    private final PowerModel powerModel;
 
     public GameController(Stage stage,PlayerModel playerModel, Locale locale,JDOMReader reader) {
         this.stage = stage;
         this.playerModel = playerModel;
         this.minionModel = new MinionModel(reader);
         this.tileModel = new TileModel(reader,locale);
+        this.powerModel = new PowerModel(reader,locale);
         this.locale = locale;
-        this.view = new GameView(minionModel,playerModel,tileModel,locale);
+        this.view = new GameView(minionModel,playerModel,tileModel,powerModel,locale);
         view.resetGameGroupPosition();
         //TODO PREVENT PLAYING WITHOUT ANY MINIONS
         view.getEndTurnButton().setOnAction(event -> {
@@ -54,7 +57,7 @@ public class GameController {
 
         // TODO game logic
 
-        // PHASE 2
+        // PART 1
         view.getMinionsTableView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             // Unselect the tile when selecting a minion
             if (newValue != null) {

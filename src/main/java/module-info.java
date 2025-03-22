@@ -11,4 +11,5 @@ open module be.ugent.objprog.minionwars {
     exports be.ugent.objprog.minionwars.effects;
     exports be.ugent.objprog.minionwars.minions;
     exports be.ugent.objprog.minionwars.tiles;
+    exports be.ugent.objprog.minionwars.powers;
 }
