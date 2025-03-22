@@ -11,6 +11,7 @@ public class LightningPower extends Power{
     public LightningPower(int radius, int value, MinionEffect effect) {
         super(radius,value, effect  );
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/powers/lightning.png")));
+        offensive = true;
     }
 
     @Override

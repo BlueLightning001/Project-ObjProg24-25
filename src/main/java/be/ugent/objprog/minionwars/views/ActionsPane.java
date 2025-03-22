@@ -12,6 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -20,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Box;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class ActionsPane extends TabPane {
     private final PowerModel powerModel;
@@ -50,25 +52,69 @@ public class ActionsPane extends TabPane {
         powerListView.setCellFactory(listView -> new ListCell<>() {
             private final Label nameLabel = new Label();
             private final Label descriptionLabel = new Label();
+            private final Label radiusLabel = new Label();
+            private final Label durationLabel = new Label();
+            private final Label valueLabel = new Label();
             private final ImageView powerIcon = new ImageView();
+            private final ImageView valueIcon = new ImageView();
+            private final ImageView durationIcon = new ImageView();
+            private final ImageView radiusIcon = new ImageView();
             private final Separator separator = new Separator();
-            private final HBox cellContainer = new HBox(powerIcon, nameLabel,separator, descriptionLabel);
+            private final Image radiusImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/range-119533.png")));
+            private final Image durationImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/duration-0073FF.png")));
+
+            private final VBox infoBox = new VBox(nameLabel, descriptionLabel);
+            private final VBox detailsBox = new VBox(valueLabel, radiusLabel, durationLabel);
+            private final HBox cellContainer = new HBox(powerIcon, infoBox, separator, detailsBox);
+
             {
                 separator.setOrientation(Orientation.VERTICAL);
 
+                // Style name and description
                 nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
                 descriptionLabel.setStyle("-fx-font-size: 16;");
                 descriptionLabel.setWrapText(true);
-                powerIcon.setFitWidth(50);
-                powerIcon.setFitHeight(50);
-                cellContainer.setSpacing(5);
 
-                // Limit description label width
+                // Set max width for description to prevent scrolling
                 descriptionLabel.setMaxWidth(200);
                 descriptionLabel.setPrefWidth(200);
                 descriptionLabel.setMinWidth(100);
-
                 HBox.setHgrow(descriptionLabel, Priority.NEVER);
+
+                // Icons size
+                powerIcon.setFitWidth(70);
+                powerIcon.setFitHeight(70);
+                setAlignment(Pos.CENTER);
+                valueIcon.setFitWidth(20);
+                valueIcon.setFitHeight(20);
+                durationIcon.setFitWidth(20);
+                durationIcon.setFitHeight(20);
+                radiusIcon.setFitWidth(20);
+                radiusIcon.setFitHeight(20);
+
+
+                // Label styles
+                radiusLabel.setStyle("-fx-font-size: 14;");
+                durationLabel.setStyle("-fx-font-size: 14;");
+                valueLabel.setStyle("-fx-font-size: 14;");
+
+                // Spacing
+                cellContainer.setSpacing(10);
+                infoBox.setSpacing(2);
+                detailsBox.setSpacing(10);
+                detailsBox.setAlignment(Pos.CENTER_LEFT); // Align text properly
+
+                // Images
+                durationIcon.setImage(durationImage);
+                radiusIcon.setImage(radiusImage);
+
+                // Ensure proportional resizing (percent of width)
+                powerIcon.setPreserveRatio(true);
+
+                detailsBox.prefWidthProperty().bind(listView.widthProperty().multiply(0.1));
+                infoBox.prefWidthProperty().bind(listView.widthProperty().multiply(0.5));
+                HBox.setHgrow(infoBox, Priority.ALWAYS);
+                HBox.setHgrow(detailsBox, Priority.ALWAYS);
             }
 
             @Override
@@ -80,13 +126,40 @@ public class ActionsPane extends TabPane {
                     setGraphic(null);
                 } else {
                     nameLabel.setText(power.getName(locale));
-                descriptionLabel.setText(power.getDescription(locale));
+                    descriptionLabel.setText(power.getDescription(locale));
                     powerIcon.setImage(power.getImage());
 
+                    // Update radius
+                    radiusLabel.setText("" + power.getRadius());
+
+
+                    // Update value label and icon
+                    if (power.getValue() > 0) {
+                        valueLabel.setText("" + power.getValue());
+                        valueIcon.setImage(power.getValueImage());
+                        valueIcon.setVisible(true);
+                    } else {
+                        valueLabel.setText("");
+                        valueIcon.setVisible(false);
+                    }
+                    // Update duration label and icon
+                    if (power.hasEffect()){
+                        durationLabel.setText("" + power.getEffect().getDuration());
+                        //durationIcon.setImage(power.getEffect().getImage());
+                        durationIcon.setVisible(true);
+                    } else {
+                        durationLabel.setText("");
+                        durationIcon.setVisible(false);
+                    }
+                    valueLabel.setGraphic(valueIcon);
+                    radiusLabel.setGraphic(radiusIcon);
+                    durationLabel.setGraphic(durationIcon);
                     setGraphic(cellContainer);
                 }
             }
         });
+
+
 
         specialTab.setContent(powerListView);
         //TODO

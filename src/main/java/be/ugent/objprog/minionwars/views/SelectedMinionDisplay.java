@@ -1,6 +1,7 @@
 package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.effects.BlindnessEffect;
+import be.ugent.objprog.minionwars.effects.BurnEffect;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.effects.ParalysisEffect;
 import be.ugent.objprog.minionwars.effects.PoisonEffect;
@@ -9,6 +10,7 @@ import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -48,6 +50,7 @@ public class SelectedMinionDisplay extends GridPane {
     private ScrollPane statusAilmentsScroll;
     private final TileModel tileModel;
     private final ResourceBundle bundle;
+    private SimpleObjectProperty<Minion> selectedMinion = new SimpleObjectProperty<>();
 
     public SelectedMinionDisplay(TileModel tileModel, Locale locale) {
         this.tileModel = tileModel;
@@ -120,29 +123,51 @@ public class SelectedMinionDisplay extends GridPane {
         statusAilmentsScroll.managedProperty().bind(statusAilmentsScroll.visibleProperty());
         statusAilmentsScroll.prefHeightProperty().bind(Bindings.when(statusAilmentsScroll.visibleProperty()).then(50).otherwise(0));
 
-        maxHeightProperty().bind(
-                Bindings.when(statusAilmentsScroll.visibleProperty())
-                        .then(130)  // If visible, height expands
-                        .otherwise(70) // If hidden, height shrinks
+        BooleanBinding hasStatusAilments = Bindings.createBooleanBinding(
+                () -> selectedMinion.get() != null && !selectedMinion.get().getStatusAilments().isEmpty(),
+                selectedMinion
         );
+
+        // Bind height properties dynamically
+        maxHeightProperty().bind(
+                Bindings.when(hasStatusAilments)
+                        .then(130)
+                        .otherwise(70)
+        );
+
+        prefHeightProperty().bind(
+                Bindings.when(statusAilmentsScroll.visibleProperty())
+                        .then(120)
+                        .otherwise(60)
+        );
+
         minHeightProperty().bind(
                 Bindings.when(statusAilmentsScroll.visibleProperty())
-                .then(90)  // If visible, height expands
-                .otherwise(60) // If hidden, height shrinks
+                        .then(120)
+                        .otherwise(60)
         );
-        statusAilmentsScroll.visibleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                row1.setPercentHeight(35);
-                row2.setPercentHeight(35);
-                row3.setPercentHeight(30);
-            } else {
-                row1.setPercentHeight(50);
-                row2.setPercentHeight(50);
-                row3.setPercentHeight(0);
-            }
-            this.requestLayout();
-        });
 
+        // Bind row percent heights
+        row1.percentHeightProperty().bind(
+                Bindings.when(hasStatusAilments)
+                        .then(30)
+                        .otherwise(50)
+        );
+
+        row2.percentHeightProperty().bind(
+                Bindings.when(hasStatusAilments)
+                        .then(30)
+                        .otherwise(50)
+        );
+
+        row3.percentHeightProperty().bind(
+                Bindings.when(hasStatusAilments)
+                        .then(40)
+                        .otherwise(0)
+        );
+
+        // Ensure statusAilmentsScroll grows properly
+        VBox.setVgrow(statusAilmentsScroll, Priority.ALWAYS);
 
     }
 
@@ -188,6 +213,7 @@ public class SelectedMinionDisplay extends GridPane {
     public void updateSelected(HexTile hexTile) {
         if (hexTile != null) {
             Minion minion = hexTile.getTile().getOccupant();
+            selectedMinion.set(minion);
             if (minion == null) {
                 clearLabels();
                 setVisible(false);
