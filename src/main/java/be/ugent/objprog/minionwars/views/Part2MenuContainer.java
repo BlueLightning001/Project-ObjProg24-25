@@ -5,6 +5,8 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 
@@ -51,6 +53,16 @@ public class Part2MenuContainer extends VBox {
         //// Actions Tabs
         actionsPane =  new ActionsPane(powerModel, locale);
 
+        //// Buttons
+        ButtonBar menuButtonBar = new ButtonBar();
+        Button restButton = new Button("Rest");
+        Button endTurnButton = new Button("End Turn");
+        Button centerBoardButton = new Button("Center Board");
+        menuButtonBar.getButtons().addAll(restButton, endTurnButton, centerBoardButton);
+        menuButtonBar.setStyle("-fx-border-color: orange; -fx-border-width: 5");
+        ButtonBar.setButtonData(endTurnButton, ButtonBar.ButtonData.LEFT);
+        ButtonBar.setButtonData(centerBoardButton, ButtonBar.ButtonData.RIGHT);
+        ButtonBar.setButtonData(restButton, ButtonBar.ButtonData.BIG_GAP);
 
         // Listeners
         tileGroupPane.selectedHexTileProperty().addListener((obs, oldTile, newTile) -> {
@@ -63,7 +75,7 @@ public class Part2MenuContainer extends VBox {
 
 
 
-        getChildren().addAll(this.currentPlayerDisplay,separator,selectedMinionDisplay,actionsPane);
+        getChildren().addAll(this.currentPlayerDisplay,separator,selectedMinionDisplay,actionsPane,menuButtonBar);
 
         // Set vertical grow priority for contained elements.
 //        VBox.setVgrow(currentPlayerDisplay, Priority.ALWAYS);
@@ -71,9 +83,11 @@ public class Part2MenuContainer extends VBox {
 //        VBox.setVgrow(menuButtonBar, Priority.ALWAYS);
 
         // Height ratios
+        menuButtonBar.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
         actionsPane.prefHeightProperty().bind(this.heightProperty().multiply(0.7));
         selectedMinionDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
         this.currentPlayerDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
+
 
     }
     public void setSelected(HexTile hexTile){

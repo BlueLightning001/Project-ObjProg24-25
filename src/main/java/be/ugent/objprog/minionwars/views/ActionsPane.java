@@ -56,11 +56,11 @@ public class ActionsPane extends TabPane {
             {
                 separator.setOrientation(Orientation.VERTICAL);
 
-                nameLabel.setStyle("-fx-font-weight: bold;");
-                descriptionLabel.setStyle("-fx-font-size: 12;");
+                nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
+                descriptionLabel.setStyle("-fx-font-size: 16;");
                 descriptionLabel.setWrapText(true);
-                powerIcon.setFitWidth(32);
-                powerIcon.setFitHeight(32);
+                powerIcon.setFitWidth(50);
+                powerIcon.setFitHeight(50);
                 cellContainer.setSpacing(5);
 
                 // Limit description label width
@@ -94,6 +94,7 @@ public class ActionsPane extends TabPane {
         setTabDragPolicy(TabDragPolicy.FIXED);
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         getTabs().setAll(specialTab);
+        setStyle("-fx-border-color: blue; -fx-border-width: 5;");
     }
 
     private Tab getAttackTab() {
@@ -101,10 +102,10 @@ public class ActionsPane extends TabPane {
         StackPane attackPane = new StackPane();
         VBox.setVgrow(attackPane, Priority.ALWAYS);
         HBox.setHgrow(attackPane, Priority.ALWAYS);
-        attackPane.setStyle("-fx-border-color: Orange; -fx-border-width: 2");
+
 
         VBox attackContent = new VBox();
-        attackContent.setStyle("-fx-border-color: BLUE; -fx-border-width: 10");
+
         attackContent.setAlignment(Pos.CENTER);
 
         Label attackLabel = new Label("Attack Label");
@@ -159,10 +160,8 @@ public class ActionsPane extends TabPane {
         StackPane movePane = new StackPane();
         VBox.setVgrow(movePane, Priority.ALWAYS);
         HBox.setHgrow(movePane, Priority.ALWAYS);
-        movePane.setStyle("-fx-border-color: Yellow");
 
         VBox moveContent = new VBox();
-        moveContent.setStyle("-fx-border-color: BLUE; -fx-border-width: 10");
         moveContent.setAlignment(Pos.CENTER);
 
         Label moveLabel = new Label("Move Label");
