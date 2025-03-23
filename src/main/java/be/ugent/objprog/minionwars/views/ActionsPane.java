@@ -20,8 +20,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Box;
 
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class ActionsPane extends TabPane {
     private final PowerModel powerModel;
@@ -39,6 +41,7 @@ public class ActionsPane extends TabPane {
         super();
         this.locale = locale;
         this.powerModel = powerModel;
+        ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         //// Moving
         moveTab = getMoveTab();
@@ -126,7 +129,7 @@ public class ActionsPane extends TabPane {
                     setGraphic(null);
                 } else {
                     nameLabel.setText(power.getName(locale));
-                    descriptionLabel.setText(power.getDescription(locale));
+                    descriptionLabel.setText(MessageFormat.format(bundle.getString("power.effect") ,power.getDescription(locale)));
                     powerIcon.setImage(power.getImage());
 
                     // Update radius
@@ -145,7 +148,6 @@ public class ActionsPane extends TabPane {
                     // Update duration label and icon
                     if (power.hasEffect()){
                         durationLabel.setText("" + power.getEffect().getDuration());
-                        //durationIcon.setImage(power.getEffect().getImage());
                         durationIcon.setVisible(true);
                     } else {
                         durationLabel.setText("");

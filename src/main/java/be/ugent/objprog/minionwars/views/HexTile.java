@@ -18,7 +18,6 @@ import javafx.scene.image.Image;
 
 import java.util.List;
 
-//For displaying the tiles
 
 
 public class HexTile extends Polygon {
@@ -63,13 +62,11 @@ public class HexTile extends Polygon {
         updateTileAppearance();
     }
 
-    /** Highlights the tile with the given color. */
     public void highlight(Color color) {
         this.highlightColor = color;
         updateTileAppearance();
     }
 
-    /** Clears any highlight effect. */
     public void clearHighlight() {
         this.highlightColor = Color.TRANSPARENT;
         updateTileAppearance();
@@ -100,7 +97,7 @@ public class HexTile extends Polygon {
         });
     }
 
-    /** Updates tile appearance using a Canvas to apply color overlays and highlighting. */
+    // Updates tile appearance using a Canvas to apply color overlays and highlighting.
     private void updateTileAppearance() {
         Image finalImage = baseImage;
 
