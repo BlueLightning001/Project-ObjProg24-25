@@ -46,6 +46,12 @@ public class TileModel {
         initialTiles.addAll(jdomReader.getTiles());
 
     }
+    /*
+      Manhattan distance is illogical for hexagonal tiles
+      Hugo. (2024, January 14). #6 - Calculating the distance between hexagonal tiles. seaotter.games.
+      Retrieved March 23, 2025,
+      from https://seaotter.games/blog/calculating-a-distance-between-hexagonal-tiles
+     */
     public int hexDistance(Tile a, Tile b) {
         int q1 = a.getXCoord();
         int r1 = a.getYCoord() - (a.getXCoord() - (a.getXCoord() % 2)) / 2;
