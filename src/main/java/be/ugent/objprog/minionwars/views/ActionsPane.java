@@ -14,6 +14,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -55,69 +56,82 @@ public class ActionsPane extends TabPane {
         powerListView.setCellFactory(listView -> new ListCell<>() {
             private final Label nameLabel = new Label();
             private final Label descriptionLabel = new Label();
+
+            // Detail labels for each value
+            private final Label valueLabel = new Label();
             private final Label radiusLabel = new Label();
             private final Label durationLabel = new Label();
-            private final Label valueLabel = new Label();
+            private final Label effectLabel = new Label();
+
+            // Icon views for each detail
             private final ImageView powerIcon = new ImageView();
             private final ImageView valueIcon = new ImageView();
-            private final ImageView durationIcon = new ImageView();
             private final ImageView radiusIcon = new ImageView();
-            private final Separator separator = new Separator();
+            private final ImageView durationIcon = new ImageView();
+            private final ImageView effectIcon = new ImageView();
+
             private final Image radiusImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/range-119533.png")));
             private final Image durationImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/duration-0073FF.png")));
 
+            private final Separator separator = new Separator();
             private final VBox infoBox = new VBox(nameLabel, descriptionLabel);
-            private final VBox detailsBox = new VBox(valueLabel, radiusLabel, durationLabel);
-            private final HBox cellContainer = new HBox(powerIcon, infoBox, separator, detailsBox);
+            private final GridPane detailsGrid = new GridPane();
+            private final HBox cellContainer = new HBox(powerIcon, infoBox, separator, detailsGrid);
 
             {
+
                 separator.setOrientation(Orientation.VERTICAL);
 
-                // Style name and description
+
                 nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
                 descriptionLabel.setStyle("-fx-font-size: 16;");
                 descriptionLabel.setWrapText(true);
-
-                // Set max width for description to prevent scrolling
                 descriptionLabel.setMaxWidth(200);
                 descriptionLabel.setPrefWidth(200);
                 descriptionLabel.setMinWidth(100);
                 HBox.setHgrow(descriptionLabel, Priority.NEVER);
 
-                // Icons size
+
                 powerIcon.setFitWidth(70);
                 powerIcon.setFitHeight(70);
-                setAlignment(Pos.CENTER);
-                valueIcon.setFitWidth(20);
-                valueIcon.setFitHeight(20);
-                durationIcon.setFitWidth(20);
-                durationIcon.setFitHeight(20);
-                radiusIcon.setFitWidth(20);
-                radiusIcon.setFitHeight(20);
-
-
-                // Label styles
-                radiusLabel.setStyle("-fx-font-size: 14;");
-                durationLabel.setStyle("-fx-font-size: 14;");
-                valueLabel.setStyle("-fx-font-size: 14;");
-
-                // Spacing
-                cellContainer.setSpacing(10);
-                infoBox.setSpacing(2);
-                detailsBox.setSpacing(10);
-                detailsBox.setAlignment(Pos.CENTER_LEFT); // Align text properly
-
-                // Images
-                durationIcon.setImage(durationImage);
-                radiusIcon.setImage(radiusImage);
-
-                // Ensure proportional resizing (percent of width)
                 powerIcon.setPreserveRatio(true);
 
-                detailsBox.prefWidthProperty().bind(listView.widthProperty().multiply(0.1));
+                valueIcon.setFitWidth(20);
+                valueIcon.setFitHeight(20);
+                radiusIcon.setFitWidth(20);
+                radiusIcon.setFitHeight(20);
+                durationIcon.setFitWidth(20);
+                durationIcon.setFitHeight(20);
+                effectIcon.setFitWidth(20);
+                effectIcon.setFitHeight(20);
+
+
+                valueLabel.setStyle("-fx-font-size: 14;");
+                radiusLabel.setStyle("-fx-font-size: 14;");
+                durationLabel.setStyle("-fx-font-size: 14;");
+                effectLabel.setStyle("-fx-font-size: 14;");
+
+                // Set up the detailsGrid with two rows and two columns
+                detailsGrid.setHgap(5);
+                detailsGrid.setVgap(5);
+                detailsGrid.add(valueLabel, 0, 0);
+                detailsGrid.add(radiusLabel, 1, 0);
+                detailsGrid.add(durationLabel, 0, 1);
+                detailsGrid.add(effectLabel, 1, 1);
+
+
+
+                // Set alignment and spacing for containers
+                cellContainer.setSpacing(10);
+                infoBox.setSpacing(2);
+                detailsGrid.setAlignment(Pos.CENTER_LEFT);
+                separator.setPrefWidth(5);
+
+                detailsGrid.setMaxWidth(Double.MAX_VALUE);
+                GridPane.setHgrow(detailsGrid, Priority.ALWAYS);
+
+                detailsGrid.prefWidthProperty().bind(listView.widthProperty().multiply(0.1));
                 infoBox.prefWidthProperty().bind(listView.widthProperty().multiply(0.5));
-                HBox.setHgrow(infoBox, Priority.ALWAYS);
-                HBox.setHgrow(detailsBox, Priority.ALWAYS);
             }
 
             @Override
@@ -129,14 +143,10 @@ public class ActionsPane extends TabPane {
                     setGraphic(null);
                 } else {
                     nameLabel.setText(power.getName(locale));
-                    descriptionLabel.setText(MessageFormat.format(bundle.getString("power.effect") ,power.getDescription(locale)));
+                    descriptionLabel.setText(power.getDescription(locale));
                     powerIcon.setImage(power.getImage());
 
-                    // Update radius
-                    radiusLabel.setText("" + power.getRadius());
-
-
-                    // Update value label and icon
+                    // Update value details
                     if (power.getValue() > 0) {
                         valueLabel.setText("" + power.getValue());
                         valueIcon.setImage(power.getValueImage());
@@ -145,21 +155,39 @@ public class ActionsPane extends TabPane {
                         valueLabel.setText("");
                         valueIcon.setVisible(false);
                     }
-                    // Update duration label and icon
-                    if (power.hasEffect()){
+                    valueLabel.setGraphic(valueIcon);
+
+                    // Update radius details
+                    radiusLabel.setText("" + power.getRadius());
+                    radiusIcon.setImage(radiusImage);
+                    radiusLabel.setGraphic(radiusIcon);
+
+                    // Update effect details
+                    if (power.hasEffect()) {
                         durationLabel.setText("" + power.getEffect().getDuration());
+                        durationIcon.setImage(durationImage);
                         durationIcon.setVisible(true);
+
+                        effectLabel.setText("" + power.getEffect().getValue());
+                        effectIcon.setImage(power.getEffect().getImage());
+                        effectIcon.setVisible(true);
                     } else {
                         durationLabel.setText("");
                         durationIcon.setVisible(false);
+
+                        effectLabel.setText("");
+                        effectIcon.setVisible(false);
                     }
-                    valueLabel.setGraphic(valueIcon);
-                    radiusLabel.setGraphic(radiusIcon);
                     durationLabel.setGraphic(durationIcon);
+                    effectLabel.setGraphic(effectIcon);
+
+
+
                     setGraphic(cellContainer);
                 }
             }
         });
+
 
 
 

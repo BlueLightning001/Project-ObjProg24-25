@@ -20,9 +20,11 @@ public class Part2MenuContainer extends VBox {
     private final TileGroupPane tileGroupPane;
     private final TileModel tileModel;
     private final PowerModel powerModel;
+    private final Button restButton;
+    private final Button endTurnButton;
+    private final Button centerBoardButton;
     private CurrentPlayerDisplay currentPlayerDisplay;
     private ActionsPane actionsPane;
-
     private ResourceBundle bundle;
     private SelectedMinionDisplay selectedMinionDisplay;
     public Part2MenuContainer(PlayerModel playerModel, MinionModel minionModel, TileModel tileModel, PowerModel powerModel, TileGroupPane tileGroupPane, Locale locale) {
@@ -49,15 +51,14 @@ public class Part2MenuContainer extends VBox {
         selectedMinionDisplay = new SelectedMinionDisplay(tileModel, locale);
 
 
-
         //// Actions Tabs
-        actionsPane =  new ActionsPane(powerModel, locale);
+        actionsPane = new ActionsPane(powerModel, locale);
 
         //// Buttons
         ButtonBar menuButtonBar = new ButtonBar();
-        Button restButton = new Button("Rest");
-        Button endTurnButton = new Button("End Turn");
-        Button centerBoardButton = new Button("Center Board");
+        restButton = new Button("Rest");
+        endTurnButton = new Button("End Turn");
+        centerBoardButton = new Button("Center Board");
         menuButtonBar.getButtons().addAll(restButton, endTurnButton, centerBoardButton);
         menuButtonBar.setStyle("-fx-border-color: orange; -fx-border-width: 5");
         ButtonBar.setButtonData(endTurnButton, ButtonBar.ButtonData.LEFT);
@@ -74,13 +75,8 @@ public class Part2MenuContainer extends VBox {
         this.currentPlayerDisplay.setStyle("-fx-border-color: red; -fx-border-width: 2");
 
 
+        getChildren().addAll(this.currentPlayerDisplay, separator, selectedMinionDisplay, actionsPane, menuButtonBar);
 
-        getChildren().addAll(this.currentPlayerDisplay,separator,selectedMinionDisplay,actionsPane,menuButtonBar);
-
-        // Set vertical grow priority for contained elements.
-//        VBox.setVgrow(currentPlayerDisplay, Priority.ALWAYS);
-//        VBox.setVgrow(selectedMinionDisplay, Priority.ALWAYS);
-//        VBox.setVgrow(menuButtonBar, Priority.ALWAYS);
 
         // Height ratios
         menuButtonBar.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
@@ -90,10 +86,27 @@ public class Part2MenuContainer extends VBox {
 
 
     }
-    public void setSelected(HexTile hexTile){
-            selectedMinionDisplay.updateSelected(hexTile);
-            actionsPane.updateSelected(hexTile);
-        }
+
+    public void setSelected(HexTile hexTile) {
+        selectedMinionDisplay.updateSelected(hexTile);
+        actionsPane.updateSelected(hexTile);
+    }
+
+    public ActionsPane getActionsPane() {
+        return actionsPane;
+    }
+
+    public Button getCenterBoardButton() {
+        return centerBoardButton;
+    }
+
+    public Button getEndTurnButton() {
+        return endTurnButton;
+    }
+
+    public Button getRestButton() {
+        return restButton;
+    }
 
 }
 

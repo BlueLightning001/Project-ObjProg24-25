@@ -5,10 +5,11 @@ import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -31,6 +32,7 @@ public class GameView {
     private ResourceBundle bundle;
     private MinionModel minionModel;
     private PowerModel powerModel;
+
     public GameView(MinionModel minionModel, PlayerModel playerModel, TileModel tileModel, PowerModel powerModel, Locale locale) {
         this.minionModel = minionModel;
         this.playerModel = playerModel;
@@ -41,13 +43,6 @@ public class GameView {
 
         container = new StackPane();
         root = new HBox();
-        part1MenuContainer = new Part1MenuContainer(playerModel, minionModel, locale);
-        centerBoardButton = part1MenuContainer.getCenterBoardButton();
-        endTurnButton = part1MenuContainer.getEndTurnButton();
-        menuTable = part1MenuContainer.getMinionsTableView();
-
-        // Reset board position
-        centerBoardButton.setOnAction(event -> resetGameGroupPosition());
 
         gameTileGroupPane = new TileGroupPane(tileModel, playerModel);
         gamePane = new ZoomableScrollPane(gameTileGroupPane);
@@ -59,6 +54,21 @@ public class GameView {
         // Bind gameTileGroupPane to gamePane size
         gameTileGroupPane.prefWidthProperty().bind(gamePane.widthProperty());
         gameTileGroupPane.prefHeightProperty().bind(gamePane.heightProperty());
+
+        //// PART 1
+        part1MenuContainer = new Part1MenuContainer(playerModel, minionModel, locale);
+        centerBoardButton = part1MenuContainer.getCenterBoardButton();
+        endTurnButton = part1MenuContainer.getEndTurnButton();
+        menuTable = part1MenuContainer.getMinionsTableView();
+
+        // Reset board position
+        centerBoardButton.setOnAction(event -> resetGameGroupPosition());
+
+        // End turn only when player has at least one minion
+        rebindEndTurnButtonPart1();
+        this.playerModel.currentPlayerProperty().addListener((observable, oldValue, newValue) -> {
+            rebindEndTurnButtonPart1();
+        });
 
         // Ensure part1MenuContainer resizes properly
         part1MenuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.30));
@@ -84,6 +94,17 @@ public class GameView {
         this.container.getChildren().add(root);
     }
 
+    private void rebindEndTurnButtonPart1() {
+        endTurnButton.disableProperty().unbind();
+        endTurnButton.disableProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> this.playerModel.getCurrentPlayer().getMinions().isEmpty(),
+                        this.playerModel.getCurrentPlayer().getMinions()
+                )
+        );
+    }
+
+
     public void resetGameGroupPosition() {
         gameTileGroupPane.setTranslateX(0);
         gameTileGroupPane.setTranslateY(0);
@@ -98,7 +119,7 @@ public class GameView {
     public void changeGamePhase() { //TODO !!
         getGameTileGroupPane().getHexTiles().forEach(HexTile::endStartPhase);
         this.root.getChildren().clear();
-        part2MenuContainer = new Part2MenuContainer(playerModel, minionModel, tileModel,powerModel ,gameTileGroupPane, locale);
+        part2MenuContainer = new Part2MenuContainer(playerModel, minionModel, tileModel, powerModel, gameTileGroupPane, locale);
         this.root.getChildren().addAll(part2MenuContainer, gamePane);
 
         part2MenuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.30));
@@ -107,11 +128,19 @@ public class GameView {
         gamePane.prefWidthProperty().bind(root.widthProperty().multiply(0.70));
         gamePane.prefHeightProperty().bind(root.heightProperty());
 
+        centerBoardButton = part2MenuContainer.getCenterBoardButton();
+        centerBoardButton.setOnAction(event -> resetGameGroupPosition());
+
+        endTurnButton = part2MenuContainer.getEndTurnButton();
 
     }
 
     public TileGroupPane getGameTileGroupPane() {
         return gameTileGroupPane;
+    }
+
+    public TabPane getActionsTabPane() {
+        return part2MenuContainer.getActionsPane();
     }
 
     public Button getEndTurnButton() {
@@ -124,6 +153,13 @@ public class GameView {
 
     public Part2MenuContainer getPart2MenuContainer() {
         return part2MenuContainer;
+    }
+
+    public Button getRestButton() {
+        if (part2MenuContainer == null) {
+            return null;
+        }
+        return part2MenuContainer.getRestButton();
     }
 
     public Region getView() {

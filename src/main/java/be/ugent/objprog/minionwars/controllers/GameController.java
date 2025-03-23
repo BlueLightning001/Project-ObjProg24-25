@@ -37,20 +37,7 @@ public class GameController {
         this.locale = locale;
         this.view = new GameView(minionModel,playerModel,tileModel,powerModel,locale);
         view.resetGameGroupPosition();
-        //TODO PREVENT PLAYING WITHOUT ANY MINIONS
-        view.getEndTurnButton().setOnAction(event -> {
-            playerModel.nextPlayer();
-            view.getMinionsTableView().getSelectionModel().clearSelection();
-            view.getGameTileGroupPane().getHexTiles().stream()
-                    .filter(hexTile -> hexTile.getTile().getHomebase() == playerModel.getCurrentPlayer().getHomeBaseID())
-                    .forEach(hexTile -> {
-                        Color playerColor = playerModel.getPlayerColor(playerModel.getCurrentPlayer()); // Get the player's color
-                        hexTile.highlight(playerColor); // Highlight tile
-                    });
-           view.getGameTileGroupPane().setSelectedHexTile(null);
 
-
-        });
         stage.setOnCloseRequest(event -> {
             view.getGameTileGroupPane().shutdown();// Releases resources from other threads
         });
@@ -58,11 +45,27 @@ public class GameController {
         // TODO game logic
 
         // PART 1
+        setUpListenersPart1();
+    }
+
+    private void setUpListenersPart1() {
         view.getMinionsTableView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             // Unselect the tile when selecting a minion
             if (newValue != null) {
                 view.getGameTileGroupPane().setSelectedHexTile(null);  // Deselect any selected tile
             }
+        });
+
+        view.getEndTurnButton().setOnAction(event -> {
+            this.playerModel.nextPlayer();
+            view.getMinionsTableView().getSelectionModel().clearSelection();
+            view.getGameTileGroupPane().getHexTiles().stream()
+                    .filter(hexTile -> hexTile.getTile().getHomebase() == this.playerModel.getCurrentPlayer().getHomeBaseID())
+                    .forEach(hexTile -> {
+                        Color playerColor = this.playerModel.getPlayerColor(this.playerModel.getCurrentPlayer()); // Get the player's color
+                        hexTile.highlight(playerColor); // Highlight tile
+                    });
+            view.getGameTileGroupPane().setSelectedHexTile(null);
         });
 
         view.getGameTileGroupPane().setOnMouseClicked(event -> {
@@ -71,7 +74,7 @@ public class GameController {
                 Tile tile = hexTile.getTile();
                 System.out.println("CLICKED: " + tile);
                 Minion selectedMinion = view.getMinionsTableView().getSelectionModel().getSelectedItem();
-                Player currentPlayer = playerModel.getCurrentPlayer();
+                Player currentPlayer = this.playerModel.getCurrentPlayer();
 
                 // Player wants to place a minion
                 if (selectedMinion != null && tile.isHomeBase() && tile.getHomebase() == currentPlayer.getHomeBaseID()
@@ -113,6 +116,7 @@ public class GameController {
                     if (tileToDelete.isOccupied() && occupant.getOwner().equals(currentPlayer)) {
                         tileToDelete.setOccupant(null);
                         view.getGameTileGroupPane().setSelectedHexTile(null);
+                        currentPlayer.removeMinion(occupant);
                         currentPlayer.addMoney(occupant.getCost());
 
                     }
@@ -122,22 +126,39 @@ public class GameController {
         });
         playerModel.turnCounterProperty().addListener((observable, oldValue, newValue) -> {
            if (newValue.intValue() == 2 ){
-              startnextPhase();
+              startNextPhase();
            }
         });
     }
 
-    private void startnextPhase() {
+    private void startNextPhase() {
         System.out.println("STARTING NEXT PHASE");
-//        view.getGameTileGroupPane().setOnMouseClicked(event -> {
-//           Object eventSource = event.getTarget();
-//           if (eventSource instanceof HexTile hexTile && event.getButton() == MouseButton.PRIMARY) {
-//
-//           }
-//        });
+
+        // Remove old selection logic
+        view.getView().setOnKeyPressed(null);
+
+        setUpListenersPart2();
         stage.setMinWidth(650);
         stage.setMinHeight(400);
         view.changeGamePhase();
+    }
+
+    private void setUpListenersPart2() {
+        view.getGameTileGroupPane().setOnMouseClicked(event -> {
+            Object eventSource = event.getTarget();
+            if (eventSource instanceof HexTile hexTile && event.getButton() == MouseButton.PRIMARY) {
+                Tile tile = hexTile.getTile();
+                System.out.println("CLICKED: " + tile);
+                Player currentPlayer = this.playerModel.getCurrentPlayer();
+
+               if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
+                    // Select the tile
+                    System.out.println("SELECTED: " + hexTile.getTile());
+                    view.getGameTileGroupPane().setSelectedHexTile(hexTile);
+                }
+
+            }
+        });
     }
 
     public void endGame(){
