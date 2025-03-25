@@ -12,6 +12,7 @@ import be.ugent.objprog.minionwars.powers.Power;
 import be.ugent.objprog.minionwars.views.HexTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.GameView;
+import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -66,12 +67,12 @@ public class GameController {
         view.getEndTurnButton().setOnAction(event -> {
             this.playerModel.nextPlayer();
             view.getMinionsTableView().getSelectionModel().clearSelection();
-            view.getGameTileGroupPane().getHexTiles().stream()
-                    .filter(hexTile -> hexTile.getTile().getHomebase() == this.playerModel.getCurrentPlayer().getHomeBaseID())
-                    .forEach(hexTile -> {
-                        Color playerColor = this.playerModel.getPlayerColor(this.playerModel.getCurrentPlayer()); // Get the player's color
-                        hexTile.highlight(playerColor); // Highlight tile
-                    });
+            view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
+                 if (!hexTile.getHighlightColor().equals(Color.TRANSPARENT)) {
+                    System.out.println("Clearing highlight: " + hexTile.getTile());
+                    hexTile.clearHighlight();
+                }
+            });
             view.getGameTileGroupPane().setSelectedHexTile(null);
         });
 
@@ -144,6 +145,13 @@ public class GameController {
         // Remove old selection logic
         view.getView().setOnKeyPressed(null);
 
+        //Clear homebase highlights
+        Platform.runLater(() -> {
+            view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
+                clearHighlights();
+            });
+        });
+
         view.changeGamePhase();
         setUpListenersPart2();
         stage.setMinWidth(650);
@@ -200,7 +208,9 @@ public class GameController {
                 }
             }
         });
-
+        view.getEndTurnButton().setOnAction(event -> {
+            playerModel.nextPlayer();
+        });
     }
 
     private void clearHighlights() {

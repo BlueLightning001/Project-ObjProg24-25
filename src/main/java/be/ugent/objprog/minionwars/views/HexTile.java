@@ -19,35 +19,20 @@ import org.w3c.dom.ls.LSException;
 import java.util.List;
 
 
-
 public class HexTile extends Polygon {
     private static final double BASE_R = 20;
     private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
-
-    private double r, n, tileWidth, tileHeight;
+    private final static int DEFAULT_STROKE = 1;
+    private final static Color DEFAULT_STROKE_COLOR = Color.BLACK;
     private final ObjectProperty<Tile> tile;
     private final ObjectProperty<Player> currentPlayer;
     private final Image baseImage;
-    private boolean startPhase = true;
     private final PlayerModel playerModel;
-    private Color highlightColor = Color.TRANSPARENT;
-    private SimpleBooleanProperty selected;
-    private final static int DEFAULT_STROKE = 1;
-    private final static Color DEFAULT_STROKE_COLOR = Color.BLACK;
+    private final ObjectProperty<Color> highlightColor = new SimpleObjectProperty<>(Color.TRANSPARENT);
     private final TileModel tileModel;
-    public List<Tile> getTilesInRadius(int radius) {
-        return tileModel.getTilesInRadius(this.getTile(),0,radius);
-    }
-    public List<Tile> getTilesInRange(int minRange, int maxRange) {
-        return tileModel.getTilesInRadius(this.getTile(),minRange,maxRange);
-    }
-    public boolean isSelected() {
-        return selected.get();
-    }
-
-    public SimpleBooleanProperty selectedProperty() {
-        return selected;
-    }
+    private double r, n, tileWidth, tileHeight;
+    private boolean startPhase = true;
+    private SimpleBooleanProperty selected;
 
     public HexTile(double x, double y, Tile tile, PlayerModel playerModel, double scaleFactor, TileModel tileModel) {
         this.tileModel = tileModel;
@@ -64,48 +49,46 @@ public class HexTile extends Polygon {
         updateTileAppearance();
     }
 
-    public void highlight(Color color) {
-        System.out.println("HIGHLIGHTING:" + tile + ", WITH: "+ color.toString());
-        this.highlightColor = color;
-        updateTileAppearance();
-    }
-
     public void clearHighlight() {
-        this.highlightColor = Color.TRANSPARENT;
         System.out.println("REMOVING HIGHLIGHT: " + tile);
+        setHighlightColor(Color.TRANSPARENT);
+    }
+
+    public void endStartPhase() {
+        startPhase = false;
         updateTileAppearance();
     }
 
-    public void setSelected(boolean b) {
-        this.selected.set(b);
+    public Color getHighlightColor() {
+        return highlightColor.get();
     }
 
-    private void setupListeners() {
-        tile.addListener((obs, oldTile, newTile) -> updateTileAppearance());
-        playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> updateTileAppearance());
-        tile.get().occupantProperty().addListener((obs, oldOccupant, newOccupant) -> updateTileAppearance());
-        this.selected.addListener((obs, oldSelected, newSelected) -> {
-            if (newSelected) {
-                this.setStroke(Color.CYAN); // Highlight border
-                System.out.println("Selected: " + tile.get());
+    public void setHighlightColor(Color color) {
+        highlightColor.set(color);
+    }
 
-            } else {
-                if (startPhase || (this.getTile().isOccupied() && playerModel.getCurrentPlayer().equals(this.getTile().getOccupant().getOwner()))){
-                    this.setStroke(DEFAULT_STROKE_COLOR);
-                } else {
-                    this.setStroke(Color.RED);
-                }
-                System.out.println("Unselected: " + tile.get());
-            }
+    public List<Tile> getTilesInRadius(int radius) {
+        return tileModel.getTilesInRadius(this.getTile(), 0, radius);
+    }
 
-        });
+    public Tile getTile() {
+        return tile.get();
+    }
+
+    public List<Tile> getTilesInRange(int minRange, int maxRange) {
+        return tileModel.getTilesInRadius(this.getTile(), minRange, maxRange);
+    }
+
+    public void highlight(Color color) {
+        System.out.println("HIGHLIGHTING: " + tile + ", WITH: " + color);
+        setHighlightColor(color);
     }
 
     // Updates tile appearance using a Canvas to apply color overlays and highlighting.
     private void updateTileAppearance() {
         Image finalImage = baseImage;
 
-        // During the start phase, only the current player sees minions on their home base
+        // During start phase, show home base for current player
         if (startPhase && tile.get().isHomeBase()) {
             Player homePlayer = playerModel.getPlayers().get(tile.get().getHomebase() - 1).get();
             if (homePlayer.equals(currentPlayer.get())) {
@@ -115,46 +98,28 @@ public class HexTile extends Polygon {
                     finalImage = applyColorOverlay(tile.get().getOccupant().getMinionIcon(), homebaseColor);
                 }
             }
-        } else if (!startPhase) {
-            // After start phase, show all minions
-            if (tile.get().isOccupied()) {
-                finalImage = tile.get().getOccupant().getMinionIcon();
-                // Determine border color based on ownership
-                Player homePlayer = playerModel.getCurrentPlayer();
-                if (!homePlayer.equals(tile.get().getOccupant().getOwner())) {
-                    setStroke(Color.RED); // Red border for enemy tiles
-                }
+        } else if (!startPhase && tile.get().isOccupied()) {
+            finalImage = tile.get().getOccupant().getMinionIcon();
+
+            // Set border color for enemy tiles
+            Player homePlayer = playerModel.getCurrentPlayer();
+            if (!homePlayer.equals(tile.get().getOccupant().getOwner())) {
+                setStroke(Color.RED);
             }
+        }
 
-
+        // Apply highlight overlay
+        if (!highlightColor.get().equals(Color.TRANSPARENT)) {
+            finalImage = applyColorOverlay(finalImage, highlightColor.get());
         }
 
         setFill(new ImagePattern(finalImage));
     }
 
 
-    public void endStartPhase() {
-        startPhase = false;
-        updateTileAppearance();
-    }
-
-    public Tile getTile() {
-        return tile.get();
-    }
-
-    public ObjectProperty<Tile> tileProperty() {
-        return tile;
-    }
-
-    public void setScaleFactor(double scaleFactor) {
-        this.r = BASE_R * scaleFactor;
-        this.n = Math.sqrt(this.r * this.r * 0.75);
-        this.tileWidth = 2 * this.n;
-        this.tileHeight = 2 * this.r;
-        updateShape();
-    }
-
-    /** Applies a color overlay using a Canvas and returns the modified image. */
+    /**
+     * Applies a color overlay using a Canvas and returns the modified image.
+     */
     private Image applyColorOverlay(Image baseImage, Color overlayColor) {
         int width = (int) baseImage.getWidth();
         int height = (int) baseImage.getHeight();
@@ -172,6 +137,57 @@ public class HexTile extends Polygon {
         WritableImage blendedImage = new WritableImage(width, height);
         canvas.snapshot(null, blendedImage);
         return blendedImage;
+    }
+
+
+    public boolean isSelected() {
+        return selected.get();
+    }
+
+    public void setSelected(boolean b) {
+        this.selected.set(b);
+    }
+
+    public SimpleBooleanProperty selectedProperty() {
+        return selected;
+    }
+
+    public void setScaleFactor(double scaleFactor) {
+        this.r = BASE_R * scaleFactor;
+        this.n = Math.sqrt(this.r * this.r * 0.75);
+        this.tileWidth = 2 * this.n;
+        this.tileHeight = 2 * this.r;
+        updateShape();
+    }
+
+    private void setupListeners() {
+        tile.addListener((obs, oldTile, newTile) -> updateTileAppearance());
+        playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> updateTileAppearance());
+        tile.get().occupantProperty().addListener((obs, oldOccupant, newOccupant) -> updateTileAppearance());
+        this.selected.addListener((obs, oldSelected, newSelected) -> {
+            if (newSelected) {
+                this.setStroke(Color.CYAN); // Highlight border
+                System.out.println("Selected: " + tile.get());
+
+            } else {
+                if (startPhase || (this.getTile().isOccupied() && playerModel.getCurrentPlayer().equals(this.getTile().getOccupant().getOwner()))) {
+                    this.setStroke(DEFAULT_STROKE_COLOR);
+                } else {
+                    this.setStroke(Color.RED);
+                }
+                System.out.println("Unselected: " + tile.get());
+            }
+
+        });
+        highlightColor.addListener((obs, oldColor, newColor) -> {
+            System.out.println("Highlight color: " + newColor + ", On Tile: " + tile.get());
+            updateTileAppearance();
+
+        });
+    }
+
+    public ObjectProperty<Tile> tileProperty() {
+        return tile;
     }
 
     private void updateShape() {
