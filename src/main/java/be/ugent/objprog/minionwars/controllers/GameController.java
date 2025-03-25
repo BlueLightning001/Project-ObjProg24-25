@@ -177,10 +177,7 @@ public class GameController {
         });
 
         view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-            if (newTab == null ) {
-                clearHighlights();
-                return;
-            }
+            clearHighlights();
 
             HexTile hexTile = view.getGameTileGroupPane().getSelectedHexTile();
             Color specialColor = Color.BLUE;
@@ -218,7 +215,9 @@ public class GameController {
     }
 
     private void highLightRadius(HexTile hexTile,int radius,Color color) {
-        highLightRadius(hexTile.getTile(),radius, color);
+        if (hexTile != null) {
+            highLightRadius(hexTile.getTile(),radius, color);
+        }
 
     }
     private void highLightRadius(Tile tile,int radius,Color color) {
@@ -229,9 +228,10 @@ public class GameController {
     }
     private void highlightRange(Tile tile,int minRange,int maxRange,Color color) {
         List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile,minRange,maxRange);
+        System.out.println("TILES IN RADIUS: " + tilesInRadius.toString());
         for (Tile tileInRadius : tilesInRadius) {
             if (tile != tileInRadius) {
-                HexTile hexTile = view.getHexTile(tile);
+                HexTile hexTile = view.getHexTile(tileInRadius);
                 System.out.println("HIGHLIGHTING: "+ tile);
                 hexTile.highlight(color);
             }
