@@ -228,7 +228,9 @@ public class GameController {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
                     int movement = occupant.getMovement();
-                    highlightRange(hexTile, 1, movement, moveColor);
+                    tileModel.getReachableTiles(hexTile.getTile(), movement).forEach(tile -> {
+                        view.getHexTile(tile).highlight(moveColor);
+                    });
                 }
             }
             System.out.println(view.getGameTileGroupPane().toString());

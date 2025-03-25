@@ -9,11 +9,17 @@ import be.ugent.objprog.minionwars.tiles.VoidTile;
 import be.ugent.objprog.minionwars.tiles.WaterTile;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class TileModel {
     private final Map<Class<? extends Tile>, String> tileNames = new HashMap<>();
@@ -133,8 +139,56 @@ public class TileModel {
         }
         return tilesInRadius;
     }
+    // Finds all tiles that can be reached within a certain amount of steps
+    // TODO Replace with simpler logic if requested
+    public List<Tile> getReachableTiles(Tile startTile, int maxMovement) {
+        Set<Tile> reachableTiles = new HashSet<>();
+        PriorityQueue<TileNode> queue = new PriorityQueue<>(Comparator.comparingInt(n -> -n.movementLeft)); // Higher movement left first
+
+        queue.add(new TileNode(startTile, maxMovement));
+
+        while (!queue.isEmpty()) {
+            TileNode current = queue.poll();
+
+            // Skip if already visited with a better path
+            if (reachableTiles.contains(current.tile) || current.movementLeft < 0) {
+                continue;
+            }
+
+            reachableTiles.add(current.tile);
+
+            for (Tile neighbor : getHexNeighbors(current.tile)) {
+                if (!neighbor.isTraversable()) continue;
+
+                int cost = neighbor.getTraversalCost();
+                int newMovementLeft = current.movementLeft - cost;
 
 
+                if (newMovementLeft >= 0 && !reachableTiles.contains(neighbor)) {
+                    queue.add(new TileNode(neighbor, newMovementLeft));
+                }
+            }
+        }
+        reachableTiles.remove(startTile);
+        return new ArrayList<>(reachableTiles);
+    }
+
+
+    private static class TileNode {
+        Tile tile;
+        int movementLeft;
+
+        TileNode(Tile tile, int movementLeft) {
+            this.tile = tile;
+            this.movementLeft = movementLeft;
+        }
+    }
+
+
+    // Returns the 6 neighboring tiles
+    private List<Tile> getHexNeighbors(Tile tile) {
+        return getTilesInRadius(tile,1,1);
+    }
 
 
     // Initialize the tile grid based on the tiles list

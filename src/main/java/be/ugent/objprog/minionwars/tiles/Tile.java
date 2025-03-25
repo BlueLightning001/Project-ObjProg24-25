@@ -11,15 +11,14 @@ public abstract class Tile {
     private final SimpleIntegerProperty homebase;
     private final String imagePath;
     private final boolean traversable;
-    private int traversalCost;
     private final boolean canAttack;
     private final boolean canBeAttacked;
     private final ObjectProperty<Minion> occupant = new SimpleObjectProperty<>(this, "occupant", null);
+    private int traversalCost;
 
 
-
-    public Tile(int x, int y,int homebase, String imagePath,boolean traversable,
-                int traversalCost , boolean canAttack, boolean canBeAttacked) {
+    public Tile(int x, int y, int homebase, String imagePath, boolean traversable,
+                int traversalCost, boolean canAttack, boolean canBeAttacked) {
         this.xCoord = x;
         this.yCoord = y;
         this.homebase = new SimpleIntegerProperty(homebase);
@@ -34,11 +33,33 @@ public abstract class Tile {
         return homebase.get();
     }
 
+    public void setHomebase(int homebase) {
+        this.homebase.set(homebase);
+    }
 
-    public int getXCoord() { return xCoord; }
-    public int getYCoord() { return yCoord; }
-    public String getImagePath() { return imagePath; }
-    public Minion getOccupant() { return occupant.get(); }
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public Minion getOccupant() {
+        return occupant.get();
+    }
+
+    public void setOccupant(Minion occupant) {
+        this.occupant.set(occupant);
+    }
+
+    public int getTraversalCost() {
+        return traversalCost;
+    }
+
+    public int getXCoord() {
+        return xCoord;
+    }
+
+    public int getYCoord() {
+        return yCoord;
+    }
 
     public SimpleIntegerProperty homebaseProperty() {
         return homebase;
@@ -56,17 +77,14 @@ public abstract class Tile {
         return traversable;
     }
 
-    public void setHomebase(int homebase) {
-        this.homebase.set(homebase);
+    public ObjectProperty<Minion> occupantProperty() {
+        return occupant;
     }
-
-    public void setOccupant(Minion occupant) {this.occupant.set(occupant); }
-    public ObjectProperty<Minion> occupantProperty() { return occupant; }
 
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "(" + xCoord + ", " + yCoord + ") ( Occupant: " + occupant.get()  +") ( homebase: " + homebase.get() + ")" ;
+        return this.getClass().getSimpleName() + "(" + xCoord + ", " + yCoord + ") ( Occupant: " + occupant.get() + ") ( homebase: " + homebase.get() + ")";
     }
 
 }
