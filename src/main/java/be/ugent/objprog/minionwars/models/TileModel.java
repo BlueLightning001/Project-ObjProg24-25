@@ -9,14 +9,11 @@ import be.ugent.objprog.minionwars.tiles.VoidTile;
 import be.ugent.objprog.minionwars.tiles.WaterTile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 public class TileModel {
     private final Map<Class<? extends Tile>, String> tileNames = new HashMap<>();
@@ -60,8 +57,8 @@ public class TileModel {
       from https://www.redblobgames.com/grids/hexagons/
      */
     public int cubeDistance(Tile a, Tile b) {
-        int[] aCoords = offsetToAxial(a);
-        int[] bCoords = offsetToAxial(b);
+        int[] aCoords = oddRToAxial(a);
+        int[] bCoords = oddRToAxial(b);
         int[] aCubeCoords = axialToCube(aCoords);
         int[] bCubeCoords = axialToCube(bCoords);
         System.out.println("Distance between: (" + a.getXCoord() + ", " + a.getYCoord() + ") and (" + b.getXCoord() + ", " + b.getYCoord() + ")" );
@@ -75,6 +72,8 @@ public class TileModel {
         return distance;
 
     }
+
+
     private int[] axialToCube(int[] axial){
         if(axial.length == 2){
             int q = axial[0];
@@ -84,10 +83,26 @@ public class TileModel {
         }
         return null;
     }
-    private int[] offsetToAxial(Tile tile){
+    private int[] cubeToAxial(int[] cube){
+        if(cube.length == 3){
+            int q = cube[0];
+            int r = cube[1];
+            int s = cube[2];
+            return new int[]{q,r};
+        }
+        return null;
+    }
+    private int[] oddRToAxial(Tile tile){
         int q = tile.getXCoord() - (tile.getYCoord() - (tile.getYCoord()&1)) / 2;
         int r = tile.getYCoord();
         return new int[]{q, r};
+    }
+    private int[] axialToOddR(int[] axial){
+        int q = axial[0];
+        int r = axial[1];
+        int col = q + (r - (r&1)) / 2;
+        int row = q + (r&1);
+        return new int[]{col, row};
     }
 
 

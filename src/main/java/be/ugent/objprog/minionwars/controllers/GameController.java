@@ -187,9 +187,10 @@ public class GameController {
         });
 
         EventHandler<MouseEvent> specialMouseMovedHandler = event -> {
-            clearHighlights();
-            if (view.getActionsTabPane() == null) return;
 
+            if (view.getActionsTabPane() == null || !view.getActionsTabPane().getSelectionModel().getSelectedItem().getText().equals(bundle.getString("actions.special"))) return;
+
+            clearHighlights();
             // Get the currently selected power
             Power selectedPower = view.getActionsTabPane().getPowerListView().getSelectionModel().getSelectedItem();
             if (selectedPower == null) {
@@ -227,7 +228,7 @@ public class GameController {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
                     int movement = occupant.getMovement();
-                    highLightRadius(hexTile, movement, moveColor);
+                    highlightRange(hexTile, 1, movement, moveColor);
                 }
             }
             System.out.println(view.getGameTileGroupPane().toString());
