@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 public class ActionsPane extends TabPane {
     private final PowerModel powerModel;
+    private final ResourceBundle bundle;
     private Locale locale;
     private double font = 15;
     private double error = 50; //%
@@ -42,7 +43,7 @@ public class ActionsPane extends TabPane {
         super();
         this.locale = locale;
         this.powerModel = powerModel;
-        ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
+        bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         //// Moving
         moveTab = getMoveTab();
@@ -51,7 +52,7 @@ public class ActionsPane extends TabPane {
         attackTab = getAttackTab();
 
         //// Special Moves
-        specialTab = new Tab("Special");
+        specialTab = new Tab(bundle.getString("actions.special"));
         ListView<Power> powerListView = new ListView<>(this.powerModel.getPowers());
         powerListView.setCellFactory(listView -> new ListCell<>() {
             private final Label nameLabel = new Label();
@@ -201,7 +202,7 @@ public class ActionsPane extends TabPane {
     }
 
     private Tab getAttackTab() {
-        Tab attackTab = new Tab("Attack");
+        Tab attackTab = new Tab(this.bundle.getString("actions.attack"));
         StackPane attackPane = new StackPane();
         VBox.setVgrow(attackPane, Priority.ALWAYS);
         HBox.setHgrow(attackPane, Priority.ALWAYS);
@@ -259,7 +260,7 @@ public class ActionsPane extends TabPane {
     }
 
     private Tab getMoveTab() {
-        Tab moveTab = new Tab("Move");
+        Tab moveTab = new Tab(this.bundle.getString("actions.move"));
         StackPane movePane = new StackPane();
         VBox.setVgrow(movePane, Priority.ALWAYS);
         HBox.setHgrow(movePane, Priority.ALWAYS);

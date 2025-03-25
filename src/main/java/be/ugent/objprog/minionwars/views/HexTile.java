@@ -1,6 +1,5 @@
 package be.ugent.objprog.minionwars.views;
 
-import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
@@ -15,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
 import javafx.scene.image.Image;
+import org.w3c.dom.ls.LSException;
 
 import java.util.List;
 
@@ -36,9 +36,11 @@ public class HexTile extends Polygon {
     private final static Color DEFAULT_STROKE_COLOR = Color.BLACK;
     private final TileModel tileModel;
     public List<Tile> getTilesInRadius(int radius) {
-        return tileModel.getTilesInRadius(this.getTile(),radius);
+        return tileModel.getTilesInRadius(this.getTile(),0,radius);
     }
-
+    public List<Tile> getTilesInRange(int minRange, int maxRange) {
+        return tileModel.getTilesInRadius(this.getTile(),minRange,maxRange);
+    }
     public boolean isSelected() {
         return selected.get();
     }
@@ -63,12 +65,14 @@ public class HexTile extends Polygon {
     }
 
     public void highlight(Color color) {
+        System.out.println("HIGHLIGHTING:" + tile + ", WITH: "+ color.toString());
         this.highlightColor = color;
         updateTileAppearance();
     }
 
     public void clearHighlight() {
         this.highlightColor = Color.TRANSPARENT;
+        System.out.println("REMOVING HIGHLIGHT: " + tile);
         updateTileAppearance();
     }
 

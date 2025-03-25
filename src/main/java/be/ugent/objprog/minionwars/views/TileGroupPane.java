@@ -145,6 +145,10 @@ public class TileGroupPane extends Pane {
 
     }
 
+    public HexTile[][] getHexTileGrid() {
+        return hexTileGrid;
+    }
+
     public void shutdown() {
         resizeExecutor.shutdown(); // Call this when closing the game
     }

@@ -7,7 +7,6 @@ import be.ugent.objprog.minionwars.tiles.MountainTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.VoidTile;
 import be.ugent.objprog.minionwars.tiles.WaterTile;
-import be.ugent.objprog.minionwars.views.HexTile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,14 +64,14 @@ public class TileModel {
         return (Math.abs(q1 - q2) + Math.abs(r1 - r2) + Math.abs(s1 - s2)) / 2;
     }
 
-    public List<Tile> getTilesInRadius(Tile centerTile, int radius) {
+    public List<Tile> getTilesInRadius(Tile centerTile, int minRange, int maxRange) {
         List<Tile> tilesInRadius = new ArrayList<>();
 
         int centerX = centerTile.getXCoord();
         int centerY = centerTile.getYCoord();
 
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
+        for (int dx = -maxRange; dx <= maxRange; dx++) {
+            for (int dy = -maxRange; dy <= maxRange; dy++) {
                 int newX = centerX + dx;
                 int newY = centerY + dy;
 
@@ -80,8 +79,11 @@ public class TileModel {
                 if (newX >= 0 && newX < tileGrid.length && newY >= 0 && newY < tileGrid[newX].length) {
                     Tile candidate = tileGrid[newX][newY];
 
-                    // Check if within hex radius
-                    if (hexDistance(centerTile, candidate) <= radius) {
+                    // Calculate hex distance
+                    int distance = hexDistance(centerTile, candidate);
+
+                    // Ensure it's within range bounds
+                    if (distance >= minRange && distance <= maxRange) {
                         tilesInRadius.add(candidate);
                     }
                 }
@@ -89,6 +91,7 @@ public class TileModel {
         }
         return tilesInRadius;
     }
+
 
 
 

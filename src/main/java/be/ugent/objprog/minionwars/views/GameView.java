@@ -5,6 +5,7 @@ import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
+import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -103,7 +104,19 @@ public class GameView {
                 )
         );
     }
-
+    public HexTile getHexTile(int x, int y) {
+        HexTile[][] grid =  gameTileGroupPane.getHexTileGrid();
+        if (x < 0 || y < 0 || x >= grid.length || y >= grid[0].length) {
+            return null;
+        }
+        return grid[x][y];
+    }
+    public HexTile getHexTile(Tile tile) {
+        if (tile != null) {
+            return getHexTile(tile.getXCoord(), tile.getYCoord());
+        }
+        return null;
+    }
 
     public void resetGameGroupPosition() {
         gameTileGroupPane.setTranslateX(0);
