@@ -50,7 +50,6 @@ public class HexTile extends Polygon {
     }
 
     public void clearHighlight() {
-        System.out.println("REMOVING HIGHLIGHT: " + tile);
         setHighlightColor(Color.TRANSPARENT);
     }
 
@@ -80,7 +79,6 @@ public class HexTile extends Polygon {
     }
 
     public void highlight(Color color) {
-        System.out.println("HIGHLIGHTING: " + tile + ", WITH: " + color);
         setHighlightColor(color);
     }
 

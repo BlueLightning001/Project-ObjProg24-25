@@ -7,6 +7,9 @@ import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,5 +155,28 @@ public class TileGroupPane extends Pane {
     public void shutdown() {
         resizeExecutor.shutdown(); // Call this when closing the game
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int y = 0; y < tileGridModel[0].length; y++) {
+            // Add spaces for odd-row shifting
+            if (y % 2 == 1) sb.append("  ");
+
+            for (int x = 0; x < tileGridModel.length; x++) {
+                Tile tile = tileGridModel[x][y];
+                if (tile != null) {
+                    sb.append(String.format("(%d,%d) ", x, y));
+                } else {
+                    sb.append("      "); // Empty space for missing tiles
+                }
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
 }
 

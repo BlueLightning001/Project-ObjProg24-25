@@ -9,9 +9,9 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.powers.Power;
-import be.ugent.objprog.minionwars.views.HexTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.GameView;
+import be.ugent.objprog.minionwars.views.HexTile;
 import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
@@ -27,21 +27,21 @@ import java.util.ResourceBundle;
 public class GameController {
     private final Locale locale;
     private final MinionModel minionModel;
-    private GameView view;
-    private PlayerModel playerModel;
     private final TileModel tileModel;
-    private Stage stage;
     private final PowerModel powerModel;
     private final ResourceBundle bundle;
+    private GameView view;
+    private PlayerModel playerModel;
+    private Stage stage;
 
-    public GameController(Stage stage,PlayerModel playerModel, Locale locale,JDOMReader reader) {
+    public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader) {
         this.stage = stage;
         this.playerModel = playerModel;
         this.minionModel = new MinionModel(reader);
-        this.tileModel = new TileModel(reader,locale);
-        this.powerModel = new PowerModel(reader,locale);
+        this.tileModel = new TileModel(reader, locale);
+        this.powerModel = new PowerModel(reader, locale);
         this.locale = locale;
-        this.view = new GameView(minionModel,playerModel,tileModel,powerModel,locale);
+        this.view = new GameView(minionModel, playerModel, tileModel, powerModel, locale);
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         view.resetGameGroupPosition();
@@ -68,7 +68,7 @@ public class GameController {
             this.playerModel.nextPlayer();
             view.getMinionsTableView().getSelectionModel().clearSelection();
             view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
-                 if (!hexTile.getHighlightColor().equals(Color.TRANSPARENT)) {
+                if (!hexTile.getHighlightColor().equals(Color.TRANSPARENT)) {
                     System.out.println("Clearing highlight: " + hexTile.getTile());
                     hexTile.clearHighlight();
                 }
@@ -133,10 +133,14 @@ public class GameController {
             }
         });
         playerModel.turnCounterProperty().addListener((observable, oldValue, newValue) -> {
-           if (newValue.intValue() == 2 ){
-              startNextPhase();
-           }
+            if (newValue.intValue() == 2) {
+                startNextPhase();
+            }
         });
+    }
+
+    public Region getView() {
+        return this.view.getView();
     }
 
     private void startNextPhase() {
@@ -159,6 +163,10 @@ public class GameController {
 
     }
 
+    private void clearHighlights() {
+        view.getGameTileGroupPane().getHexTiles().forEach(HexTile::clearHighlight);
+    }
+
     private void setUpListenersPart2() {
         view.getGameTileGroupPane().setOnMouseClicked(event -> {
             Object eventSource = event.getTarget();
@@ -167,7 +175,7 @@ public class GameController {
                 System.out.println("CLICKED: " + tile);
                 Player currentPlayer = this.playerModel.getCurrentPlayer();
 
-               if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
+                if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
                     // Select the tile
                     System.out.println("SELECTED: " + hexTile.getTile());
                     view.getGameTileGroupPane().setSelectedHexTile(hexTile);
@@ -188,62 +196,61 @@ public class GameController {
                 ListView<Power> powerListView = (ListView<Power>) newTab.getContent();
                 Power power = powerListView.getSelectionModel().getSelectedItem();
                 if (power != null) {
-                    highLightRadius(hexTile,power.getRadius(),specialColor);
+                    highLightRadius(hexTile, power.getRadius(), specialColor);
+
                 }
             } else if (newTab.getText().equals(bundle.getString("actions.attack"))) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
                     int minRange = occupant.getRange().getFirst();
                     int maxRange = occupant.getRange().getLast();
-                    highlightRange(hexTile,minRange,maxRange,attackColor);
+                    highlightRange(hexTile, minRange, maxRange, attackColor);
                 }
             } else if (newTab.getText().equals(bundle.getString("actions.move"))) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
                     int movement = occupant.getMovement();
-                    highLightRadius(hexTile,movement,moveColor);
+                    highLightRadius(hexTile, movement, moveColor);
                 }
             }
+            System.out.println(view.getGameTileGroupPane().toString());
         });
         view.getEndTurnButton().setOnAction(event -> {
             playerModel.nextPlayer();
         });
     }
 
-    private void clearHighlights() {
-        view.getGameTileGroupPane().getHexTiles().forEach(HexTile::clearHighlight);
-    }
-
-    private void highLightRadius(HexTile hexTile,int radius,Color color) {
+    private void highLightRadius(HexTile hexTile, int radius, Color color) {
         if (hexTile != null) {
-            highLightRadius(hexTile.getTile(),radius, color);
+            highLightRadius(hexTile.getTile(), radius, color);
         }
 
     }
-    private void highLightRadius(Tile tile,int radius,Color color) {
-        highlightRange(tile,0,radius,color);
+
+    private void highlightRange(HexTile hexTile, int minRange, int maxRange, Color color) {
+        highlightRange(hexTile.getTile(), minRange, maxRange, color);
     }
-    private void highlightRange(HexTile hexTile,int minRange,int maxRange,Color color) {
-        highlightRange(hexTile.getTile(),minRange,maxRange,color);
+
+    private void highLightRadius(Tile tile, int radius, Color color) {
+        highlightRange(tile, 0, radius, color);
     }
-    private void highlightRange(Tile tile,int minRange,int maxRange,Color color) {
-        List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile,minRange,maxRange);
+
+    private void highlightRange(Tile tile, int minRange, int maxRange, Color color) {
+        List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile, minRange, maxRange);
         System.out.println("TILES IN RADIUS: " + tilesInRadius.toString());
         for (Tile tileInRadius : tilesInRadius) {
-            if (tile != tileInRadius) {
-                HexTile hexTile = view.getHexTile(tileInRadius);
-                System.out.println("HIGHLIGHTING: "+ tile);
-                hexTile.highlight(color);
-            }
+
+            HexTile hexTile = view.getHexTile(tileInRadius);
+            System.out.println("HIGHLIGHTING: " + tile);
+            hexTile.highlight(color);
+
         }
     }
-    public void endGame(){
+
+    public void endGame() {
         //TODO launch new game
         view.getGameTileGroupPane().shutdown();
         stage.close();
 
-    }
-    public Region getView() {
-        return this.view.getView();
     }
 }
