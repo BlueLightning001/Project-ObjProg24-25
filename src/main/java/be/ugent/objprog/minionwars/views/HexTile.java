@@ -4,6 +4,7 @@ import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.tiles.Tile;
+import be.ugent.objprog.minionwars.tiles.VoidTile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -63,7 +64,9 @@ public class HexTile extends Polygon {
     }
 
     public void setHighlightColor(Color color) {
-        highlightColor.set(color);
+        if (!tile.get().getClass().equals(VoidTile.class)) {
+            highlightColor.set(color);
+        }
     }
 
     public List<Tile> getTilesInRadius(int radius) {
