@@ -152,7 +152,7 @@ public class GameView {
         return gameTileGroupPane;
     }
 
-    public TabPane getActionsTabPane() {
+    public ActionsPane getActionsTabPane() {
         return part2MenuContainer.getActionsPane();
     }
 

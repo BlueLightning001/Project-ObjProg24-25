@@ -6,6 +6,7 @@ import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Bounds;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -151,6 +152,17 @@ public class TileGroupPane extends Pane {
     public HexTile[][] getHexTileGrid() {
         return hexTileGrid;
     }
+
+    public HexTile getHexTileAt(double sceneX, double sceneY) {
+        for (HexTile hexTile : getHexTiles()) {
+            Bounds bounds = hexTile.localToScene(hexTile.getBoundsInLocal());
+            if (bounds.contains(sceneX, sceneY)) {
+                return hexTile;
+            }
+        }
+        return null;
+    }
+
 
     public void shutdown() {
         resizeExecutor.shutdown(); // Call this when closing the game

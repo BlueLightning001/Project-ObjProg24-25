@@ -50,9 +50,14 @@ public class TileModel {
     }
     /*
       Manhattan distance is illogical for hexagonal tiles
+
+      Sources that helped with the calculations:
       Hugo. (2024, January 14). #6 - Calculating the distance between hexagonal tiles. seaotter.games.
       Retrieved March 23, 2025,
       from https://seaotter.games/blog/calculating-a-distance-between-hexagonal-tiles
+
+      Red Blob Games. (2013, March). Hexagonal grids. redblobgames.com. Retrieved March 25, 2025,
+      from https://www.redblobgames.com/grids/hexagons/
      */
     public int cubeDistance(Tile a, Tile b) {
         int[] aCoords = offsetToAxial(a);

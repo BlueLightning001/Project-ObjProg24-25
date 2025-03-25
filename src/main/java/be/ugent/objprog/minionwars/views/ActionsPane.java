@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 public class ActionsPane extends TabPane {
     private final PowerModel powerModel;
     private final ResourceBundle bundle;
+    private final ListView<Power> powerListView;
     private Locale locale;
     private double font = 15;
     private double error = 50; //%
@@ -53,7 +54,7 @@ public class ActionsPane extends TabPane {
 
         //// Special Moves
         specialTab = new Tab(bundle.getString("actions.special"));
-        ListView<Power> powerListView = new ListView<>(this.powerModel.getPowers());
+        powerListView = new ListView<>(this.powerModel.getPowers());
         powerListView.setCellFactory(listView -> new ListCell<>() {
             private final Label nameLabel = new Label();
             private final Label descriptionLabel = new Label();
@@ -258,7 +259,9 @@ public class ActionsPane extends TabPane {
         });
 
     }
-
+    public ListView<Power> getPowerListView(){
+        return powerListView;
+    }
     private Tab getMoveTab() {
         Tab moveTab = new Tab(this.bundle.getString("actions.move"));
         StackPane movePane = new StackPane();

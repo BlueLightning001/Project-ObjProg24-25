@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 import java.util.Locale;
 
 public class PowerModel {
-    private ObservableList<Power> powers ;
+    private final ObservableList<Power> powers ;
 
     public PowerModel(JDOMReader reader, Locale locale) {
         this.powers =FXCollections.observableArrayList(reader.getPowers());

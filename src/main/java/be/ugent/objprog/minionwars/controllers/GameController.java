@@ -13,9 +13,11 @@ import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.GameView;
 import be.ugent.objprog.minionwars.views.HexTile;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -184,6 +186,24 @@ public class GameController {
             }
         });
 
+        EventHandler<MouseEvent> specialMouseMovedHandler = event -> {
+            clearHighlights();
+            if (view.getActionsTabPane() == null) return;
+
+            // Get the currently selected power
+            Power selectedPower = view.getActionsTabPane().getPowerListView().getSelectionModel().getSelectedItem();
+            if (selectedPower == null) {
+                clearHighlights();
+                return;
+            }
+
+            // Get the tile under the mouse
+            HexTile tileUnderMouse = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
+            if (tileUnderMouse != null) {
+                highLightRadius(tileUnderMouse, selectedPower.getRadius(), Color.BLUE);
+            }
+        };
+
         view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
             clearHighlights();
 
@@ -193,12 +213,9 @@ public class GameController {
             Color moveColor = Color.GREEN;
 
             if (newTab.getText().equals(bundle.getString("actions.special"))) {
-                ListView<Power> powerListView = (ListView<Power>) newTab.getContent();
-                Power power = powerListView.getSelectionModel().getSelectedItem();
-                if (power != null) {
-                    highLightRadius(hexTile, power.getRadius(), specialColor);
+                view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
+                //TODO
 
-                }
             } else if (newTab.getText().equals(bundle.getString("actions.attack"))) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
@@ -215,6 +232,7 @@ public class GameController {
             }
             System.out.println(view.getGameTileGroupPane().toString());
         });
+
         view.getEndTurnButton().setOnAction(event -> {
             playerModel.nextPlayer();
         });
