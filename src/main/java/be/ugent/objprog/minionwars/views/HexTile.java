@@ -87,6 +87,7 @@ public class HexTile extends Polygon {
 
     // Updates tile appearance using a Canvas to apply color overlays and highlighting.
     private void updateTileAppearance() {
+        setStroke(Color.BLACK);
         Image finalImage = baseImage;
 
         // During start phase, show home base for current player
@@ -183,7 +184,21 @@ public class HexTile extends Polygon {
         highlightColor.addListener((obs) -> {
             updateTileAppearance();
         });
+
+        // Add hover effect
+        setOnMouseEntered(event -> {
+            if (!selected.get()) { // Only change if not selected
+                this.setStroke(Color.YELLOW); // Temporary highlight on hover
+            }
+        });
+
+        setOnMouseExited(event -> {
+            if (!selected.get()) { // Restore original border if not selected
+                updateTileAppearance();
+            }
+        });
     }
+
 
     public ObjectProperty<Tile> tileProperty() {
         return tile;
