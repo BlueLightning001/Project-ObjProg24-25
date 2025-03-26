@@ -17,20 +17,4 @@ public class FireballPower extends Power {
         offensive = true;
     }
 
-    //TODO A LOT
-    @Override
-    public void apply(HexTile center, Player caster) {
-        System.out.println("Fireball power called");
-        List<Tile> affectedTiles = center.getTilesInRadius(radius);
-        for (Tile tile : affectedTiles) {
-            Minion minion = tile.getOccupant();
-            if (minion != null && !minion.getOwner().equals(caster)) {
-                System.out.println("Damaging " + minion);
-                minion.decreaseDefence(value);
-                minion.applyEffectLogic(effect);
-            }
-        }
-    }
-
-
 }

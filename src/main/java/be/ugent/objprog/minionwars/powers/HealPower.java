@@ -16,17 +16,4 @@ public class HealPower extends Power {
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/powers/healing.png")));
         offensive = false;
     }
-
-    @Override
-    public void apply(HexTile center, Player caster) {
-        List<Tile> affectedTiles = center.getTilesInRadius(radius);
-        for (Tile tile : affectedTiles) {
-            Minion minion = tile.getOccupant();
-            if (minion != null && minion.getOwner().equals(caster)) {
-                System.out.println("Healing " + minion);
-                minion.heal(value);
-                minion.applyEffectLogic(effect);
-            }
-        }
-    }
 }

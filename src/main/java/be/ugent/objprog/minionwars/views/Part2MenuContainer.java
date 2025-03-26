@@ -54,10 +54,12 @@ public class Part2MenuContainer extends VBox {
 
         //// Actions Tabs
         actionsPane = new ActionsPane(playerModel, powerModel, locale);
+        actionsPane.setVisible(false);
 
         //// Buttons
         ButtonBar menuButtonBar = new ButtonBar();
         restButton = new Button("Rest");
+        restButton.setVisible(false);
         endTurnButton = new Button("End Turn");
         centerBoardButton = new Button("Center Board");
         menuButtonBar.getButtons().addAll(restButton, endTurnButton, centerBoardButton);
@@ -69,7 +71,9 @@ public class Part2MenuContainer extends VBox {
         // Listeners
         tileGroupPane.selectedHexTileProperty().addListener((obs, oldTile, newTile) -> {
             setSelected(newTile);
+
         });
+
 
         //DEBUG //TODO
         setStyle("-fx-border-color: green; -fx-border-width: 2");
@@ -89,8 +93,13 @@ public class Part2MenuContainer extends VBox {
     }
 
     public void setSelected(HexTile hexTile) {
+
         selectedMinionDisplay.updateSelected(hexTile);
         actionsPane.updateSelected(hexTile);
+
+        boolean hasMinion = hexTile != null && hexTile.getTile().isOccupied();
+        restButton.setVisible(hasMinion);
+        actionsPane.setVisible(hasMinion);
     }
 
     public ActionsPane getActionsPane() {

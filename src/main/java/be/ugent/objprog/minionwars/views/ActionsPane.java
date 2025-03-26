@@ -59,31 +59,21 @@ public class ActionsPane extends TabPane {
         powerListView.setItems(playerModel.getCurrentPlayer().getAvailablePowers());
         // Bind the ListView to the current player's powers
         playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
-            // Unbind old player properties
-            specialTab.disableProperty().unbind();
-            specialTab.styleProperty().unbind();
             powerListView.itemsProperty().unbind();
 
             if (newPlayer != null) {
-                // Update the power list with the player's available powers
-                powerListView.itemsProperty().bind(Bindings.createObjectBinding(newPlayer::getAvailablePowers));
+                // Properly bind power list
+                powerListView.itemsProperty().bind(
+                        Bindings.createObjectBinding(newPlayer::getAvailablePowers, newPlayer.availablePowerUsesProperty())
+                );
+
                 System.out.println("NEW PLAYER POWERS: " + newPlayer.getAvailablePowers());
 
-                // Bind disable property to availablePowerUsesProperty
-                specialTab.disableProperty().bind(newPlayer.availablePowerUsesProperty().lessThanOrEqualTo(0));
-
-                // Bind opacity to grey out the tab when no power usages are left
-                specialTab.styleProperty().bind(
-                        Bindings.when(newPlayer.availablePowerUsesProperty().lessThanOrEqualTo(0))
-                                .then("-fx-opacity: 0.5;")
-                                .otherwise("")
-                );
             } else {
                 powerListView.setItems(FXCollections.observableArrayList()); // Clear if no player
-                specialTab.setDisable(true);
-                specialTab.setStyle(""); // Reset style
             }
         });
+
 
 
 
@@ -219,6 +209,8 @@ public class ActionsPane extends TabPane {
 
 
                     setGraphic(cellContainer);
+
+                    setDisable(playerModel.getCurrentPlayer().getAvailablePowerUses() <= 0);
                 }
             }
         });

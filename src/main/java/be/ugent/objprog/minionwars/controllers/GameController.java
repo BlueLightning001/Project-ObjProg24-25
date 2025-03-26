@@ -13,8 +13,10 @@ import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.GameView;
 import be.ugent.objprog.minionwars.views.HexTile;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -195,7 +197,21 @@ public class GameController {
             }
         });
 
+        playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
+            ListView<Power> powerListView = view.getPart2MenuContainer().getActionsPane().getPowerListView();
+            if (newPlayer != null) {
+                powerListView.itemsProperty().bind(Bindings.createObjectBinding(newPlayer::getAvailablePowers));
 
+                // Force update: clear power selection when the turn changes
+                Platform.runLater(() -> {
+                    powerListView.getSelectionModel().clearSelection();
+                    view.getPart2MenuContainer().setSelected(null);
+                    updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem()); // Reapply handlers
+                });
+            } else {
+                powerListView.setItems(FXCollections.observableArrayList()); // Clear if no player
+            }
+        });
 
         // Refresh ui when
         view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
@@ -257,8 +273,8 @@ public class GameController {
             specialMouseClickedHandler = event -> {
                 Power selectedPower = view.getActionsTabPane().getPowerListView().getSelectionModel().getSelectedItem();
                 HexTile clickedTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
-
-                if (clickedTile != null && selectedPower != null) {
+                System.out.println(currentPlayer.getAvailablePowerUses() +", POWERS: " + currentPlayer.getAvailablePowers() );
+                if (clickedTile != null && selectedPower != null && currentPlayer.getAvailablePowerUses() > 0) {
                     currentPlayer.usePower(selectedPower);
                     selectedPower.apply(clickedTile,currentPlayer);
 
