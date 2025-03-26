@@ -5,6 +5,8 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.Pane;
@@ -71,10 +73,21 @@ public class TileGroupPane extends Pane {
 
     public void bindPane(ZoomableScrollPane gamePane) {
         this.boundPane = gamePane;
-        boundPane.widthProperty().addListener((obs) -> adjustTileSizeAsync());
-        boundPane.heightProperty().addListener((obs) -> adjustTileSizeAsync());
+
+        // Create a single instance of ResizeListener
+        ResizeListener resizeListener = new ResizeListener();
+
+        boundPane.widthProperty().addListener(resizeListener);
+        boundPane.heightProperty().addListener(resizeListener);
 
         adjustTileSizeAsync(); // Initial resize
+    }
+
+    private class ResizeListener implements InvalidationListener {
+        @Override
+        public void invalidated(Observable observable) {
+            adjustTileSizeAsync();
+        }
     }
 
     private void adjustTileSizeAsync() {
@@ -100,7 +113,6 @@ public class TileGroupPane extends Pane {
             double xOffset = (paneWidth - totalWidth) / 2;
             double yOffset = (paneHeight - totalHeight) / 2;
 
-            // VERY LAGGY !!
             Platform.runLater(() -> {
                 tileScaleFactor = newScaleFactor;
 
@@ -123,6 +135,7 @@ public class TileGroupPane extends Pane {
             });
         });
     }
+
 
     public ZoomableScrollPane getBoundPane() {
         return boundPane;

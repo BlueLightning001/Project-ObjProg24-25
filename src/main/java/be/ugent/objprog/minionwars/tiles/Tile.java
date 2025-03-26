@@ -15,8 +15,6 @@ public abstract class Tile {
     private final boolean canBeAttacked;
     private final ObjectProperty<Minion> occupant = new SimpleObjectProperty<>(this, "occupant", null);
     private int traversalCost;
-
-
     public Tile(int x, int y, int homebase, String imagePath, boolean traversable,
                 int traversalCost, boolean canAttack, boolean canBeAttacked) {
         this.xCoord = x;
@@ -46,7 +44,16 @@ public abstract class Tile {
     }
 
     public void setOccupant(Minion occupant) {
+        // Remove old link
+        if (occupant != null) {
+            occupant.setOccupiedTile(null);
+        }
+
+        // Create new link
         this.occupant.set(occupant);
+        if (occupant != null) {
+            occupant.setOccupiedTile(this);
+        }
     }
 
     public int getTraversalCost() {
@@ -63,6 +70,14 @@ public abstract class Tile {
 
     public SimpleIntegerProperty homebaseProperty() {
         return homebase;
+    }
+
+    public boolean isCanAttack() {
+        return canAttack;
+    }
+
+    public boolean isCanBeAttacked() {
+        return canBeAttacked;
     }
 
     public boolean isHomeBase() {

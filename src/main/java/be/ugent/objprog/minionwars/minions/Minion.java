@@ -2,6 +2,7 @@ package be.ugent.objprog.minionwars.minions;
 
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.models.Player;
+import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,6 +32,7 @@ public class Minion {
     private ObservableList<MinionEffect> statusAilments = FXCollections.observableArrayList();
     private boolean moved = false;
     private boolean attacked = false;
+    private Tile occupiedTile = null;
 
     public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {
         this.type = new SimpleStringProperty(type);
@@ -48,24 +50,6 @@ public class Minion {
         this.minionIcon = minionIcon;
     }
 
-    public void heal(int value) {
-        this.defence.set(this.defence.get() + value);
-        if (this.defence.get() > baseDefence) {
-            this.defence.set(baseDefence);
-        }
-    }
-
-    public int getBaseDefence() {
-        return baseDefence;
-    }
-
-    public void resetActions(){
-        moved = false;
-        attacked = false;
-    }
-    public boolean hasActions(){
-        return !moved || !attacked;
-    }
     public void addStatusAilment(MinionEffect effect) {
         statusAilments.removeIf(e -> e.getClass().equals(effect.getClass()) && e.getValue() <= effect.getValue()); // "Refreshes" the statusAilment if it is higher
         statusAilments.add(effect);
@@ -80,6 +64,18 @@ public class Minion {
 
     public SimpleIntegerProperty attackProperty() {
         return attack;
+    }
+
+    @Override
+    public Minion clone() {
+        try {
+            return new Minion(this.type.get(), this.name.get(), this.cost.get(), this.movement.get(),
+                    List.of(this.range.getFirst(), this.range.getLast()).toArray(new Integer[2]),
+                    this.attack.get(), this.defence.get(), this.effect,
+                    this.minionIcon);
+        } catch (Exception e) {
+            throw new AssertionError("Cloning failed", e); // Should never happen
+        }
     }
 
     public SimpleIntegerProperty costProperty() {
@@ -105,6 +101,10 @@ public class Minion {
         this.attack.set(attack);
     }
 
+    public int getBaseDefence() {
+        return baseDefence;
+    }
+
     public int getDefence() {
         return defence.get();
     }
@@ -125,6 +125,14 @@ public class Minion {
         return minionIcon;
     }
 
+    public Tile getOccupiedTile() {
+        return occupiedTile;
+    }
+
+    public void setOccupiedTile(Tile occupiedTile) {
+        this.occupiedTile = occupiedTile;
+    }
+
     public Player getOwner() {
         return owner;
     }
@@ -139,6 +147,17 @@ public class Minion {
 
     public String getType() {
         return type.get();
+    }
+
+    public boolean hasActions() {
+        return !moved || !attacked;
+    }
+
+    public void heal(int value) {
+        this.defence.set(this.defence.get() + value);
+        if (this.defence.get() > baseDefence) {
+            this.defence.set(baseDefence);
+        }
     }
 
     public boolean isAttacked() {
@@ -165,8 +184,22 @@ public class Minion {
         return name;
     }
 
+    public void reduceAilmentValue() {
+        for (MinionEffect minionEffect : statusAilments) {
+            minionEffect.reduceDuration();
+            if (minionEffect.getValue() <= 0) {
+                statusAilments.remove(minionEffect);
+            }
+        }
+    }
+
     public void removeStatusAilment(Effect effect) {
         statusAilments.remove(effect);
+    }
+
+    public void resetActions() {
+        moved = false;
+        attacked = false;
     }
 
     @Override
@@ -208,25 +241,6 @@ public class Minion {
 
     public SimpleStringProperty typeProperty() {
         return type;
-    }
-    public void reduceAilmentValue() {
-        for (MinionEffect minionEffect : statusAilments) {
-            minionEffect.reduceDuration();
-            if (minionEffect.getValue() <= 0) {
-                statusAilments.remove(minionEffect);
-            }
-        }
-    }
-    @Override
-    public Minion clone() {
-         try {
-            return new Minion(this.type.get(),this.name.get(), this.cost.get(), this.movement.get(),
-                    List.of(this.range.getFirst(),this.range.getLast()).toArray(new Integer[2]),
-                    this.attack.get(), this.defence.get(), this.effect,
-                    this.minionIcon);
-        } catch (Exception e) {
-            throw new AssertionError("Cloning failed", e); // Should never happen
-        }
     }
 
 

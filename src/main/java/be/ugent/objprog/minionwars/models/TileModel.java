@@ -78,9 +78,7 @@ public class TileModel {
         return distance;
 
     }
-    public int manhattanDistance(Tile a, Tile b) {
-        return Math.abs(a.getXCoord() - b.getXCoord()) + Math.abs(a.getYCoord() - b.getYCoord());
-    }
+
 
 
     private int[] axialToCube(int[] axial){
@@ -143,38 +141,40 @@ public class TileModel {
         return tilesInRadius;
     }
     // Finds all tiles that can be reached within a certain amount of steps
-    // TODO Replace with simpler logic if requested
+    // TODO Replace with simpler logic if needed
     public List<Tile> getReachableTiles(Tile startTile, int maxMovement) {
-        Set<Tile> reachableTiles = new HashSet<>();
+        Map<Tile, Integer> movementLeftMap = new HashMap<>();
         PriorityQueue<TileNode> queue = new PriorityQueue<>(Comparator.comparingInt(n -> -n.movementLeft)); // Higher movement left first
 
         queue.add(new TileNode(startTile, maxMovement));
+        movementLeftMap.put(startTile, maxMovement);
 
         while (!queue.isEmpty()) {
             TileNode current = queue.poll();
 
-            // Skip if already visited with a better path
-            if (reachableTiles.contains(current.tile) || current.movementLeft < 0) {
+            // Skip if we already reached this tile with more movement left
+            if (movementLeftMap.getOrDefault(current.tile, -1) > current.movementLeft) {
                 continue;
             }
 
-            reachableTiles.add(current.tile);
-
             for (Tile neighbor : getHexNeighbors(current.tile)) {
+                // Tile is not traversable
                 if (!neighbor.isTraversable()) continue;
 
                 int cost = neighbor.getTraversalCost();
                 int newMovementLeft = current.movementLeft - cost;
 
-
-                if (newMovementLeft >= 0 && !reachableTiles.contains(neighbor)) {
+                if (newMovementLeft >= 0 && newMovementLeft > movementLeftMap.getOrDefault(neighbor, -1)) {
+                    movementLeftMap.put(neighbor, newMovementLeft);
                     queue.add(new TileNode(neighbor, newMovementLeft));
                 }
             }
         }
-        reachableTiles.remove(startTile);
-        return new ArrayList<>(reachableTiles);
+
+        movementLeftMap.remove(startTile); // Exclude start tile
+        return new ArrayList<>(movementLeftMap.keySet());
     }
+
 
 
     private static class TileNode {

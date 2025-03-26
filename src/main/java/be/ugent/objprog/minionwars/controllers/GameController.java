@@ -14,7 +14,6 @@ import be.ugent.objprog.minionwars.views.GameView;
 import be.ugent.objprog.minionwars.views.HexTile;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -22,6 +21,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -219,10 +219,13 @@ public class GameController {
 
             } else if (newTab.getText().equals(bundle.getString("actions.attack"))) {
                 Minion occupant = hexTile.getTile().getOccupant();
-                if (occupant != null) {
+                if (occupant != null && hexTile.getTile().isCanAttack()) {
                     int minRange = occupant.getRange().getFirst();
                     int maxRange = occupant.getRange().getLast();
                     highlightRange(hexTile, minRange, maxRange, attackColor);
+
+                    // Make sure only empty tiles are traversable
+                    clearMinionHighlights(occupant.getOwner(),null);
                 }
             } else if (newTab.getText().equals(bundle.getString("actions.move"))) {
                 Minion occupant = hexTile.getTile().getOccupant();
@@ -231,6 +234,7 @@ public class GameController {
                     tileModel.getReachableTiles(hexTile.getTile(), movement).forEach(tile -> {
                         view.getHexTile(tile).highlight(moveColor);
                     });
+                    clearMinionHighlights(playerModel.getPlayer1(),playerModel.getPlayer2());
                 }
             }
             System.out.println(view.getGameTileGroupPane().toString());
@@ -240,6 +244,30 @@ public class GameController {
             playerModel.nextPlayer();
         });
     }
+    // Helper method to undo highlights on tiles for certain situations
+    private void clearMinionHighlights(Player clearFromPlayer1, Player clearFromPlayer2) {
+        List<Minion> allMinions = new ArrayList<>();
+
+
+        if (clearFromPlayer1 != null) {
+            allMinions.addAll(clearFromPlayer1.getMinions());
+        }
+
+        if (clearFromPlayer2 != null) {
+            allMinions.addAll(clearFromPlayer2.getMinions());
+        }
+
+        for (Minion minion : allMinions) {
+            Tile tile = minion.getOccupiedTile();
+            if (tile != null) {
+                int x = tile.getXCoord();
+                int y = tile.getYCoord();
+                HexTile minionHexTile = view.getGameTileGroupPane().getHexTileGrid()[x][y];
+                minionHexTile.clearHighlight();
+            }
+        }
+    }
+
 
     private void highLightRadius(HexTile hexTile, int radius, Color color) {
         if (hexTile != null) {
