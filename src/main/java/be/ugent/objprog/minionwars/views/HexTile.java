@@ -187,7 +187,7 @@ public class HexTile extends Polygon {
 
         // Add hover effect
         setOnMouseEntered(event -> {
-            if (!selected.get()) { // Only change if not selected
+            if (!selected.get() && !this.tile.get().getClass().equals(VoidTile.class)) { // Only change if not selected
                 this.setStroke(Color.YELLOW); // Temporary highlight on hover
             }
         });

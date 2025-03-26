@@ -4,6 +4,7 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.powers.Power;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -58,23 +59,32 @@ public class ActionsPane extends TabPane {
         powerListView.setItems(playerModel.getCurrentPlayer().getAvailablePowers());
         // Bind the ListView to the current player's powers
         playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
+            // Unbind old player properties
+            specialTab.disableProperty().unbind();
+            specialTab.styleProperty().unbind();
+            powerListView.itemsProperty().unbind();
+
             if (newPlayer != null) {
                 // Update the power list with the player's available powers
-                powerListView.setItems(newPlayer.getAvailablePowers());
+                powerListView.itemsProperty().bind(Bindings.createObjectBinding(newPlayer::getAvailablePowers));
                 System.out.println("NEW PLAYER POWERS: " + newPlayer.getAvailablePowers());
-                // Disable the Special tab if there are no available power usages
-                specialTab.setDisable(newPlayer.getAvailablePowerUses() <= 0);
 
-                // grey out the tab
-                if (newPlayer.getAvailablePowerUses() <= 0) {
-                    specialTab.setStyle("-fx-opacity: 0.5;");  // Reduce opacity for greying out
-                } else {
-                    specialTab.setStyle("");  // Reset the style when there are available powers
-                }
+                // Bind disable property to availablePowerUsesProperty
+                specialTab.disableProperty().bind(newPlayer.availablePowerUsesProperty().lessThanOrEqualTo(0));
+
+                // Bind opacity to grey out the tab when no power usages are left
+                specialTab.styleProperty().bind(
+                        Bindings.when(newPlayer.availablePowerUsesProperty().lessThanOrEqualTo(0))
+                                .then("-fx-opacity: 0.5;")
+                                .otherwise("")
+                );
             } else {
                 powerListView.setItems(FXCollections.observableArrayList()); // Clear if no player
+                specialTab.setDisable(true);
+                specialTab.setStyle(""); // Reset style
             }
         });
+
 
 
 
