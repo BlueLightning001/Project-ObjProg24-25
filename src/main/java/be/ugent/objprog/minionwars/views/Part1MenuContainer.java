@@ -82,9 +82,9 @@ public class Part1MenuContainer extends VBox {
         currentPlayerHBox.setSpacing(20);
 
         // Adjust font sizes based on the width of the HBox.
-        currentPlayerHBox.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+        currentPlayerHBox.widthProperty().addListener((obs) -> {
             Platform.runLater(() -> {
-                double newFontSize = newWidth.doubleValue() * fontScale;
+                double newFontSize = currentPlayerHBox.getWidth() * fontScale;
                 currentPlayerLabel.setStyle("-fx-font-size: " + newFontSize + "px;");
                 currentPlayerCoinsLabel.setStyle("-fx-font-size: " + (newFontSize * 0.8) + "px;");
             });

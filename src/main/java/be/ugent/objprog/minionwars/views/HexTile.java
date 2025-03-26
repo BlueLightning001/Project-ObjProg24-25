@@ -162,9 +162,9 @@ public class HexTile extends Polygon {
     }
 
     private void setupListeners() {
-        tile.addListener((obs, oldTile, newTile) -> updateTileAppearance());
-        playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> updateTileAppearance());
-        tile.get().occupantProperty().addListener((obs, oldOccupant, newOccupant) -> updateTileAppearance());
+        tile.addListener((obs) -> updateTileAppearance());
+        playerModel.currentPlayerProperty().addListener((obs) -> updateTileAppearance());
+        tile.get().occupantProperty().addListener((obs) -> updateTileAppearance());
         this.selected.addListener((obs, oldSelected, newSelected) -> {
             if (newSelected) {
                 this.setStroke(Color.CYAN); // Highlight border
@@ -180,10 +180,8 @@ public class HexTile extends Polygon {
             }
 
         });
-        highlightColor.addListener((obs, oldColor, newColor) -> {
-            System.out.println("Highlight color: " + newColor + ", On Tile: " + tile.get());
+        highlightColor.addListener((obs) -> {
             updateTileAppearance();
-
         });
     }
 

@@ -44,10 +44,10 @@ public class MinionsTableView extends TableView<Minion> {
 
 
         //TODO USE INVALIDATIONLISTENERS INSTEAD
-        placeHolder.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+        placeHolder.widthProperty().addListener((obs) -> {
             // Only update font size after layout is settled
             Platform.runLater(() -> {
-                double newFontSize = newWidth.doubleValue() * .1;
+                double newFontSize = placeHolder.getWidth() * .1;
                 placeHolder.setStyle("-fx-font-size: " + newFontSize + "px;");
             });
         });
@@ -74,7 +74,7 @@ public class MinionsTableView extends TableView<Minion> {
             }
             if (newPlayer != null) {
                 newPlayer.moneyProperty().addListener(this::moneyChanged);
-                this.moneyChanged(newPlayer.moneyProperty(),oldPlayer.getMoney(),newPlayer.getMoney());
+                this.moneyChanged(newPlayer.moneyProperty(),oldPlayer == null ? 0 : oldPlayer.getMoney(),newPlayer.getMoney());
             }
         });
 

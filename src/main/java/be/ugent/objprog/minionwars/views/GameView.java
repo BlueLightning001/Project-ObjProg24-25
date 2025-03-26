@@ -67,7 +67,7 @@ public class GameView {
 
         // End turn only when player has at least one minion
         rebindEndTurnButtonPart1();
-        this.playerModel.currentPlayerProperty().addListener((observable, oldValue, newValue) -> {
+        this.playerModel.currentPlayerProperty().addListener((observable) -> {
             rebindEndTurnButtonPart1();
         });
 

@@ -87,9 +87,9 @@ public class CurrentPlayerDisplay extends HBox {
         setSpacing(20);
 
         // Adjust font sizes based on the width of the HBox.
-        widthProperty().addListener((obs, oldWidth, newWidth) -> {
+        widthProperty().addListener((obs) -> {
             Platform.runLater(() -> {
-                double newFontSize = newWidth.doubleValue() * fontScale;
+                double newFontSize = getWidth() * fontScale;
                 currentPlayerLabel.setStyle("-fx-font-size: " + newFontSize + "px;");
                 currentPlayerMinionsUsedLabel.setStyle("-fx-font-size: " + (newFontSize * 0.8) + "px;");
             });

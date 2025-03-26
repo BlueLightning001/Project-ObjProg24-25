@@ -240,23 +240,25 @@ public class ActionsPane extends TabPane {
         toBeStyled.setAlignment(Pos.CENTER);
         toBeStyled.prefWidthProperty().bind(container.widthProperty().multiply(width));
         toBeStyled.prefHeightProperty().bind(container.heightProperty().multiply(height));
-        toBeStyled.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+        toBeStyled.widthProperty().addListener(obs -> {
             Platform.runLater(() -> {
-                double fontSize = newWidth.doubleValue() * 0.1;
+                double fontSize = toBeStyled.getWidth() * 0.1;
                 toBeStyled.setStyle("-fx-font-size: " + fontSize + "px;");
             });
         });
+
     }
     private void styleNode(Button toBeStyled, StackPane container, double width, double height) {
         toBeStyled.setAlignment(Pos.CENTER);
         toBeStyled.prefWidthProperty().bind(container.widthProperty().multiply(width));
         toBeStyled.prefHeightProperty().bind(container.heightProperty().multiply(height));
-        toBeStyled.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+        toBeStyled.widthProperty().addListener(obs -> {
             Platform.runLater(() -> {
-                double fontSize = newWidth.doubleValue() * 0.1;
+                double fontSize = toBeStyled.getWidth() * 0.1;
                 toBeStyled.setStyle("-fx-font-size: " + fontSize + "px;");
             });
         });
+
 
     }
     public ListView<Power> getPowerListView(){

@@ -71,8 +71,8 @@ public class TileGroupPane extends Pane {
 
     public void bindPane(ZoomableScrollPane gamePane) {
         this.boundPane = gamePane;
-        boundPane.widthProperty().addListener((obs, oldVal, newVal) -> adjustTileSizeAsync());
-        boundPane.heightProperty().addListener((obs, oldVal, newVal) -> adjustTileSizeAsync());
+        boundPane.widthProperty().addListener((obs) -> adjustTileSizeAsync());
+        boundPane.heightProperty().addListener((obs) -> adjustTileSizeAsync());
 
         adjustTileSizeAsync(); // Initial resize
     }
