@@ -1,6 +1,7 @@
 package be.ugent.objprog.minionwars.powers;
 
 import be.ugent.objprog.minionwars.effects.MinionEffect;
+import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.views.HexTile;
 import javafx.scene.image.Image;
 
@@ -15,7 +16,7 @@ public class LightningPower extends Power{
     }
 
     @Override
-    public void apply(HexTile center) {
+    public void apply(HexTile center, Player caster) {
         System.out.println("Lightning power called");
     }
 }

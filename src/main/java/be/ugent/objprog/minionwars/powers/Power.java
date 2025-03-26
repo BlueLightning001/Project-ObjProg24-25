@@ -1,6 +1,7 @@
 package be.ugent.objprog.minionwars.powers;
 
 import be.ugent.objprog.minionwars.effects.MinionEffect;
+import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.views.HexTile;
 import javafx.scene.image.Image;
 
@@ -24,7 +25,7 @@ public abstract class Power {
     }
 
     //TODO ALL IMPLEMENTATIONS
-    public abstract void apply(HexTile center);
+    public abstract void apply(HexTile center, Player caster);
 
     public MinionEffect getEffect() {
         return effect;
@@ -59,4 +60,5 @@ public abstract class Power {
             return healthImage;
         }
     }
+
 }

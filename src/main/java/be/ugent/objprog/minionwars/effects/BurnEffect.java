@@ -15,5 +15,6 @@ public class BurnEffect extends MinionEffect {
     @Override
     public void applyEffect(Minion minion) {
         System.out.println("Burn effect on " + minion.getName() + ", value: " + value);
+        minion.addStatusAilment(new BurnEffect(duration.get(),value.get()));
     }
 }

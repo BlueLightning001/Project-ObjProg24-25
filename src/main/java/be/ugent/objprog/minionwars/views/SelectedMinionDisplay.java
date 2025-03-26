@@ -1,14 +1,8 @@
 package be.ugent.objprog.minionwars.views;
 
-import be.ugent.objprog.minionwars.effects.BlindnessEffect;
-import be.ugent.objprog.minionwars.effects.BurnEffect;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
-import be.ugent.objprog.minionwars.effects.ParalysisEffect;
-import be.ugent.objprog.minionwars.effects.PoisonEffect;
-import be.ugent.objprog.minionwars.effects.RageEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.TileModel;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,10 +12,6 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
@@ -40,6 +30,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class SelectedMinionDisplay extends GridPane {
+    private final TileModel tileModel;
+    private final ResourceBundle bundle;
     private Circle minionsIcon = new Circle();
     private Label minionsLabel = new Label();
     private Label attackStatLabel = new Label();
@@ -48,8 +40,6 @@ public class SelectedMinionDisplay extends GridPane {
     private Label tileNameLabel = new Label();
     private VBox statusAilmentsContainer;
     private ScrollPane statusAilmentsScroll;
-    private final TileModel tileModel;
-    private final ResourceBundle bundle;
     private SimpleObjectProperty<Minion> selectedMinion = new SimpleObjectProperty<>();
 
     public SelectedMinionDisplay(TileModel tileModel, Locale locale) {
@@ -63,7 +53,7 @@ public class SelectedMinionDisplay extends GridPane {
     }
 
     private void setUpLayout() {
-        VBox.setVgrow(this,Priority.SOMETIMES);
+        VBox.setVgrow(this, Priority.SOMETIMES);
         setMinHeight(60);
         setPrefHeight(70);
         setGridLinesVisible(true); //TODO debug
@@ -171,45 +161,6 @@ public class SelectedMinionDisplay extends GridPane {
 
     }
 
-    private void setupStatLabel(Label label) {
-        label.setAlignment(Pos.CENTER);
-        label.setTextAlignment(TextAlignment.CENTER);
-        label.setStyle("-fx-font-weight: bolder; -fx-font-size: 15");
-        GridPane.setHalignment(label, HPos.CENTER);
-        GridPane.setValignment(label, VPos.CENTER);
-    }
-
-    private GridPane statsDisplay() {
-        GridPane statsGrid = new GridPane();
-
-        statsGrid.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-
-        ColumnConstraints col1 = new ColumnConstraints();
-        col1.setHgrow(Priority.ALWAYS);
-
-        ColumnConstraints col2 = new ColumnConstraints();
-        col2.setHgrow(Priority.ALWAYS);
-
-        statsGrid.getColumnConstraints().addAll(col1, col2);
-
-        RowConstraints row1 = new RowConstraints();
-        row1.setVgrow(Priority.ALWAYS);
-
-        RowConstraints row2 = new RowConstraints();
-        row2.setVgrow(Priority.ALWAYS);
-
-        statsGrid.getRowConstraints().addAll(row1, row2);
-
-        statsGrid.add(attackStatLabel, 0, 0);
-        statsGrid.add(defenseStatLabel, 1, 0);
-        statsGrid.add(ailmentsStatLabel, 0, 1);
-        GridPane.setColumnSpan(ailmentsStatLabel, 2);
-
-        getNodeByRowColumnIndex(1, 0, statsGrid).setStyle("-fx-border-width: 2 0 0 0; -fx-border-color: #050505;");
-
-        return statsGrid;
-    }
-
     public void updateSelected(HexTile hexTile) {
         if (hexTile != null) {
             Minion minion = hexTile.getTile().getOccupant();
@@ -266,11 +217,43 @@ public class SelectedMinionDisplay extends GridPane {
         }
     }
 
-    private void attachStatIcon(Label label, String path) {
-        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(path)));
-        imageView.setPreserveRatio(true);
-        imageView.fitHeightProperty().bind(label.heightProperty().multiply(0.8));
-        label.setGraphic(imageView);
+    private void setupStatLabel(Label label) {
+        label.setAlignment(Pos.CENTER);
+        label.setTextAlignment(TextAlignment.CENTER);
+        label.setStyle("-fx-font-weight: bolder; -fx-font-size: 15");
+        GridPane.setHalignment(label, HPos.CENTER);
+        GridPane.setValignment(label, VPos.CENTER);
+    }
+
+    private GridPane statsDisplay() {
+        GridPane statsGrid = new GridPane();
+
+        statsGrid.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setHgrow(Priority.ALWAYS);
+
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setHgrow(Priority.ALWAYS);
+
+        statsGrid.getColumnConstraints().addAll(col1, col2);
+
+        RowConstraints row1 = new RowConstraints();
+        row1.setVgrow(Priority.ALWAYS);
+
+        RowConstraints row2 = new RowConstraints();
+        row2.setVgrow(Priority.ALWAYS);
+
+        statsGrid.getRowConstraints().addAll(row1, row2);
+
+        statsGrid.add(attackStatLabel, 0, 0);
+        statsGrid.add(defenseStatLabel, 1, 0);
+        statsGrid.add(ailmentsStatLabel, 0, 1);
+        GridPane.setColumnSpan(ailmentsStatLabel, 2);
+
+        getNodeByRowColumnIndex(1, 0, statsGrid).setStyle("-fx-border-width: 2 0 0 0; -fx-border-color: #050505;");
+
+        return statsGrid;
     }
 
     private void clearLabels() {
@@ -285,6 +268,14 @@ public class SelectedMinionDisplay extends GridPane {
         tileNameLabel.setText("");
         statusAilmentsContainer.getChildren().clear();
     }
+
+    private void attachStatIcon(Label label, String path) {
+        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(path)));
+        imageView.setPreserveRatio(true);
+        imageView.fitHeightProperty().bind(label.heightProperty().multiply(0.8));
+        label.setGraphic(imageView);
+    }
+
     public Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
         for (Node node : gridPane.getChildren()) {
             if (GridPane.getRowIndex(node) != null && javafx.scene.layout.GridPane.getColumnIndex(node) != null
@@ -293,5 +284,17 @@ public class SelectedMinionDisplay extends GridPane {
             }
         }
         return null;
+    }
+
+    public Minion getSelectedMinion() {
+        return selectedMinion.get();
+    }
+
+    public void setSelectedMinion(Minion selectedMinion) {
+        this.selectedMinion.set(selectedMinion);
+    }
+
+    public SimpleObjectProperty<Minion> selectedMinionProperty() {
+        return selectedMinion;
     }
 }

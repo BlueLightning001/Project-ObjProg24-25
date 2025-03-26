@@ -11,8 +11,8 @@ public abstract class Tile {
     private final SimpleIntegerProperty homebase;
     private final String imagePath;
     private final boolean traversable;
-    private final boolean canAttack;
-    private final boolean canBeAttacked;
+    private final boolean ableToAttack;
+    private final boolean ableToBeAttacked;
     private final ObjectProperty<Minion> occupant = new SimpleObjectProperty<>(this, "occupant", null);
     private int traversalCost;
     public Tile(int x, int y, int homebase, String imagePath, boolean traversable,
@@ -23,8 +23,8 @@ public abstract class Tile {
         this.imagePath = imagePath;
         this.traversable = traversable;
         this.traversalCost = traversalCost;
-        this.canAttack = canAttack;
-        this.canBeAttacked = canBeAttacked;
+        this.ableToAttack = canAttack;
+        this.ableToBeAttacked = canBeAttacked;
     }
 
     public int getHomebase() {
@@ -72,12 +72,12 @@ public abstract class Tile {
         return homebase;
     }
 
-    public boolean isCanAttack() {
-        return canAttack;
+    public boolean isAbleToAttack() {
+        return ableToAttack;
     }
 
-    public boolean isCanBeAttacked() {
-        return canBeAttacked;
+    public boolean isAbleToBeAttacked() {
+        return ableToBeAttacked;
     }
 
     public boolean isHomeBase() {

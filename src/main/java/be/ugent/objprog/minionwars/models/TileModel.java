@@ -67,14 +67,13 @@ public class TileModel {
         int[] bCoords = oddRToAxial(b);
         int[] aCubeCoords = axialToCube(aCoords);
         int[] bCubeCoords = axialToCube(bCoords);
-        System.out.println("Distance between: (" + a.getXCoord() + ", " + a.getYCoord() + ") and (" + b.getXCoord() + ", " + b.getYCoord() + ")" );
+
         int distance = - 1;
         if (aCubeCoords != null && bCubeCoords != null) {
             distance = Math.max(Math.max(Math.abs(aCubeCoords[0] - bCubeCoords[0]),
                             Math.abs(aCubeCoords[1] - bCubeCoords[1]))
                     , Math.abs(aCubeCoords[2] - bCubeCoords[2]));
         }
-        System.out.println("IS: " + distance);
         return distance;
 
     }

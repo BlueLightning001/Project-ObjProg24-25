@@ -13,7 +13,9 @@ import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.GameView;
 import be.ugent.objprog.minionwars.views.HexTile;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
+import javafx.scene.control.Tab;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -35,6 +37,8 @@ public class GameController {
     private GameView view;
     private PlayerModel playerModel;
     private Stage stage;
+    private EventHandler<MouseEvent> specialMouseClickedHandler;
+    private EventHandler<MouseEvent> specialMouseMovedHandler;
 
     public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader) {
         this.stage = stage;
@@ -42,6 +46,11 @@ public class GameController {
         this.minionModel = new MinionModel(reader);
         this.tileModel = new TileModel(reader, locale);
         this.powerModel = new PowerModel(reader, locale);
+        // Load the players powers
+        this.playerModel.getPlayer1().setAvailablePowers(FXCollections.observableArrayList(powerModel.getPowerList()));
+        this.playerModel.getPlayer2().setAvailablePowers(FXCollections.observableArrayList(powerModel.getPowerList()));
+
+        System.out.println("---------------ADDED PLAYERS POWERS-----------------------------------");
         this.locale = locale;
         this.view = new GameView(minionModel, playerModel, tileModel, powerModel, locale);
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
@@ -186,64 +195,108 @@ public class GameController {
             }
         });
 
-        EventHandler<MouseEvent> specialMouseMovedHandler = event -> {
 
-            if (view.getActionsTabPane() == null || !view.getActionsTabPane().getSelectionModel().getSelectedItem().getText().equals(bundle.getString("actions.special"))) return;
 
-            clearHighlights();
-            // Get the currently selected power
-            Power selectedPower = view.getActionsTabPane().getPowerListView().getSelectionModel().getSelectedItem();
-            if (selectedPower == null) {
-                clearHighlights();
-                return;
-            }
-
-            // Get the tile under the mouse
-            HexTile tileUnderMouse = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
-            if (tileUnderMouse != null) {
-                highLightRadius(tileUnderMouse, selectedPower.getRadius(), Color.BLUE);
-            }
-        };
-
+        // Refresh ui when
         view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-            clearHighlights();
+            updateActionUI(newTab);
+        });
+        view.getPart2MenuContainer().getSelectedMinionDisplay().selectedMinionProperty().addListener((obs) -> {
+            updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem());
+        });
 
-            HexTile hexTile = view.getGameTileGroupPane().getSelectedHexTile();
-            Color specialColor = Color.BLUE;
-            Color attackColor = Color.RED;
-            Color moveColor = Color.GREEN;
 
-            if (newTab.getText().equals(bundle.getString("actions.special"))) {
-                view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
-                //TODO
+        view.getEndTurnButton().setOnAction(event -> {
+            playerModel.nextPlayer();
+        });
+    }
+    private void updateActionUI(Tab selectedTab) {
+        clearHighlights();
 
-            } else if (newTab.getText().equals(bundle.getString("actions.attack"))) {
+        Player currentPlayer = this.playerModel.getCurrentPlayer();
+        HexTile hexTile = view.getGameTileGroupPane().getSelectedHexTile();
+        Color attackColor = Color.RED;
+        Color moveColor = Color.GREEN;
+
+        if (selectedTab == null) return;
+
+        String tabText = selectedTab.getText();
+
+        // Remove previous event handlers before adding new ones
+        if (specialMouseClickedHandler != null) {
+            view.getGameTileGroupPane().removeEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
+        }
+        if (specialMouseMovedHandler != null) {
+            view.getGameTileGroupPane().removeEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
+        }
+
+
+        if (tabText.equals(bundle.getString("actions.special"))) {
+            // Clear selection to avoid auto-triggering when switching tabs
+            view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
+
+            specialMouseMovedHandler = event -> {
+
+                if (view.getActionsTabPane() == null || !view.getActionsTabPane().getSelectionModel().getSelectedItem().getText().equals(bundle.getString("actions.special"))) return;
+
+                clearHighlights();
+                // Get the currently selected power
+                Power selectedPower = view.getActionsTabPane().getPowerListView().getSelectionModel().getSelectedItem();
+                if (selectedPower == null) {
+                    clearHighlights();
+                    return;
+                }
+
+                // Get the tile under the mouse
+                HexTile tileUnderMouse = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
+                if (tileUnderMouse != null) {
+                    highLightRadius(tileUnderMouse, selectedPower.getRadius(), Color.BLUE);
+                }
+            };
+
+            specialMouseClickedHandler = event -> {
+                Power selectedPower = view.getActionsTabPane().getPowerListView().getSelectionModel().getSelectedItem();
+                HexTile clickedTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
+
+                if (clickedTile != null && selectedPower != null) {
+                    currentPlayer.usePower(selectedPower);
+                    selectedPower.apply(clickedTile,currentPlayer);
+
+                    // Clear selection so the power is not used again automatically
+                    view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
+                }
+            };
+
+            // Add the new event filters
+            view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
+            view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
+
+        } else if (tabText.equals(bundle.getString("actions.attack"))) {
+            if (hexTile != null && hexTile.getTile().isOccupied()) {
                 Minion occupant = hexTile.getTile().getOccupant();
-                if (occupant != null && hexTile.getTile().isCanAttack()) {
+                if (occupant != null && hexTile.getTile().isAbleToAttack()) {
                     int minRange = occupant.getRange().getFirst();
                     int maxRange = occupant.getRange().getLast();
                     highlightRange(hexTile, minRange, maxRange, attackColor);
-
-                    // Make sure only empty tiles are traversable
-                    clearMinionHighlights(occupant.getOwner(),null);
+                    clearMinionHighlights(occupant.getOwner(), null);
                 }
-            } else if (newTab.getText().equals(bundle.getString("actions.move"))) {
+            }
+
+        } else if (tabText.equals(bundle.getString("actions.move"))) {
+            if (hexTile != null && hexTile.getTile().isOccupied()) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
                     int movement = occupant.getMovement();
                     tileModel.getReachableTiles(hexTile.getTile(), movement).forEach(tile -> {
                         view.getHexTile(tile).highlight(moveColor);
                     });
-                    clearMinionHighlights(playerModel.getPlayer1(),playerModel.getPlayer2());
+                    clearMinionHighlights(playerModel.getPlayer1(), playerModel.getPlayer2());
                 }
             }
-            System.out.println(view.getGameTileGroupPane().toString());
-        });
-
-        view.getEndTurnButton().setOnAction(event -> {
-            playerModel.nextPlayer();
-        });
+        }
     }
+
+
     // Helper method to undo highlights on tiles for certain situations
     private void clearMinionHighlights(Player clearFromPlayer1, Player clearFromPlayer2) {
         List<Minion> allMinions = new ArrayList<>();
@@ -286,11 +339,9 @@ public class GameController {
 
     private void highlightRange(Tile tile, int minRange, int maxRange, Color color) {
         List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile, minRange, maxRange);
-        System.out.println("TILES IN RADIUS: " + tilesInRadius.toString());
         for (Tile tileInRadius : tilesInRadius) {
 
             HexTile hexTile = view.getHexTile(tileInRadius);
-            System.out.println("HIGHLIGHTING: " + tile);
             hexTile.highlight(color);
 
         }

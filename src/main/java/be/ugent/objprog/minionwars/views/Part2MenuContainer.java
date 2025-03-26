@@ -27,6 +27,7 @@ public class Part2MenuContainer extends VBox {
     private ActionsPane actionsPane;
     private ResourceBundle bundle;
     private SelectedMinionDisplay selectedMinionDisplay;
+
     public Part2MenuContainer(PlayerModel playerModel, MinionModel minionModel, TileModel tileModel, PowerModel powerModel, TileGroupPane tileGroupPane, Locale locale) {
         this.playerModel = playerModel;
         this.minionModel = minionModel;
@@ -52,7 +53,7 @@ public class Part2MenuContainer extends VBox {
 
 
         //// Actions Tabs
-        actionsPane = new ActionsPane(powerModel, locale);
+        actionsPane = new ActionsPane(playerModel, powerModel, locale);
 
         //// Buttons
         ButtonBar menuButtonBar = new ButtonBar();
@@ -106,6 +107,10 @@ public class Part2MenuContainer extends VBox {
 
     public Button getRestButton() {
         return restButton;
+    }
+
+    public SelectedMinionDisplay getSelectedMinionDisplay() {
+        return selectedMinionDisplay;
     }
 
 }

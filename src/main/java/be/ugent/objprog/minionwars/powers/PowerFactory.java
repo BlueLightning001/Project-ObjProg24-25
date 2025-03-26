@@ -9,6 +9,8 @@ import be.ugent.objprog.minionwars.effects.ParalysisEffect;
 import be.ugent.objprog.minionwars.effects.PoisonEffect;
 import be.ugent.objprog.minionwars.effects.RageEffect;
 import be.ugent.objprog.minionwars.effects.SlowEffect;
+import be.ugent.objprog.minionwars.minions.Minion;
+import javafx.scene.effect.Effect;
 
 import java.util.Map;
 
@@ -24,9 +26,18 @@ public class PowerFactory {
         if (factoryFunction == null) {
             throw new IllegalArgumentException("Unknown power type: " + powerType);
         }
+        MinionEffect effectClone = (effect != null) ? cloneEffect(effect) : null;
 
         System.out.println("Creating power: " + powerType + ", Radius: " + radius + ", Value: " + value);
-        return factoryFunction.create(radius, value,effect);
+        return factoryFunction.create(radius, value,effectClone);
+    }
+    private MinionEffect cloneEffect(MinionEffect effect) {
+        EffectFactory effectFactory = new EffectFactory();
+        return effectFactory.createEffect(
+                effect.getClass().getSimpleName().toLowerCase().replace("effect", ""),
+                effect.getDuration(),
+                effect.getValue()
+        );
     }
 
     @FunctionalInterface

@@ -1,8 +1,10 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.powers.Power;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -19,9 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Box;
 
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -40,7 +40,7 @@ public class ActionsPane extends TabPane {
     private final Tab moveTab;
     private final Tab attackTab;
     private final Tab specialTab;
-    public ActionsPane(PowerModel powerModel, Locale locale) {
+    public ActionsPane(PlayerModel playerModel, PowerModel powerModel, Locale locale) {
         super();
         this.locale = locale;
         this.powerModel = powerModel;
@@ -54,7 +54,30 @@ public class ActionsPane extends TabPane {
 
         //// Special Moves
         specialTab = new Tab(bundle.getString("actions.special"));
-        powerListView = new ListView<>(this.powerModel.getPowers());
+        powerListView = new ListView<>();
+        powerListView.setItems(playerModel.getCurrentPlayer().getAvailablePowers());
+        // Bind the ListView to the current player's powers
+        playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
+            if (newPlayer != null) {
+                // Update the power list with the player's available powers
+                powerListView.setItems(newPlayer.getAvailablePowers());
+                System.out.println("NEW PLAYER POWERS: " + newPlayer.getAvailablePowers());
+                // Disable the Special tab if there are no available power usages
+                specialTab.setDisable(newPlayer.getAvailablePowerUses() <= 0);
+
+                // grey out the tab
+                if (newPlayer.getAvailablePowerUses() <= 0) {
+                    specialTab.setStyle("-fx-opacity: 0.5;");  // Reduce opacity for greying out
+                } else {
+                    specialTab.setStyle("");  // Reset the style when there are available powers
+                }
+            } else {
+                powerListView.setItems(FXCollections.observableArrayList()); // Clear if no player
+            }
+        });
+
+
+
         powerListView.setCellFactory(listView -> new ListCell<>() {
             private final Label nameLabel = new Label();
             private final Label descriptionLabel = new Label();
