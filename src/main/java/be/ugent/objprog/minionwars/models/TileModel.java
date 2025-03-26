@@ -78,6 +78,9 @@ public class TileModel {
         return distance;
 
     }
+    public int manhattanDistance(Tile a, Tile b) {
+        return Math.abs(a.getXCoord() - b.getXCoord()) + Math.abs(a.getYCoord() - b.getYCoord());
+    }
 
 
     private int[] axialToCube(int[] axial){
@@ -127,10 +130,10 @@ public class TileModel {
                 if (newX >= 0 && newX < tileGrid.length && newY >= 0 && newY < tileGrid[newX].length) {
                     Tile candidate = tileGrid[newX][newY];
 
-                    // Calculate hex distance
+
                     int distance = cubeDistance(centerTile, candidate);
 
-                    // Ensure it's within range bounds
+                    // Ensure distance within range bounds
                     if (distance >= minRange && distance <= maxRange) {
                         tilesInRadius.add(candidate);
                     }

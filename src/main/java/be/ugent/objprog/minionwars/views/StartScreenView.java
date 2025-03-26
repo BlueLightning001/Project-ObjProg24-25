@@ -28,7 +28,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class StartScreenView {
+public class StartScreenView  {
     private final ResourceBundle bundle;
     private final PlayerModel model;
     private final StackPane container;

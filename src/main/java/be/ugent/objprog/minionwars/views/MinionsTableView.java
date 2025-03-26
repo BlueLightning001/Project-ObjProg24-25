@@ -8,9 +8,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
@@ -24,7 +22,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -46,6 +43,7 @@ public class MinionsTableView extends TableView<Minion> {
         placeHolder.setWrapText(true);
 
 
+        //TODO USE INVALIDATIONLISTENERS INSTEAD
         placeHolder.widthProperty().addListener((obs, oldWidth, newWidth) -> {
             // Only update font size after layout is settled
             Platform.runLater(() -> {
