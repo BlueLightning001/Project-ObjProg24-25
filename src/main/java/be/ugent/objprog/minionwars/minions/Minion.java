@@ -97,6 +97,22 @@ public class Minion {
         return attack.get();
     }
 
+    public void moveTo(Tile newTile) {
+        setMoved(true);
+
+        Tile oldTile = this.occupiedTile;
+
+
+        oldTile.setOccupant(null);
+        newTile.setOccupant(this);
+
+    }
+
+    public void refillActions() {
+        setMoved(false);
+        setAttacked(false);
+    }
+
     public void setAttack(int attack) {
         this.attack.set(attack);
     }
@@ -160,7 +176,7 @@ public class Minion {
         }
     }
 
-    public boolean isAttacked() {
+    public boolean hasAttacked() {
         return attacked;
     }
 
@@ -168,7 +184,7 @@ public class Minion {
         this.attacked = attacked;
     }
 
-    public boolean isMoved() {
+    public boolean hasMoved() {
         return moved;
     }
 

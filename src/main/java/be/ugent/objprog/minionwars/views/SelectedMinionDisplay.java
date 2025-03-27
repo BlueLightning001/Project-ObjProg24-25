@@ -165,6 +165,7 @@ public class SelectedMinionDisplay extends GridPane {
         if (hexTile != null) {
             Minion minion = hexTile.getTile().getOccupant();
             selectedMinion.set(minion);
+
             if (minion == null) {
                 clearLabels();
                 setVisible(false);

@@ -298,17 +298,45 @@ public class GameController {
                 }
             }
 
+
         } else if (tabText.equals(bundle.getString("actions.move"))) {
-            if (hexTile != null && hexTile.getTile().isOccupied()) {
+            if (hexTile != null && hexTile.getTile().isOccupied() && !hexTile.getTile().getOccupant().hasMoved() ) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
                     int movement = occupant.getMovement();
-                    tileModel.getReachableTiles(hexTile.getTile(), movement).forEach(tile -> {
+                    List<Tile> reachableTiles = tileModel.getReachableTiles(hexTile.getTile(), movement);
+
+                    reachableTiles.forEach(tile -> {
                         view.getHexTile(tile).highlight(moveColor);
                     });
+
                     clearMinionHighlights(playerModel.getPlayer1(), playerModel.getPlayer2());
+
+                    // Remove any previous event filter before adding a new one
+                    if (specialMouseClickedHandler != null) {
+                        view.getGameTileGroupPane().removeEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
+                    }
+
+                    // Define the event filter
+                    specialMouseClickedHandler = event -> {
+                        HexTile clickedTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
+                        if (clickedTile != null && reachableTiles.contains(clickedTile.getTile()) && !occupant.hasMoved()) {
+
+
+                            occupant.moveTo(clickedTile.getTile()); // Move minion to new tile
+
+                            clearHighlights(); // Remove highlights after moving
+                            setSelected(clickedTile);
+
+                            event.consume(); // Prevent other handlers from processing the event
+                        }
+                    };
+
+                    // Add the event filter
+                    view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
                 }
             }
+
         }
     }
 
@@ -362,7 +390,10 @@ public class GameController {
 
         }
     }
-
+    private void setSelected(HexTile hexTile){
+        view.getPart2MenuContainer().setSelected(hexTile);
+        view.getGameTileGroupPane().setSelectedHexTile(hexTile);
+    }
     public void endGame() {
         //TODO launch new game
         view.getGameTileGroupPane().shutdown();

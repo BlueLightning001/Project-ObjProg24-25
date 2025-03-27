@@ -172,9 +172,9 @@ public class HexTile extends Polygon {
                 System.out.println("Selected: " + tile.get());
 
             } else {
-                if (startPhase || (this.getTile().isOccupied() && playerModel.getCurrentPlayer().equals(this.getTile().getOccupant().getOwner()))) {
+                if (startPhase || !this.getTile().isOccupied() ||(this.getTile().isOccupied() && playerModel.getCurrentPlayer().equals(this.getTile().getOccupant().getOwner()))) {
                     this.setStroke(DEFAULT_STROKE_COLOR);
-                } else {
+                } else if (this.getTile().isOccupied()) {
                     this.setStroke(Color.RED);
                 }
                 System.out.println("Unselected: " + tile.get());
