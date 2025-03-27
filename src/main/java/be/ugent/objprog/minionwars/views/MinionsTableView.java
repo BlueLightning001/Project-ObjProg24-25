@@ -42,8 +42,6 @@ public class MinionsTableView extends TableView<Minion> {
         Label placeHolder = new Label(bundle.getString("gameScreen.minionTableView.placeholder"));
         placeHolder.setWrapText(true);
 
-
-        //TODO USE INVALIDATIONLISTENERS INSTEAD
         placeHolder.widthProperty().addListener((obs) -> {
             // Only update font size after layout is settled
             Platform.runLater(() -> {

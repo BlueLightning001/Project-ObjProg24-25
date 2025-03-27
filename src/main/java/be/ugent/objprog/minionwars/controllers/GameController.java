@@ -280,6 +280,7 @@ public class GameController {
 
                     // Clear selection so the power is not used again automatically
                     view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
+                    clearHighlights();
                 }
             };
 
