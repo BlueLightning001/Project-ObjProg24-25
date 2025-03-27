@@ -1,5 +1,6 @@
 package be.ugent.objprog.minionwars.powers;
 
+import be.ugent.objprog.minionwars.effects.EffectFactory;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.Player;
@@ -38,11 +39,11 @@ public abstract class Power {
                 if (offensive && !minion.getOwner().equals(caster)) {
                     System.out.println("Damaging: " + minion);
                     minion.decreaseDefence(value);
-                    minion.applyEffectLogic(effect);
+                    minion.addStatusAilment(effect); // Each spell can only be used once, so no need for a new instance
                 } else if (!offensive && minion.getOwner().equals(caster)) {
                     System.out.println("Healing " + minion);
                     minion.heal(value);
-                    minion.applyEffectLogic(effect);
+                    minion.addStatusAilment(effect);
                 }
 
             }

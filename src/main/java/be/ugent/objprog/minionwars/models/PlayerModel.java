@@ -94,11 +94,18 @@ public class PlayerModel {
     public void nextPlayer() {
         if (currentPlayer.get() == player1.get()) {
             currentPlayer.set(player2.get());
-            player1.get().getMinions().forEach(Minion::refillActions);
+            player1.get().getMinions().forEach(minion -> {
+                minion.refillActions();
+                minion.reduceAilmentValue();
+            });
         } else {
             currentPlayer.set(player1.get());
-            player2.get().getMinions().forEach(Minion::refillActions);
+            player2.get().getMinions().forEach(minion -> {
+                minion.refillActions();
+                minion.reduceAilmentValue();
+            });
         }
+        currentPlayer.get().getMinions().forEach(Minion::activateStatusAilments);
         turnCounter.set(turnCounter.get() + 1); // To show how many turns you played after the game ends
     }
 

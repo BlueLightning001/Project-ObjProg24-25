@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -51,9 +52,11 @@ public class Minion {
     }
 
     public void addStatusAilment(MinionEffect effect) {
-        statusAilments.removeIf(e -> e.getClass().equals(effect.getClass()) && e.getValue() <= effect.getValue()); // "Refreshes" the statusAilment if it is higher
-        statusAilments.add(effect);
-        System.out.println(statusAilments);
+        if (effect != null) {
+            statusAilments.removeIf(e -> e.getClass().equals(effect.getClass()) && e.getValue() <= effect.getValue()); // "Refreshes" the statusAilment if it is higher
+            statusAilments.add(effect);
+            System.out.println(statusAilments);
+        }
     }
 
     public void applyEffectLogic(MinionEffect effect) {
@@ -83,7 +86,9 @@ public class Minion {
     }
 
     public void decreaseDefence(int value) {
-        if (this.defence.get() < value) {
+        System.out.println("CURRENT DEFENSE: " + defence.get());
+        System.out.println("VALUE: " + value);
+        if (this.defence.get() <= value) { //Character dies
             throw new IllegalArgumentException("Defence too low " + defence.get());
         }
         this.defence.set(this.defence.get() - value);
@@ -199,28 +204,29 @@ public class Minion {
     public SimpleStringProperty nameProperty() {
         return name;
     }
-
+    public void activateStatusAilments(){
+        for (MinionEffect effect : statusAilments) {
+            System.out.println("ACTIVATING STATUS AILMENT: " + effect.getClass().getSimpleName());
+            effect.applyEffect(this);
+        }
+    }
     public void reduceAilmentValue() {
-        for (MinionEffect minionEffect : statusAilments) {
+        for (MinionEffect minionEffect : new ArrayList<>(statusAilments)) {
             minionEffect.reduceDuration();
-            if (minionEffect.getValue() <= 0) {
-                statusAilments.remove(minionEffect);
+            if (minionEffect.getDuration() <= 0) {
+                removeStatusAilment(minionEffect);
             }
         }
     }
 
-    public void removeStatusAilment(Effect effect) {
+    public void removeStatusAilment(MinionEffect effect) {
         statusAilments.remove(effect);
-    }
-
-    public void resetActions() {
-        moved = false;
-        attacked = false;
     }
 
     @Override
     public String toString() {
-        return type.get().toUpperCase() + ":  NAME: " + getName() + ", HEALTH: " + getDefence() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", OWNER: " + owner;
+        return type.get().toUpperCase() + ":  NAME: " + getName() + ", HEALTH: " + getDefence() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", OWNER: " + owner +
+                "\n StatusAilments: " + statusAilments.toString();
     }
 
     public String getName() {
