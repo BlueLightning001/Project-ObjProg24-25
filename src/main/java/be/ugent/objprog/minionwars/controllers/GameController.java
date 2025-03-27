@@ -206,7 +206,7 @@ public class GameController {
                 Platform.runLater(() -> {
                     powerListView.getSelectionModel().clearSelection();
                     view.getPart2MenuContainer().setSelected(null);
-                    updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem()); // Reapply handlers
+                    updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem());
                 });
             } else {
                 powerListView.setItems(FXCollections.observableArrayList()); // Clear if no player
@@ -290,13 +290,37 @@ public class GameController {
             view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
 
         } else if (tabText.equals(bundle.getString("actions.attack"))) {
-            if (hexTile != null && hexTile.getTile().isOccupied()) {
+            if (hexTile != null && hexTile.getTile().isOccupied() ) {
                 Minion occupant = hexTile.getTile().getOccupant();
-                if (occupant != null && hexTile.getTile().isAbleToAttack()) {
+                if (occupant != null && hexTile.getTile().isAbleToAttack() && !occupant.hasAttacked()) {
                     int minRange = occupant.getRange().getFirst();
                     int maxRange = occupant.getRange().getLast();
-                    highlightRange(hexTile, minRange, maxRange, attackColor);
+
+                    // Get all attackable tiles
+                    List<Tile> attackableTiles = highlightRange(hexTile, minRange, maxRange, attackColor);
                     clearMinionHighlights(occupant.getOwner(), null);
+
+                    // Attack on click
+                    specialMouseClickedHandler = event -> {
+                        HexTile clickedHexTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
+                        if (clickedHexTile == null || clickedHexTile.getTile() == null) return;
+
+                        Minion target = clickedHexTile.getTile().getOccupant();
+
+                        // Ensure the tile contains a minion and is within attack range
+                        if (target != null
+                                && target.getOwner() != occupant.getOwner()  // Ensure it's an enemy
+                                && attackableTiles.contains(clickedHexTile.getTile())) {  // Check if it's within range
+
+                            occupant.attack(target);  // Execute attack
+                            clearHighlights();
+                            setSelected(null);
+                            System.out.println(occupant + " attacked " + target);
+                        }
+                    };
+
+                    // Attach the event handler
+                    view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
                 }
             }
 
@@ -322,7 +346,7 @@ public class GameController {
                     // Define the event filter
                     specialMouseClickedHandler = event -> {
                         HexTile clickedTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
-                        if (clickedTile != null && reachableTiles.contains(clickedTile.getTile()) && !occupant.hasMoved()) {
+                        if (clickedTile != null && !clickedTile.getTile().isOccupied() && reachableTiles.contains(clickedTile.getTile()) && !occupant.hasMoved()) {
 
 
                             occupant.moveTo(clickedTile.getTile()); // Move minion to new tile
@@ -375,15 +399,18 @@ public class GameController {
 
     }
 
-    private void highlightRange(HexTile hexTile, int minRange, int maxRange, Color color) {
-        highlightRange(hexTile.getTile(), minRange, maxRange, color);
+    private List<Tile> highlightRange(HexTile hexTile, int minRange, int maxRange, Color color) {
+        return highlightRange(hexTile.getTile(), minRange, maxRange, color);
     }
 
     private void highLightRadius(Tile tile, int radius, Color color) {
         highlightRange(tile, 0, radius, color);
     }
-
-    private void highlightRange(Tile tile, int minRange, int maxRange, Color color) {
+    /**
+     * @param tile Center of the range
+     * @return Optional List of all affected tiles
+     */
+    private List<Tile> highlightRange(Tile tile, int minRange, int maxRange, Color color) {
         List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile, minRange, maxRange);
         for (Tile tileInRadius : tilesInRadius) {
 
@@ -391,9 +418,14 @@ public class GameController {
             hexTile.highlight(color);
 
         }
+        return tilesInRadius;
     }
     private void setSelected(HexTile hexTile){
-        tileModel.setSelectedTile(hexTile.getTile());
+        if (hexTile != null) {
+            tileModel.setSelectedTile(hexTile.getTile());
+        } else {
+            tileModel.setSelectedTile(null);
+        }
     }
     public void endGame() {
         //TODO launch new game

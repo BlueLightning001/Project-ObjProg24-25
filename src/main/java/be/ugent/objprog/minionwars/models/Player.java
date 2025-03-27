@@ -87,6 +87,7 @@ public class Player {
     }
 
     public void removeMinion(Minion minion) {
+        minion.setOwner(null);
         this.minions.remove(minion);
     }
 

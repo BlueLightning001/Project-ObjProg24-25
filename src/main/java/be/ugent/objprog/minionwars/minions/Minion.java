@@ -3,12 +3,12 @@ package be.ugent.objprog.minionwars.minions;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.tiles.Tile;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
@@ -26,13 +26,13 @@ public class Minion {
     private final int baseAttack;
     private final int baseMovement;
     private final Integer[] baseRange;
+    private final SimpleBooleanProperty moved = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty attacked = new SimpleBooleanProperty(false);
     private ObservableList<Integer> range;
     private MinionEffect effect;
     private Image minionIcon;
     private Player owner = null;  //TODO REMOVE UNNECESSARY PROPERTIES AND REPLACE THEM WITH NORMAL VALUES
     private ObservableList<MinionEffect> statusAilments = FXCollections.observableArrayList();
-    private boolean moved = false;
-    private boolean attacked = false;
     private Tile occupiedTile = null;
 
     public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {
@@ -51,6 +51,13 @@ public class Minion {
         this.minionIcon = minionIcon;
     }
 
+    public void activateStatusAilments() {
+        for (MinionEffect effect : statusAilments) {
+            System.out.println("ACTIVATING STATUS AILMENT: " + effect.getClass().getSimpleName());
+            effect.applyEffect(this);
+        }
+    }
+
     public void addStatusAilment(MinionEffect effect) {
         if (effect != null) {
             statusAilments.removeIf(e -> e.getClass().equals(effect.getClass()) && e.getValue() <= effect.getValue()); // "Refreshes" the statusAilment if it is higher
@@ -67,6 +74,10 @@ public class Minion {
 
     public SimpleIntegerProperty attackProperty() {
         return attack;
+    }
+
+    public SimpleBooleanProperty attackedProperty() {
+        return attacked;
     }
 
     @Override
@@ -89,7 +100,7 @@ public class Minion {
         System.out.println("CURRENT DEFENSE: " + defence.get());
         System.out.println("VALUE: " + value);
         if (this.defence.get() <= value) { //Character dies
-            throw new IllegalArgumentException("Defence too low " + defence.get());
+            markDead();
         }
         this.defence.set(this.defence.get() - value);
     }
@@ -102,22 +113,6 @@ public class Minion {
         return attack.get();
     }
 
-    public void moveTo(Tile newTile) {
-        setMoved(true);
-
-        Tile oldTile = this.occupiedTile;
-
-
-        oldTile.setOccupant(null);
-        newTile.setOccupant(this);
-
-    }
-
-    public void refillActions() {
-        setMoved(false);
-        setAttacked(false);
-    }
-
     public void setAttack(int attack) {
         this.attack.set(attack);
     }
@@ -126,12 +121,12 @@ public class Minion {
         return baseDefence;
     }
 
-    public int getDefence() {
-        return defence.get();
+    public int getCost() {
+        return cost.get();
     }
 
-    public void setDefence(int defence) {
-        this.defence.set(defence);
+    public void setCost(int cost) {
+        this.cost.set(cost);
     }
 
     public MinionEffect getEffect() {
@@ -171,7 +166,24 @@ public class Minion {
     }
 
     public boolean hasActions() {
-        return !moved || !attacked;
+        return !moved.get() || !attacked.get();
+    }
+
+    public boolean hasAttacked() {
+        return attacked.get();
+    }
+    public void attack(Minion target) {
+        int attackPower = this.attack.get();
+        target.decreaseDefence(attackPower);
+        setAttacked(true);
+    }
+    public void markDead(){
+        this.getOccupiedTile().setOccupant(null);
+        owner.removeMinion(this);
+
+    }
+    public boolean hasMoved() {
+        return moved.get();
     }
 
     public void heal(int value) {
@@ -181,20 +193,23 @@ public class Minion {
         }
     }
 
-    public boolean hasAttacked() {
-        return attacked;
-    }
+    public void moveTo(Tile newTile) {
+        setMoved(true);
 
-    public void setAttacked(boolean attacked) {
-        this.attacked = attacked;
-    }
+        Tile oldTile = this.occupiedTile;
 
-    public boolean hasMoved() {
-        return moved;
+
+        oldTile.setOccupant(null);
+        newTile.setOccupant(this);
+
     }
 
     public void setMoved(boolean moved) {
-        this.moved = moved;
+        this.moved.set(moved);
+    }
+
+    public SimpleBooleanProperty movedProperty() {
+        return moved;
     }
 
     public SimpleIntegerProperty movementProperty() {
@@ -204,12 +219,7 @@ public class Minion {
     public SimpleStringProperty nameProperty() {
         return name;
     }
-    public void activateStatusAilments(){
-        for (MinionEffect effect : statusAilments) {
-            System.out.println("ACTIVATING STATUS AILMENT: " + effect.getClass().getSimpleName());
-            effect.applyEffect(this);
-        }
-    }
+
     public void reduceAilmentValue() {
         for (MinionEffect minionEffect : new ArrayList<>(statusAilments)) {
             minionEffect.reduceDuration();
@@ -223,6 +233,15 @@ public class Minion {
         statusAilments.remove(effect);
     }
 
+    public void refillActions() {
+        setMoved(false);
+        setAttacked(false);
+    }
+
+    public void setAttacked(boolean attacked) {
+        this.attacked.set(attacked);
+    }
+
     @Override
     public String toString() {
         return type.get().toUpperCase() + ":  NAME: " + getName() + ", HEALTH: " + getDefence() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", OWNER: " + owner +
@@ -233,12 +252,12 @@ public class Minion {
         return name.get();
     }
 
-    public int getCost() {
-        return cost.get();
+    public int getDefence() {
+        return defence.get();
     }
 
-    public void setCost(int cost) {
-        this.cost.set(cost);
+    public void setDefence(int defence) {
+        this.defence.set(defence);
     }
 
     public int getMovement() {
