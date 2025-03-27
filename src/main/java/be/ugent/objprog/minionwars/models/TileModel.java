@@ -7,6 +7,7 @@ import be.ugent.objprog.minionwars.tiles.MountainTile;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.VoidTile;
 import be.ugent.objprog.minionwars.tiles.WaterTile;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,6 +30,7 @@ public class TileModel {
     private ResourceBundle bundle;
     private final List<Tile> initialTiles;
     private Tile[][] tileGrid;
+    private final SimpleObjectProperty<Tile> selectedTile = new SimpleObjectProperty<>();
 
     public TileModel(JDOMReader reader, Locale locale) {
         this.initialTiles = new ArrayList<>();
@@ -43,6 +45,11 @@ public class TileModel {
         tileNames.put(VoidTile.class, bundle.getString("tiles.voidTile"));
         tileNames.put(ForestTile.class, bundle.getString("tiles.forestTile"));
     }
+
+    public Tile getSelectedTile() {
+        return selectedTile.get();
+    }
+
     public String getTileName(Class<? extends Tile> tileClass) {
         return tileNames.getOrDefault(tileClass, bundle.getString("tiles.unknownTile"));
     }
@@ -174,6 +181,13 @@ public class TileModel {
         return new ArrayList<>(movementLeftMap.keySet());
     }
 
+    public SimpleObjectProperty<Tile> selectedTileProperty() {
+        return selectedTile;
+    }
+
+    public void setSelectedTile(Tile selectedTile) {
+        this.selectedTile.set(selectedTile);
+    }
 
 
     private static class TileNode {

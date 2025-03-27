@@ -220,7 +220,7 @@ public class Minion {
 
     @Override
     public String toString() {
-        return type.get().toUpperCase() + ":  NAME: " + getName() + ", COST: " + getCost() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", OWNER: " + owner;
+        return type.get().toUpperCase() + ":  NAME: " + getName() + ", HEALTH: " + getDefence() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", OWNER: " + owner;
     }
 
     public String getName() {

@@ -1,5 +1,6 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.powers.Power;
@@ -56,25 +57,31 @@ public class ActionsPane extends TabPane {
         //// Special Moves
         specialTab = new Tab(bundle.getString("actions.special"));
         powerListView = new ListView<>();
-        powerListView.setItems(playerModel.getCurrentPlayer().getAvailablePowers());
+
         // Bind the ListView to the current player's powers
         playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
             powerListView.itemsProperty().unbind();
-
+            powerModel.selectedPowerProperty().unbind();
+            System.out.println("NEW PLAYER BEFORE BINDINGS: " + newPlayer);
             if (newPlayer != null) {
+                System.out.println("REACHED BINDINGS-----------------------");
                 // Properly bind power list
                 powerListView.itemsProperty().bind(
                         Bindings.createObjectBinding(newPlayer::getAvailablePowers, newPlayer.availablePowerUsesProperty())
                 );
-
-                System.out.println("NEW PLAYER POWERS: " + newPlayer.getAvailablePowers());
-
+                powerModel.selectedPowerProperty().bind(powerListView.getSelectionModel().selectedItemProperty());
             } else {
                 powerListView.setItems(FXCollections.observableArrayList()); // Clear if no player
             }
         });
-
-
+        //Force initial update (player changes before this object is constructed)
+        Player currentPlayer = playerModel.getCurrentPlayer();
+        if (currentPlayer != null) {
+            powerListView.itemsProperty().bind(
+                    Bindings.createObjectBinding(currentPlayer::getAvailablePowers, currentPlayer.availablePowerUsesProperty())
+            );
+            powerModel.selectedPowerProperty().bind(powerListView.getSelectionModel().selectedItemProperty());
+        }
 
 
 

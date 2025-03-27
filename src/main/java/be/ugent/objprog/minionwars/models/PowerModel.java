@@ -5,6 +5,7 @@ import be.ugent.objprog.minionwars.effects.EffectFactory;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.powers.Power;
 import be.ugent.objprog.minionwars.powers.PowerFactory;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -13,12 +14,15 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class PowerModel {
-    private final ObservableList<Power> powers ;
+    private final ObservableList<Power> powers;
     private final PowerFactory powerFactory = new PowerFactory();
-    private final EffectFactory effectFactory =  new EffectFactory();
+    private final EffectFactory effectFactory = new EffectFactory();
+    private final SimpleObjectProperty<Power> selectedPower = new SimpleObjectProperty<>();
+
     public PowerModel(JDOMReader reader, Locale locale) {
-        this.powers =FXCollections.observableArrayList(reader.getPowers());
+        this.powers = FXCollections.observableArrayList(reader.getPowers());
     }
+
     public ObservableList<Power> getBasePowers() {
         return powers;
     }
@@ -42,6 +46,18 @@ public class PowerModel {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Power getSelectedPower() {
+        return selectedPower.get();
+    }
+
+    public void setSelectedPower(Power selectedPower) {
+        this.selectedPower.set(selectedPower);
+    }
+
+    public SimpleObjectProperty<Power> selectedPowerProperty() {
+        return selectedPower;
     }
 
 

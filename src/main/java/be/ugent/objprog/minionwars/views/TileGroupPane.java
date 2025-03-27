@@ -41,12 +41,12 @@ public class TileGroupPane extends Pane {
         initializeTiles();  // Create the tiles once
 
         // Update tiles to match selection
-        selectedHexTileProperty().addListener((observable, oldValue, newValue) -> {
+        tileModel.selectedTileProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != null) {
-                oldValue.setSelected(false);
+                getHexTileGrid()[oldValue.getXCoord()][oldValue.getYCoord()].setSelected(false);
             }
             if (newValue != null) {
-                newValue.setSelected(true);
+                getHexTileGrid()[newValue.getXCoord()][newValue.getYCoord()].setSelected(true);
             }
         });
 

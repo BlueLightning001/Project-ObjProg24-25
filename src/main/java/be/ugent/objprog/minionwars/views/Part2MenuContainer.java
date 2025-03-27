@@ -69,9 +69,13 @@ public class Part2MenuContainer extends VBox {
         ButtonBar.setButtonData(restButton, ButtonBar.ButtonData.BIG_GAP);
 
         // Listeners
-        tileGroupPane.selectedHexTileProperty().addListener((obs, oldTile, newTile) -> {
-            setSelected(newTile);
-
+        tileModel.selectedTileProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("VALUE CHANGED FROM " + oldValue + " TO " + newValue);
+            if (newValue != null) {
+                setSelected(tileGroupPane.getHexTileGrid()[newValue.getXCoord()][newValue.getYCoord()]);
+            } else {
+                setSelected(null);
+            }
         });
 
 

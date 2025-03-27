@@ -191,7 +191,7 @@ public class GameController {
                 if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
                     // Select the tile
                     System.out.println("SELECTED: " + hexTile.getTile());
-                    view.getGameTileGroupPane().setSelectedHexTile(hexTile);
+                    setSelected(hexTile);
                 }
 
             }
@@ -214,11 +214,11 @@ public class GameController {
         });
 
         // Refresh ui when
-        view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-            updateActionUI(newTab);
-        });
-        view.getPart2MenuContainer().getSelectedMinionDisplay().selectedMinionProperty().addListener((obs) -> {
+        tileModel.selectedTileProperty().addListener((observable) -> {
             updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem());
+        });
+        view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            updateActionUI(newValue);
         });
 
 
@@ -230,7 +230,8 @@ public class GameController {
         clearHighlights();
 
         Player currentPlayer = this.playerModel.getCurrentPlayer();
-        HexTile hexTile = view.getGameTileGroupPane().getSelectedHexTile();
+        Tile selectedTile = tileModel.getSelectedTile();
+        HexTile hexTile = view.getHexTile(selectedTile);
         Color attackColor = Color.RED;
         Color moveColor = Color.GREEN;
 
@@ -257,7 +258,7 @@ public class GameController {
 
                 clearHighlights();
                 // Get the currently selected power
-                Power selectedPower = view.getActionsTabPane().getPowerListView().getSelectionModel().getSelectedItem();
+                Power selectedPower = powerModel.getSelectedPower();
                 if (selectedPower == null) {
                     clearHighlights();
                     return;
@@ -271,7 +272,7 @@ public class GameController {
             };
 
             specialMouseClickedHandler = event -> {
-                Power selectedPower = view.getActionsTabPane().getPowerListView().getSelectionModel().getSelectedItem();
+                Power selectedPower = powerModel.getSelectedPower();
                 HexTile clickedTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
                 System.out.println(currentPlayer.getAvailablePowerUses() +", POWERS: " + currentPlayer.getAvailablePowers() );
                 if (clickedTile != null && selectedPower != null && currentPlayer.getAvailablePowerUses() > 0) {
@@ -392,8 +393,7 @@ public class GameController {
         }
     }
     private void setSelected(HexTile hexTile){
-        view.getPart2MenuContainer().setSelected(hexTile);
-        view.getGameTileGroupPane().setSelectedHexTile(hexTile);
+        tileModel.setSelectedTile(hexTile.getTile());
     }
     public void endGame() {
         //TODO launch new game
