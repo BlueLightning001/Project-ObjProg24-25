@@ -32,16 +32,17 @@ public class ActionsPane extends TabPane {
     private final PowerModel powerModel;
     private final ResourceBundle bundle;
     private final ListView<Power> powerListView;
-    private Locale locale;
-    private double font = 15;
-    private double error = 50; //%
-    private Button moveButton;
-    private Button attackButton;
-    private Button specialAttackButton;
-    private Button healButton;
     private final Tab moveTab;
     private final Tab attackTab;
     private final Tab specialTab;
+    private Locale locale;
+    private double font = 15;
+    private double error = 50; //%
+    private Button skipButton;
+    private Button stayButton;
+    private Button attackButton;
+    private Button specialAttackButton;
+    private Button healButton;
     public ActionsPane(PlayerModel playerModel, PowerModel powerModel, Locale locale) {
         super();
         this.locale = locale;
@@ -49,10 +50,10 @@ public class ActionsPane extends TabPane {
         bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         //// Moving
-        moveTab = getMoveTab();
+        moveTab = makeMoveTab();
 
         //// Attacking
-        attackTab = getAttackTab();
+        attackTab = makeAttackTab();
 
         //// Special Moves
         specialTab = new Tab(bundle.getString("actions.special"));
@@ -82,7 +83,6 @@ public class ActionsPane extends TabPane {
             );
             powerModel.selectedPowerProperty().bind(powerListView.getSelectionModel().selectedItemProperty());
         }
-
 
 
         powerListView.setCellFactory(listView -> new ListCell<>() {
@@ -152,7 +152,6 @@ public class ActionsPane extends TabPane {
                 detailsGrid.add(effectLabel, 1, 1);
 
 
-
                 // Set alignment and spacing for containers
                 cellContainer.setSpacing(10);
                 infoBox.setSpacing(2);
@@ -214,15 +213,12 @@ public class ActionsPane extends TabPane {
                     effectLabel.setGraphic(effectIcon);
 
 
-
                     setGraphic(cellContainer);
 
                     setDisable(playerModel.getCurrentPlayer().getAvailablePowerUses() <= 0);
                 }
             }
         });
-
-
 
 
         specialTab.setContent(powerListView);
@@ -234,7 +230,29 @@ public class ActionsPane extends TabPane {
         setStyle("-fx-border-color: blue; -fx-border-width: 5;");
     }
 
-    private Tab getAttackTab() {
+    private Tab makeMoveTab() {
+        Tab moveTab = new Tab(this.bundle.getString("actions.move"));
+        StackPane movePane = new StackPane();
+        VBox.setVgrow(movePane, Priority.ALWAYS);
+        HBox.setHgrow(movePane, Priority.ALWAYS);
+
+        VBox moveContent = new VBox();
+        moveContent.setAlignment(Pos.CENTER);
+
+        Label moveLabel = new Label("Move Label");
+        styleNode(moveLabel, movePane, 0.7, 0.4);
+
+        stayButton = new Button("Stand still");
+        styleNode(stayButton, movePane, 0.5, 0.1);
+
+
+        moveContent.getChildren().addAll(moveLabel, stayButton);
+        movePane.getChildren().add(moveContent);
+        moveTab.setContent(movePane);
+        return moveTab;
+    }
+
+    private Tab makeAttackTab() {
         Tab attackTab = new Tab(this.bundle.getString("actions.attack"));
         StackPane attackPane = new StackPane();
         VBox.setVgrow(attackPane, Priority.ALWAYS);
@@ -246,22 +264,28 @@ public class ActionsPane extends TabPane {
         attackContent.setAlignment(Pos.CENTER);
 
         Label attackLabel = new Label("Attack Label");
-        styleNode(attackLabel,attackPane,0.7,0.4);
+        styleNode(attackLabel, attackPane, 0.7, 0.4);
 
         attackButton = new Button("Normal attack");
-        styleNode(attackButton,attackPane,0.5,0.1);
+        styleNode(attackButton, attackPane, 0.5, 0.1);
 
         specialAttackButton = new Button("Special attack");
-        styleNode(specialAttackButton,attackPane,0.5,0.1);
+        styleNode(specialAttackButton, attackPane, 0.5, 0.1);
+
 
         Label orLabel = new Label("Or Label");
-        styleNode(orLabel,attackPane,0.7,0.1);
+        styleNode(orLabel, attackPane, 0.7, 0.1);
 
         healButton = new Button("Heal");
-        styleNode(healButton,attackPane,0.5,0.1);
+        styleNode(healButton, attackPane, 0.5, 0.1);
 
+        skipButton = new Button("skip");
+        styleNode(skipButton, attackPane, 0.5, 0.1);
 
-        attackContent.getChildren().addAll(attackLabel,attackButton,specialAttackButton, orLabel, healButton);
+        Label orLabel2 = new Label("Or Label2");
+        styleNode(orLabel2, attackPane, 0.7, 0.1);
+
+        attackContent.getChildren().addAll(attackLabel, attackButton, specialAttackButton, orLabel, healButton, orLabel2, skipButton);
         attackPane.getChildren().add(attackContent);
         attackTab.setContent(attackPane);
         return attackTab;
@@ -280,6 +304,7 @@ public class ActionsPane extends TabPane {
         });
 
     }
+
     private void styleNode(Button toBeStyled, StackPane container, double width, double height) {
         toBeStyled.setAlignment(Pos.CENTER);
         toBeStyled.prefWidthProperty().bind(container.widthProperty().multiply(width));
@@ -293,35 +318,39 @@ public class ActionsPane extends TabPane {
 
 
     }
-    public ListView<Power> getPowerListView(){
+
+    public Button getAttackButton() {
+        return attackButton;
+    }
+
+    public Tab getAttackTab() {
+        return attackTab;
+    }
+
+    public Button getHealButton() {
+        return healButton;
+    }
+
+    public Tab getMoveTab() {
+        return moveTab;
+    }
+
+    public ListView<Power> getPowerListView() {
         return powerListView;
     }
-    private Tab getMoveTab() {
-        Tab moveTab = new Tab(this.bundle.getString("actions.move"));
-        StackPane movePane = new StackPane();
-        VBox.setVgrow(movePane, Priority.ALWAYS);
-        HBox.setHgrow(movePane, Priority.ALWAYS);
 
-        VBox moveContent = new VBox();
-        moveContent.setAlignment(Pos.CENTER);
+    public Button getSpecialAttackButton() {
+        return specialAttackButton;
+    }
 
-        Label moveLabel = new Label("Move Label");
-        styleNode(moveLabel,movePane,0.7,0.4);
-
-        moveButton = new Button("Stand still");
-        styleNode(moveButton,movePane,0.5,0.1);
-
-
-        moveContent.getChildren().addAll(moveLabel, moveButton);
-        movePane.getChildren().add(moveContent);
-        moveTab.setContent(movePane);
-        return moveTab;
+    public Button getStayButton() {
+        return stayButton;
     }
 
     public void updateSelected(HexTile hexTile) {
         if (hexTile != null) {
-            if (hexTile.getTile().isOccupied()){
-               getTabs().setAll(moveTab,attackTab,specialTab);
+            if (hexTile.getTile().isOccupied()) {
+                getTabs().setAll(moveTab, attackTab, specialTab);
             } else {
                 getTabs().setAll(specialTab);
             }

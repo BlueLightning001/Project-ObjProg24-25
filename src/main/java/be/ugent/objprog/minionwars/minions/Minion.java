@@ -1,5 +1,6 @@
 package be.ugent.objprog.minionwars.minions;
 
+import be.ugent.objprog.minionwars.effects.EffectFactory;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.tiles.Tile;
@@ -25,6 +26,8 @@ public class Minion {
     private final int baseDefence;
     private final int baseAttack;
     private final int baseMovement;
+    private final int baseRecoveryCharges = 2;
+    private final SimpleIntegerProperty recoveryCharges = new SimpleIntegerProperty(baseRecoveryCharges);
     private final Integer[] baseRange;
     private final SimpleBooleanProperty moved = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty attacked = new SimpleBooleanProperty(false);
@@ -34,7 +37,6 @@ public class Minion {
     private Player owner = null;  //TODO REMOVE UNNECESSARY PROPERTIES AND REPLACE THEM WITH NORMAL VALUES
     private ObservableList<MinionEffect> statusAilments = FXCollections.observableArrayList();
     private Tile occupiedTile = null;
-
     public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {
         this.type = new SimpleStringProperty(type);
         this.name = new SimpleStringProperty(name);
@@ -58,12 +60,8 @@ public class Minion {
         }
     }
 
-    public void addStatusAilment(MinionEffect effect) {
-        if (effect != null) {
-            statusAilments.removeIf(e -> e.getClass().equals(effect.getClass()) && e.getValue() <= effect.getValue()); // "Refreshes" the statusAilment if it is higher
-            statusAilments.add(effect);
-            System.out.println(statusAilments);
-        }
+    public void addRecoveryCharges(int recoveryCharges) {
+        this.recoveryCharges.add(recoveryCharges);
     }
 
     public void applyEffectLogic(MinionEffect effect) {
@@ -94,15 +92,6 @@ public class Minion {
 
     public SimpleIntegerProperty costProperty() {
         return cost;
-    }
-
-    public void decreaseDefence(int value) {
-        System.out.println("CURRENT DEFENSE: " + defence.get());
-        System.out.println("VALUE: " + value);
-        if (this.defence.get() <= value) { //Character dies
-            markDead();
-        }
-        this.defence.set(this.defence.get() - value);
     }
 
     public SimpleIntegerProperty defenceProperty() {
@@ -141,20 +130,20 @@ public class Minion {
         return minionIcon;
     }
 
-    public Tile getOccupiedTile() {
-        return occupiedTile;
-    }
-
-    public void setOccupiedTile(Tile occupiedTile) {
-        this.occupiedTile = occupiedTile;
-    }
-
     public Player getOwner() {
         return owner;
     }
 
     public void setOwner(Player owner) {
         this.owner = owner;
+    }
+
+    public int getRecoveryCharges() {
+        return recoveryCharges.get();
+    }
+
+    public void setRecoveryCharges(int recoveryCharges) {
+        this.recoveryCharges.set(recoveryCharges);
     }
 
     public ObservableList<MinionEffect> getStatusAilments() {
@@ -172,16 +161,7 @@ public class Minion {
     public boolean hasAttacked() {
         return attacked.get();
     }
-    public void attack(Minion target) {
-        int attackPower = this.attack.get();
-        target.decreaseDefence(attackPower);
-        setAttacked(true);
-    }
-    public void markDead(){
-        this.getOccupiedTile().setOccupant(null);
-        owner.removeMinion(this);
 
-    }
     public boolean hasMoved() {
         return moved.get();
     }
@@ -220,6 +200,10 @@ public class Minion {
         return name;
     }
 
+    public SimpleIntegerProperty recoveryChargesProperty() {
+        return recoveryCharges;
+    }
+
     public void reduceAilmentValue() {
         for (MinionEffect minionEffect : new ArrayList<>(statusAilments)) {
             minionEffect.reduceDuration();
@@ -238,8 +222,55 @@ public class Minion {
         setAttacked(false);
     }
 
+    public void specialAttack(Minion target) {
+        attack(target);
+        if (effect != null) {
+            EffectFactory effectFactory = new EffectFactory();
+            MinionEffect effectClone = effectFactory.createEffect(effect.getClass().getSimpleName().toLowerCase().replace("effect", ""),
+                    effect.getDuration(), effect.getValue());
+            target.addStatusAilment(effectClone);
+        }
+    }
+
+    public void attack(Minion target) {
+        int attackPower = this.attack.get();
+        target.decreaseDefence(attackPower);
+        setAttacked(true);
+    }
+
+    public void addStatusAilment(MinionEffect effect) {
+        if (effect != null) {
+            statusAilments.removeIf(e -> e.getClass().equals(effect.getClass()) && e.getValue() <= effect.getValue()); // "Refreshes" the statusAilment if it is higher
+            statusAilments.add(effect);
+            System.out.println(statusAilments);
+        }
+    }
+
+    public void decreaseDefence(int value) {
+        System.out.println("CURRENT DEFENSE: " + defence.get());
+        System.out.println("VALUE: " + value);
+        if (this.defence.get() <= value) { //Character dies
+            markDead();
+        }
+        this.defence.set(this.defence.get() - value);
+    }
+
     public void setAttacked(boolean attacked) {
         this.attacked.set(attacked);
+    }
+
+    public void markDead() {
+        this.getOccupiedTile().setOccupant(null);
+        owner.removeMinion(this);
+
+    }
+
+    public Tile getOccupiedTile() {
+        return occupiedTile;
+    }
+
+    public void setOccupiedTile(Tile occupiedTile) {
+        this.occupiedTile = occupiedTile;
     }
 
     @Override

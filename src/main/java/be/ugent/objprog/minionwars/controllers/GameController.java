@@ -16,6 +16,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.input.KeyCode;
@@ -246,6 +247,21 @@ public class GameController {
         if (specialMouseMovedHandler != null) {
             view.getGameTileGroupPane().removeEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
         }
+        Tab attackTab = view.getActionsTabPane().getAttackTab();
+        Tab moveTab = view.getActionsTabPane().getMoveTab();
+
+        attackTab.disableProperty().unbind();
+        moveTab.disableProperty().unbind();
+
+        if (selectedTile != null && selectedTile.isOccupied()) {
+            Minion occupant = selectedTile.getOccupant();
+
+            attackTab.disableProperty().bind(occupant.attackedProperty());
+            moveTab.disableProperty().bind(occupant.movedProperty());
+        } else {
+            attackTab.setDisable(true);
+            moveTab.setDisable(true);
+        }
 
 
         if (tabText.equals(bundle.getString("actions.special"))) {
@@ -292,6 +308,12 @@ public class GameController {
         } else if (tabText.equals(bundle.getString("actions.attack"))) {
             if (hexTile != null && hexTile.getTile().isOccupied() ) {
                 Minion occupant = hexTile.getTile().getOccupant();
+                Button attackButton= view.getActionsTabPane().getAttackButton();
+                Button specialAttackButton = view.getActionsTabPane().getSpecialAttackButton();
+
+                attackButton.disableProperty().unbind();
+                specialAttackButton.disableProperty().unbind();
+
                 if (occupant != null && hexTile.getTile().isAbleToAttack() && !occupant.hasAttacked()) {
                     int minRange = occupant.getRange().getFirst();
                     int maxRange = occupant.getRange().getLast();
