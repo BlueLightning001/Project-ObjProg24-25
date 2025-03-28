@@ -53,7 +53,7 @@ public class Part2MenuContainer extends VBox {
 
 
         //// Actions Tabs
-        actionsPane = new ActionsPane(playerModel, powerModel, locale);
+        actionsPane = new ActionsPane(tileModel,playerModel, powerModel, locale);
         actionsPane.setVisible(false);
 
         //// Buttons

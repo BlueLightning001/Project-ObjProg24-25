@@ -1,15 +1,19 @@
 package be.ugent.objprog.minionwars.views;
 
+import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
+import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.powers.Power;
+import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ListCell;
@@ -27,6 +31,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -46,10 +51,14 @@ public class ActionsPane extends TabPane {
     private ToggleButton attackButton;
     private ToggleButton specialAttackButton;
     private Button healButton;
-    public ActionsPane(PlayerModel playerModel, PowerModel powerModel, Locale locale) {
+    private TileModel tileModel;
+    private ToggleGroup attackToggleGroup;
+
+    public ActionsPane(TileModel tileModel, PlayerModel playerModel, PowerModel powerModel, Locale locale) {
         super();
         this.locale = locale;
         this.powerModel = powerModel;
+        this.tileModel = tileModel;
         bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         //// Moving
@@ -222,6 +231,8 @@ public class ActionsPane extends TabPane {
                 }
             }
         });
+        // Update UI when selected tile changes
+        tileModel.selectedTileProperty().addListener((obs, oldTile, newTile) -> updateAttackOptions(newTile));
 
 
         specialTab.setContent(powerListView);
@@ -254,7 +265,35 @@ public class ActionsPane extends TabPane {
         moveTab.setContent(movePane);
         return moveTab;
     }
+    private void updateAttackOptions(Tile selectedTile) {
+        if (selectedTile != null && selectedTile.isOccupied()) {
+            Minion occupant = selectedTile.getOccupant();
+            boolean hasSpecialAttack = occupant.hasSpecialAttack();
 
+            // Enable/disable buttons based on minion's abilities
+            specialAttackButton.setDisable(!hasSpecialAttack);
+            specialAttackButton.setVisible(hasSpecialAttack);
+            if (hasSpecialAttack) {
+                ImageView effectImageView = new ImageView(occupant.getEffect().getImage());
+                specialAttackButton.setGraphic(effectImageView);
+                effectImageView.fitHeightProperty().bind(specialAttackButton.heightProperty().multiply(0.3));
+                effectImageView.setPreserveRatio(true);
+                specialAttackButton.setContentDisplay(ContentDisplay.RIGHT);
+                specialAttackButton.setText(bundle.getString("actions.attack.specialAttack")+ "\n"+ MessageFormat.format(bundle.getString("power.effect" ), occupant.getEffect().getName(locale)));
+
+            }
+
+            attackButton.setText(bundle.getString("actions.attack.normalAttack"));
+
+            // Always default to normal attack when selecting a new minion
+            attackToggleGroup.selectToggle(attackButton);
+        } else {
+            // No minion selected, disable attack options
+            attackButton.setDisable(true);
+            specialAttackButton.setDisable(true);
+            specialAttackButton.setVisible(false);
+        }
+    }
     private Tab makeAttackTab() {
         Tab attackTab = new Tab(this.bundle.getString("actions.attack"));
         StackPane attackPane = new StackPane();
@@ -268,14 +307,16 @@ public class ActionsPane extends TabPane {
         styleNode(attackLabel, attackPane, 0.7, 0.4);
 
         // Create a ToggleGroup for the attack buttons
-        ToggleGroup attackToggleGroup = new ToggleGroup();
+        attackToggleGroup = new ToggleGroup();
 
         attackButton = new ToggleButton("Normal attack");
         styleNode(attackButton, attackPane, 0.5, 0.1);
         attackButton.setToggleGroup(attackToggleGroup);
 
         specialAttackButton = new ToggleButton("Special attack");
-        styleNode(specialAttackButton, attackPane, 0.5, 0.1);
+        specialAttackButton.setMinHeight(70);
+        styleNode(specialAttackButton, attackPane, 0.5, 0.2);
+        autoResizeText(specialAttackButton,0.2);
         specialAttackButton.setToggleGroup(attackToggleGroup);
 
         Label orLabel = new Label("Or Label");
@@ -313,6 +354,15 @@ public class ActionsPane extends TabPane {
 
 
     }
+    private void autoResizeText(Labeled label, double scaleFactor) {
+        label.prefHeightProperty().addListener((obs, oldWidth, newWidth) -> {
+            Platform.runLater(() -> {
+                double fontSize = newWidth.doubleValue() * scaleFactor;
+                label.setStyle("-fx-font-size: " + fontSize + "px;");
+            });
+        });
+    }
+
 
     public ToggleButton getAttackButton() {
         return attackButton;

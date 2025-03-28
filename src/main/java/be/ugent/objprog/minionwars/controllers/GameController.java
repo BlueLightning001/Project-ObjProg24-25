@@ -328,12 +328,6 @@ public class GameController {
                     List<Tile> attackableTiles = highlightRange(hexTile, minRange, maxRange, attackColor);
                     clearMinionHighlights(occupant.getOwner(), null);
 
-                    // Check if the minion has a special attack
-                    boolean hasSpecialAttack = occupant.hasSpecialAttack();
-                    specialAttackButton.setDisable(!hasSpecialAttack);
-
-                    // Set default selection to "Attack"
-                    attackToggleGroup.selectToggle(attackButton);
 
                     // Attack on click
                     specialMouseClickedHandler = event -> {
@@ -347,7 +341,7 @@ public class GameController {
                                 && target.getOwner() != occupant.getOwner()  // Ensure it's an enemy
                                 && attackableTiles.contains(clickedHexTile.getTile())) {  // Check if it's within range
 
-                            if (specialAttackButton.isSelected() && hasSpecialAttack) {
+                            if (specialAttackButton.isSelected() && occupant.hasSpecialAttack()) {
                                 occupant.specialAttack(target);  // Execute special attack
                                 System.out.println(occupant + " used special attack on " + target);
                             } else {
