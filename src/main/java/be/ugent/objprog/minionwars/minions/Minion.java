@@ -28,6 +28,7 @@ public class Minion {
     private final int baseMovement;
     private final int baseRecoveryCharges = 2;
     private final SimpleIntegerProperty recoveryCharges = new SimpleIntegerProperty(baseRecoveryCharges);
+    private final SimpleIntegerProperty healCharges = new SimpleIntegerProperty(2);
     private final Integer[] baseRange;
     private final SimpleBooleanProperty moved = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty attacked = new SimpleBooleanProperty(false);
@@ -100,6 +101,10 @@ public class Minion {
 
     public int getAttack() {
         return attack.get();
+    }
+
+    public boolean hasSpecialAttack() {
+        return this.effect != null;
     }
 
     public void setAttack(int attack) {

@@ -19,6 +19,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -306,11 +308,15 @@ public class GameController {
             view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
 
         } else if (tabText.equals(bundle.getString("actions.attack"))) {
-            if (hexTile != null && hexTile.getTile().isOccupied() ) {
+            if (hexTile != null && hexTile.getTile().isOccupied()) {
                 Minion occupant = hexTile.getTile().getOccupant();
-                Button attackButton= view.getActionsTabPane().getAttackButton();
-                Button specialAttackButton = view.getActionsTabPane().getSpecialAttackButton();
+                ToggleButton attackButton = view.getActionsTabPane().getAttackButton();
+                ToggleButton specialAttackButton = view.getActionsTabPane().getSpecialAttackButton();
+                ToggleGroup attackToggleGroup = attackButton.getToggleGroup();
 
+                attackButton.setSelected(true);
+
+                // Unbind existing properties
                 attackButton.disableProperty().unbind();
                 specialAttackButton.disableProperty().unbind();
 
@@ -321,6 +327,13 @@ public class GameController {
                     // Get all attackable tiles
                     List<Tile> attackableTiles = highlightRange(hexTile, minRange, maxRange, attackColor);
                     clearMinionHighlights(occupant.getOwner(), null);
+
+                    // Check if the minion has a special attack
+                    boolean hasSpecialAttack = occupant.hasSpecialAttack();
+                    specialAttackButton.setDisable(!hasSpecialAttack);
+
+                    // Set default selection to "Attack"
+                    attackToggleGroup.selectToggle(attackButton);
 
                     // Attack on click
                     specialMouseClickedHandler = event -> {
@@ -334,10 +347,16 @@ public class GameController {
                                 && target.getOwner() != occupant.getOwner()  // Ensure it's an enemy
                                 && attackableTiles.contains(clickedHexTile.getTile())) {  // Check if it's within range
 
-                            occupant.attack(target);  // Execute attack
+                            if (specialAttackButton.isSelected() && hasSpecialAttack) {
+                                occupant.specialAttack(target);  // Execute special attack
+                                System.out.println(occupant + " used special attack on " + target);
+                            } else {
+                                occupant.attack(target);  // Execute normal attack
+                                System.out.println(occupant + " attacked " + target);
+                            }
+
                             clearHighlights();
                             setSelected(null);
-                            System.out.println(occupant + " attacked " + target);
                         }
                     };
 
@@ -345,9 +364,8 @@ public class GameController {
                     view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
                 }
             }
-
-
-        } else if (tabText.equals(bundle.getString("actions.move"))) {
+        }
+        else if (tabText.equals(bundle.getString("actions.move"))) {
             if (hexTile != null && hexTile.getTile().isOccupied() && !hexTile.getTile().getOccupant().hasMoved() ) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {

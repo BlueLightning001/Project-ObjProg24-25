@@ -11,11 +11,14 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -40,8 +43,8 @@ public class ActionsPane extends TabPane {
     private double error = 50; //%
     private Button skipButton;
     private Button stayButton;
-    private Button attackButton;
-    private Button specialAttackButton;
+    private ToggleButton attackButton;
+    private ToggleButton specialAttackButton;
     private Button healButton;
     public ActionsPane(PlayerModel playerModel, PowerModel powerModel, Locale locale) {
         super();
@@ -258,20 +261,22 @@ public class ActionsPane extends TabPane {
         VBox.setVgrow(attackPane, Priority.ALWAYS);
         HBox.setHgrow(attackPane, Priority.ALWAYS);
 
-
         VBox attackContent = new VBox();
-
         attackContent.setAlignment(Pos.CENTER);
 
         Label attackLabel = new Label("Attack Label");
         styleNode(attackLabel, attackPane, 0.7, 0.4);
 
-        attackButton = new Button("Normal attack");
+        // Create a ToggleGroup for the attack buttons
+        ToggleGroup attackToggleGroup = new ToggleGroup();
+
+        attackButton = new ToggleButton("Normal attack");
         styleNode(attackButton, attackPane, 0.5, 0.1);
+        attackButton.setToggleGroup(attackToggleGroup);
 
-        specialAttackButton = new Button("Special attack");
+        specialAttackButton = new ToggleButton("Special attack");
         styleNode(specialAttackButton, attackPane, 0.5, 0.1);
-
+        specialAttackButton.setToggleGroup(attackToggleGroup);
 
         Label orLabel = new Label("Or Label");
         styleNode(orLabel, attackPane, 0.7, 0.1);
@@ -279,33 +284,23 @@ public class ActionsPane extends TabPane {
         healButton = new Button("Heal");
         styleNode(healButton, attackPane, 0.5, 0.1);
 
-        skipButton = new Button("skip");
+        skipButton = new Button("Skip");
         styleNode(skipButton, attackPane, 0.5, 0.1);
 
         Label orLabel2 = new Label("Or Label2");
         styleNode(orLabel2, attackPane, 0.7, 0.1);
 
-        attackContent.getChildren().addAll(attackLabel, attackButton, specialAttackButton, orLabel, healButton, orLabel2, skipButton);
+        attackContent.getChildren().addAll(
+                attackLabel, attackButton, specialAttackButton,
+                orLabel, healButton, orLabel2, skipButton
+        );
         attackPane.getChildren().add(attackContent);
         attackTab.setContent(attackPane);
+
         return attackTab;
     }
 
-    private void styleNode(Label toBeStyled, StackPane container, double width, double height) {
-        toBeStyled.setWrapText(true);
-        toBeStyled.setAlignment(Pos.CENTER);
-        toBeStyled.prefWidthProperty().bind(container.widthProperty().multiply(width));
-        toBeStyled.prefHeightProperty().bind(container.heightProperty().multiply(height));
-        toBeStyled.widthProperty().addListener(obs -> {
-            Platform.runLater(() -> {
-                double fontSize = toBeStyled.getWidth() * 0.1;
-                toBeStyled.setStyle("-fx-font-size: " + fontSize + "px;");
-            });
-        });
-
-    }
-
-    private void styleNode(Button toBeStyled, StackPane container, double width, double height) {
+    private void styleNode(Labeled toBeStyled, StackPane container, double width, double height) {
         toBeStyled.setAlignment(Pos.CENTER);
         toBeStyled.prefWidthProperty().bind(container.widthProperty().multiply(width));
         toBeStyled.prefHeightProperty().bind(container.heightProperty().multiply(height));
@@ -319,7 +314,7 @@ public class ActionsPane extends TabPane {
 
     }
 
-    public Button getAttackButton() {
+    public ToggleButton getAttackButton() {
         return attackButton;
     }
 
@@ -339,7 +334,7 @@ public class ActionsPane extends TabPane {
         return powerListView;
     }
 
-    public Button getSpecialAttackButton() {
+    public ToggleButton getSpecialAttackButton() {
         return specialAttackButton;
     }
 
