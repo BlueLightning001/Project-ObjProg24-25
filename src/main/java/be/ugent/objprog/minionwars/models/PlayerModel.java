@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -105,7 +106,8 @@ public class PlayerModel {
                 minion.reduceAilmentValue();
             });
         }
-        currentPlayer.get().getMinions().forEach(Minion::activateStatusAilments);
+        // New to prevent concurrent modification (caused by status effect expiring)
+        new  ArrayList<>(currentPlayer.get().getMinions()).forEach(Minion::activateStatusAilments);
         turnCounter.set(turnCounter.get() + 1); // To show how many turns you played after the game ends
     }
 

@@ -27,7 +27,21 @@ public class Minion {
     private final int baseAttack;
     private final int baseMovement;
     private final int baseRecoveryCharges = 2;
+    public final static int HEAL_CHARGE_VALUE = 2;
     private final SimpleIntegerProperty recoveryCharges = new SimpleIntegerProperty(baseRecoveryCharges);
+
+    public int getHealCharges() {
+        return healCharges.get();
+    }
+    public void useHealCharge(){
+        healCharges.set(healCharges.get() - 1);
+        setAttacked(true);
+    }
+
+    public SimpleIntegerProperty healChargesProperty() {
+        return healCharges;
+    }
+
     private final SimpleIntegerProperty healCharges = new SimpleIntegerProperty(2);
     private final Integer[] baseRange;
     private final SimpleBooleanProperty moved = new SimpleBooleanProperty(false);

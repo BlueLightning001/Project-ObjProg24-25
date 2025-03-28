@@ -320,6 +320,26 @@ public class GameController {
                 attackButton.disableProperty().unbind();
                 specialAttackButton.disableProperty().unbind();
 
+                if (occupant != null && !occupant.hasAttacked()) {
+                    Button healButton = view.getActionsTabPane().getHealButton();
+                    Button skipButton = view.getActionsTabPane().getSkipButton();
+
+                    healButton.disableProperty().unbind();
+                    healButton.disableProperty().bind(occupant.healChargesProperty().lessThanOrEqualTo(0));
+                    healButton.setOnAction(event -> {
+                        occupant.useHealCharge();
+                        occupant.heal(Minion.HEAL_CHARGE_VALUE);
+
+                        invalidateAndUpdateSelectedMinion();
+                    });
+
+                    skipButton.setOnAction(event -> {
+                        occupant.setAttacked(true);
+                    });
+
+                }
+
+
                 if (occupant != null && hexTile.getTile().isAbleToAttack() && !occupant.hasAttacked()) {
                     int minRange = occupant.getRange().getFirst();
                     int maxRange = occupant.getRange().getLast();
@@ -350,7 +370,7 @@ public class GameController {
                             }
 
                             clearHighlights();
-                            setSelected(null);
+                            invalidateAndUpdateSelectedMinion();
                         }
                     };
 
@@ -399,7 +419,18 @@ public class GameController {
 
         }
     }
+    private void invalidateAndUpdateSelectedMinion() {
+        // Assuming you have a tile model that tracks the selected tile
+        Tile selectedTile = tileModel.getSelectedTile();
 
+        if (selectedTile != null && selectedTile.isOccupied()) {
+            Minion selectedMinion = selectedTile.getOccupant();
+
+            // invalidate the selected minion in the view
+            tileModel.setSelectedTile(null);
+            tileModel.setSelectedTile(selectedTile);  // Re-select the minion to trigger a UI update
+        }
+    }
 
     // Helper method to undo highlights on tiles for certain situations
     private void clearMinionHighlights(Player clearFromPlayer1, Player clearFromPlayer2) {

@@ -53,7 +53,6 @@ public class ActionsPane extends TabPane {
     private Button healButton;
     private TileModel tileModel;
     private ToggleGroup attackToggleGroup;
-
     public ActionsPane(TileModel tileModel, PlayerModel playerModel, PowerModel powerModel, Locale locale) {
         super();
         this.locale = locale;
@@ -121,6 +120,7 @@ public class ActionsPane extends TabPane {
             private final VBox infoBox = new VBox(nameLabel, descriptionLabel);
             private final GridPane detailsGrid = new GridPane();
             private final HBox cellContainer = new HBox(powerIcon, infoBox, separator, detailsGrid);
+
 
             {
 
@@ -265,6 +265,61 @@ public class ActionsPane extends TabPane {
         moveTab.setContent(movePane);
         return moveTab;
     }
+
+    private Tab makeAttackTab() {
+        Tab attackTab = new Tab(this.bundle.getString("actions.attack"));
+        StackPane attackPane = new StackPane();
+        VBox.setVgrow(attackPane, Priority.ALWAYS);
+        HBox.setHgrow(attackPane, Priority.ALWAYS);
+
+        VBox attackContent = new VBox();
+        attackContent.setAlignment(Pos.CENTER);
+
+        Label attackLabel = new Label(bundle.getString("actions.attack.attackLabel"));
+        styleNode(attackLabel, attackPane, 0.7, 0.4);
+        autoResizeText(attackLabel,0.2);
+        attackLabel.setWrapText(true);
+
+        // Create a ToggleGroup for the attack buttons
+        attackToggleGroup = new ToggleGroup();
+
+        attackButton = new ToggleButton("Normal attack");
+        styleNode(attackButton, attackPane, 0.5, 0.1);
+        attackButton.setToggleGroup(attackToggleGroup);
+
+        specialAttackButton = new ToggleButton("Special attack");
+        specialAttackButton.setMinHeight(70);
+        styleNode(specialAttackButton, attackPane, 0.5, 0.2);
+        autoResizeText(specialAttackButton, 0.15);
+        specialAttackButton.setToggleGroup(attackToggleGroup);
+
+        Label orLabel = new Label(bundle.getString("actions.or"));
+        styleNode(orLabel, attackPane, 0.7, 0.1);
+
+        healButton = new Button(MessageFormat.format(bundle.getString("actions.attack.heal"), Minion.HEAL_CHARGE_VALUE));
+        healButton.setContentDisplay(ContentDisplay.RIGHT);
+        ImageView healButtonImage = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/heal-D60000.png"))));
+        healButton.setGraphic(healButtonImage);
+        healButtonImage.fitHeightProperty().bind(healButton.heightProperty().multiply(0.3));
+        healButtonImage.setPreserveRatio(true);
+        styleNode(healButton, attackPane, 0.5, 0.1);
+
+        skipButton = new Button(bundle.getString("actions.attack.skip"));
+        styleNode(skipButton, attackPane, 0.5, 0.1);
+
+        Label orLabel2 = new Label(bundle.getString("actions.or"));
+        styleNode(orLabel2, attackPane, 0.7, 0.1);
+
+        attackContent.getChildren().addAll(
+                attackLabel, attackButton, specialAttackButton,
+                orLabel, healButton, orLabel2, skipButton
+        );
+        attackPane.getChildren().add(attackContent);
+        attackTab.setContent(attackPane);
+
+        return attackTab;
+    }
+
     private void updateAttackOptions(Tile selectedTile) {
         if (selectedTile != null && selectedTile.isOccupied()) {
             Minion occupant = selectedTile.getOccupant();
@@ -279,7 +334,7 @@ public class ActionsPane extends TabPane {
                 effectImageView.fitHeightProperty().bind(specialAttackButton.heightProperty().multiply(0.3));
                 effectImageView.setPreserveRatio(true);
                 specialAttackButton.setContentDisplay(ContentDisplay.RIGHT);
-                specialAttackButton.setText(bundle.getString("actions.attack.specialAttack")+ "\n"+ MessageFormat.format(bundle.getString("power.effect" ), occupant.getEffect().getName(locale)));
+                specialAttackButton.setText(bundle.getString("actions.attack.specialAttack") + "\n" + MessageFormat.format(bundle.getString("power.effect"), occupant.getEffect().getName(locale)));
 
             }
 
@@ -293,52 +348,6 @@ public class ActionsPane extends TabPane {
             specialAttackButton.setDisable(true);
             specialAttackButton.setVisible(false);
         }
-    }
-    private Tab makeAttackTab() {
-        Tab attackTab = new Tab(this.bundle.getString("actions.attack"));
-        StackPane attackPane = new StackPane();
-        VBox.setVgrow(attackPane, Priority.ALWAYS);
-        HBox.setHgrow(attackPane, Priority.ALWAYS);
-
-        VBox attackContent = new VBox();
-        attackContent.setAlignment(Pos.CENTER);
-
-        Label attackLabel = new Label("Attack Label");
-        styleNode(attackLabel, attackPane, 0.7, 0.4);
-
-        // Create a ToggleGroup for the attack buttons
-        attackToggleGroup = new ToggleGroup();
-
-        attackButton = new ToggleButton("Normal attack");
-        styleNode(attackButton, attackPane, 0.5, 0.1);
-        attackButton.setToggleGroup(attackToggleGroup);
-
-        specialAttackButton = new ToggleButton("Special attack");
-        specialAttackButton.setMinHeight(70);
-        styleNode(specialAttackButton, attackPane, 0.5, 0.2);
-        autoResizeText(specialAttackButton,0.2);
-        specialAttackButton.setToggleGroup(attackToggleGroup);
-
-        Label orLabel = new Label("Or Label");
-        styleNode(orLabel, attackPane, 0.7, 0.1);
-
-        healButton = new Button("Heal");
-        styleNode(healButton, attackPane, 0.5, 0.1);
-
-        skipButton = new Button("Skip");
-        styleNode(skipButton, attackPane, 0.5, 0.1);
-
-        Label orLabel2 = new Label("Or Label2");
-        styleNode(orLabel2, attackPane, 0.7, 0.1);
-
-        attackContent.getChildren().addAll(
-                attackLabel, attackButton, specialAttackButton,
-                orLabel, healButton, orLabel2, skipButton
-        );
-        attackPane.getChildren().add(attackContent);
-        attackTab.setContent(attackPane);
-
-        return attackTab;
     }
 
     private void styleNode(Labeled toBeStyled, StackPane container, double width, double height) {
@@ -354,6 +363,7 @@ public class ActionsPane extends TabPane {
 
 
     }
+
     private void autoResizeText(Labeled label, double scaleFactor) {
         label.prefHeightProperty().addListener((obs, oldWidth, newWidth) -> {
             Platform.runLater(() -> {
@@ -362,7 +372,6 @@ public class ActionsPane extends TabPane {
             });
         });
     }
-
 
     public ToggleButton getAttackButton() {
         return attackButton;
@@ -382,6 +391,10 @@ public class ActionsPane extends TabPane {
 
     public ListView<Power> getPowerListView() {
         return powerListView;
+    }
+
+    public Button getSkipButton() {
+        return skipButton;
     }
 
     public ToggleButton getSpecialAttackButton() {
