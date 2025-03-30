@@ -4,6 +4,8 @@ import be.ugent.objprog.minionwars.effects.EffectFactory;
 import be.ugent.objprog.minionwars.effects.MinionEffect;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.tiles.Tile;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -17,6 +19,7 @@ import java.util.List;
 
 
 public class Minion {
+    public final static int HEAL_CHARGE_VALUE = 2;
     private final SimpleStringProperty type;
     private final SimpleStringProperty name;
     private final SimpleIntegerProperty cost;
@@ -27,21 +30,8 @@ public class Minion {
     private final int baseAttack;
     private final int baseMovement;
     private final int baseRecoveryCharges = 2;
-    public final static int HEAL_CHARGE_VALUE = 2;
+    private final BooleanBinding hasActionsProperty;
     private final SimpleIntegerProperty recoveryCharges = new SimpleIntegerProperty(baseRecoveryCharges);
-
-    public int getHealCharges() {
-        return healCharges.get();
-    }
-    public void useHealCharge(){
-        healCharges.set(healCharges.get() - 1);
-        setAttacked(true);
-    }
-
-    public SimpleIntegerProperty healChargesProperty() {
-        return healCharges;
-    }
-
     private final SimpleIntegerProperty healCharges = new SimpleIntegerProperty(2);
     private final Integer[] baseRange;
     private final SimpleBooleanProperty moved = new SimpleBooleanProperty(false);
@@ -66,6 +56,14 @@ public class Minion {
         this.baseAttack = attack;
         this.effect = effect;
         this.minionIcon = minionIcon;
+
+        this.hasActionsProperty = Bindings.createBooleanBinding(
+                () -> !(moved.get() && attacked.get()),  // Should be false when both are true
+                moved,
+                attacked
+        );
+
+
     }
 
     public void activateStatusAilments() {
@@ -83,6 +81,10 @@ public class Minion {
         if (effect != null) {
             effect.applyEffect(this);
         }
+    }
+
+    public BooleanBinding hasActionsProperty() {
+        return hasActionsProperty;
     }
 
     public SimpleIntegerProperty attackProperty() {
@@ -117,10 +119,6 @@ public class Minion {
         return attack.get();
     }
 
-    public boolean hasSpecialAttack() {
-        return this.effect != null;
-    }
-
     public void setAttack(int attack) {
         this.attack.set(attack);
     }
@@ -143,6 +141,10 @@ public class Minion {
 
     public void setEffect(MinionEffect effect) {
         this.effect = effect;
+    }
+
+    public int getHealCharges() {
+        return healCharges.get();
     }
 
     public Image getMinionIcon() {
@@ -185,11 +187,19 @@ public class Minion {
         return moved.get();
     }
 
+    public boolean hasSpecialAttack() {
+        return this.effect != null;
+    }
+
     public void heal(int value) {
         this.defence.set(this.defence.get() + value);
         if (this.defence.get() > baseDefence) {
             this.defence.set(baseDefence);
         }
+    }
+
+    public SimpleIntegerProperty healChargesProperty() {
+        return healCharges;
     }
 
     public void moveTo(Tile newTile) {
@@ -241,6 +251,10 @@ public class Minion {
         setAttacked(false);
     }
 
+    public void rest() {
+        recoveryCharges.add(1);
+    }
+
     public void specialAttack(Minion target) {
         attack(target);
         if (effect != null) {
@@ -249,6 +263,7 @@ public class Minion {
                     effect.getDuration(), effect.getValue());
             target.addStatusAilment(effectClone);
         }
+        recoveryCharges.set(0);
     }
 
     public void attack(Minion target) {
@@ -272,10 +287,6 @@ public class Minion {
             markDead();
         }
         this.defence.set(this.defence.get() - value);
-    }
-
-    public void setAttacked(boolean attacked) {
-        this.attacked.set(attacked);
     }
 
     public void markDead() {
@@ -332,6 +343,15 @@ public class Minion {
 
     public SimpleStringProperty typeProperty() {
         return type;
+    }
+
+    public void useHealCharge() {
+        healCharges.set(healCharges.get() - 1);
+        setAttacked(true);
+    }
+
+    public void setAttacked(boolean attacked) {
+        this.attacked.set(attacked);
     }
 
 

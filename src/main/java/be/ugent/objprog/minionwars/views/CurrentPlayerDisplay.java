@@ -4,7 +4,9 @@ import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -59,17 +61,14 @@ public class CurrentPlayerDisplay extends HBox {
                 currentPlayerMinionsUsedLabel.textProperty().unbind();
 
                 currentPlayerLabel.textProperty().bind(newPlayer.nameProperty());
-                currentPlayerMinionsUsedLabel.textProperty().bind(
-                        Bindings.createStringBinding(() -> {
-                            long activeMinions = newPlayer.getMinions().stream()
-                                    .filter(Minion::hasActions)
-                                    .count();
-                            int totalMinions = newPlayer.getMinions().size();
-                            return activeMinions + "/" + totalMinions;
-                        }, newPlayer.getMinions())
-                );
+                bindMinionCount(newPlayer); // Add listener to update when minion actions change
             }
         });
+
+        // Initial binding
+        if (playerModel.getCurrentPlayer() != null) {
+            bindMinionCount(playerModel.getCurrentPlayer());
+        }
 
         // Set alignments.
         currentPlayerLabel.setAlignment(Pos.CENTER);
@@ -94,6 +93,40 @@ public class CurrentPlayerDisplay extends HBox {
                 currentPlayerMinionsUsedLabel.setStyle("-fx-font-size: " + (newFontSize * 0.8) + "px;");
             });
         });
+    }
+
+    // Method to bind minion count label and listen for updates
+    private void bindMinionCount(Player player) {
+
+        currentPlayerMinionsUsedLabel.textProperty().unbind();
+
+        // update the label whenever a minion has no more actions
+        InvalidationListener updateListener = (obs) -> {
+            updateMinionActionCount(player);
+        };
+
+        // Attach listener to each minion
+        for (Minion minion : player.getMinions()) {
+            minion.hasActionsProperty().addListener(updateListener);
+        }
+
+        // Bind the label initially
+        currentPlayerMinionsUsedLabel.setText(getMinionActionText(player));
+    }
+
+    private void updateMinionActionCount(Player player) {
+        Platform.runLater(() -> {
+            currentPlayerMinionsUsedLabel.setText(getMinionActionText(player));
+        });
+    }
+
+    // Produces the used/total text for the label
+    private String getMinionActionText(Player player) {
+        long usedMinions = player.getMinions().stream()
+                .filter(minion -> !minion.hasActions())
+                .count();
+        int totalMinions = player.getMinions().size();
+        return usedMinions + "/" + totalMinions;
     }
 }
 

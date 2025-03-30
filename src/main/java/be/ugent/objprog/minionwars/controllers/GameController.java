@@ -229,8 +229,10 @@ public class GameController {
             playerModel.nextPlayer();
         });
     }
+    //TODO SPECIAL ATTACK ONLY WHEN FULL CHARGES
     private void updateActionUI(Tab selectedTab) {
         clearHighlights();
+
 
         Player currentPlayer = this.playerModel.getCurrentPlayer();
         Tile selectedTile = tileModel.getSelectedTile();
@@ -238,9 +240,31 @@ public class GameController {
         Color attackColor = Color.RED;
         Color moveColor = Color.GREEN;
 
-        if (selectedTab == null) return;
+        Button restButton = view.getRestButton();
+        Button endTurnButton = view.getPart2MenuContainer().getEndTurnButton();
+        Button stayButton = view.getActionsTabPane().getStayButton();
 
-        String tabText = selectedTab.getText();
+
+        restButton.disableProperty().unbind();
+        endTurnButton.disableProperty().unbind();
+        System.out.println("ALL MINIONS USED ACTIONS? ");
+        System.out.println(currentPlayer.getMinions().stream().noneMatch(Minion::hasActions));
+        for (Minion minion : currentPlayer.getMinions()){
+            System.out.println(minion.getName() + ", HAS ACTIONS?: " + minion.hasActions());
+            System.out.println("HASACTIONSPROPERTY: " + minion.hasActionsProperty().get());
+            if (minion.hasActions()) {
+                System.out.println("ATTACKED?: " + minion.hasAttacked());
+                System.out.println("MOVED?: " + minion.hasMoved());
+            }
+        }
+        endTurnButton.disableProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> currentPlayer.getMinions().stream().anyMatch(Minion::hasActions),
+                        currentPlayer.getMinions()
+                )
+        );
+
+
 
         // Remove previous event handlers before adding new ones
         if (specialMouseClickedHandler != null) {
@@ -257,6 +281,13 @@ public class GameController {
 
         if (selectedTile != null && selectedTile.isOccupied()) {
             Minion occupant = selectedTile.getOccupant();
+            restButton.disableProperty().bind(
+                    Bindings.createBooleanBinding(
+                            () -> occupant.hasAttacked() || occupant.hasMoved(),
+                            occupant.attackedProperty(),
+                            occupant.movedProperty()
+                    )
+            );
 
             attackTab.disableProperty().bind(occupant.attackedProperty());
             moveTab.disableProperty().bind(occupant.movedProperty());
@@ -265,6 +296,9 @@ public class GameController {
             moveTab.setDisable(true);
         }
 
+        if (selectedTab == null) return;
+
+        String tabText = selectedTab.getText();
 
         if (tabText.equals(bundle.getString("actions.special"))) {
             // Clear selection to avoid auto-triggering when switching tabs
@@ -300,6 +334,8 @@ public class GameController {
                     // Clear selection so the power is not used again automatically
                     view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
                     clearHighlights();
+
+                    invalidateAndUpdateSelectedMinion();
                 }
             };
 
@@ -331,10 +367,12 @@ public class GameController {
                         occupant.heal(Minion.HEAL_CHARGE_VALUE);
 
                         invalidateAndUpdateSelectedMinion();
+                        updateActionUI(null);
                     });
 
                     skipButton.setOnAction(event -> {
                         occupant.setAttacked(true);
+                        updateActionUI(null);
                     });
 
                 }
@@ -385,6 +423,12 @@ public class GameController {
                 if (occupant != null) {
                     int movement = occupant.getMovement();
                     List<Tile> reachableTiles = tileModel.getReachableTiles(hexTile.getTile(), movement);
+
+                    stayButton.setOnAction(event -> {
+                        occupant.setMoved(true);
+                        clearHighlights();
+                        updateActionUI(null);
+                    });
 
                     reachableTiles.forEach(tile -> {
                         view.getHexTile(tile).highlight(moveColor);

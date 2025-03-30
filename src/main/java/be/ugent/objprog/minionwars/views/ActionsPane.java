@@ -244,6 +244,10 @@ public class ActionsPane extends TabPane {
         setStyle("-fx-border-color: blue; -fx-border-width: 5;");
     }
 
+    public Tab getSpecialTab() {
+        return specialTab;
+    }
+
     private Tab makeMoveTab() {
         Tab moveTab = new Tab(this.bundle.getString("actions.move"));
         StackPane movePane = new StackPane();
