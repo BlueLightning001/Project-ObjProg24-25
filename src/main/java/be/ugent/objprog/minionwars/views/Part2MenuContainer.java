@@ -63,7 +63,6 @@ public class Part2MenuContainer extends VBox {
         endTurnButton = new Button("End Turn");
         centerBoardButton = new Button("Center Board");
         menuButtonBar.getButtons().addAll(restButton, endTurnButton, centerBoardButton);
-        menuButtonBar.setStyle("-fx-border-color: orange; -fx-border-width: 5");
         ButtonBar.setButtonData(endTurnButton, ButtonBar.ButtonData.LEFT);
         ButtonBar.setButtonData(centerBoardButton, ButtonBar.ButtonData.RIGHT);
         ButtonBar.setButtonData(restButton, ButtonBar.ButtonData.BIG_GAP);
@@ -77,11 +76,6 @@ public class Part2MenuContainer extends VBox {
                 setSelected(null);
             }
         });
-
-
-        //DEBUG //TODO
-        setStyle("-fx-border-color: green; -fx-border-width: 2");
-        this.currentPlayerDisplay.setStyle("-fx-border-color: red; -fx-border-width: 2");
 
 
         getChildren().addAll(this.currentPlayerDisplay, separator, selectedMinionDisplay, actionsPane, menuButtonBar);

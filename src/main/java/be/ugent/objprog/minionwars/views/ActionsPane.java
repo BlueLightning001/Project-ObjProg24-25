@@ -241,7 +241,6 @@ public class ActionsPane extends TabPane {
         setTabDragPolicy(TabDragPolicy.FIXED);
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         getTabs().setAll(specialTab);
-        setStyle("-fx-border-color: blue; -fx-border-width: 5;");
     }
 
     public Tab getSpecialTab() {
