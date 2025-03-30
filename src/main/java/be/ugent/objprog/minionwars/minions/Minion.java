@@ -83,6 +83,10 @@ public class Minion {
         }
     }
 
+    public double getBaseRecoveryCharges() {
+        return baseRecoveryCharges;
+    }
+
     public BooleanBinding hasActionsProperty() {
         return hasActionsProperty;
     }
@@ -252,9 +256,17 @@ public class Minion {
     }
 
     public void rest() {
-        recoveryCharges.add(1);
+        System.out.println("RESTING: " + this);
+        if (recoveryCharges.get() < baseRecoveryCharges) {
+            recoveryCharges.set(recoveryCharges.get() + 1);
+        }
+        System.out.println("CURRENT CHARGES: " + recoveryCharges.get());
+        setAttacked(true);
+        setMoved(true);
     }
-
+    public boolean specialReady(){
+        return recoveryChargesProperty().get() >= baseRecoveryCharges;
+    }
     public void specialAttack(Minion target) {
         attack(target);
         if (effect != null) {

@@ -208,8 +208,8 @@ public class GameController {
                 // Force update: clear power selection when the turn changes
                 Platform.runLater(() -> {
                     powerListView.getSelectionModel().clearSelection();
-                    view.getPart2MenuContainer().setSelected(null);
-                    updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem());
+                    setSelected(null);
+                    invalidateAndUpdateSelectedMinion();
                 });
             } else {
                 powerListView.setItems(FXCollections.observableArrayList()); // Clear if no player
@@ -288,6 +288,12 @@ public class GameController {
                             occupant.movedProperty()
                     )
             );
+
+            restButton.setOnAction(event -> {
+                occupant.rest();
+
+                updateActionUI(moveTab);
+            });
 
             attackTab.disableProperty().bind(occupant.attackedProperty());
             moveTab.disableProperty().bind(occupant.movedProperty());
@@ -374,6 +380,7 @@ public class GameController {
                         occupant.setAttacked(true);
                         updateActionUI(null);
                     });
+
 
                 }
 

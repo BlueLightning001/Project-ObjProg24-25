@@ -330,7 +330,7 @@ public class ActionsPane extends TabPane {
             boolean hasSpecialAttack = occupant.hasSpecialAttack();
 
             // Enable/disable buttons based on minion's abilities
-            specialAttackButton.setDisable(!hasSpecialAttack);
+            specialAttackButton.disableProperty().unbind();
             specialAttackButton.setVisible(hasSpecialAttack);
             if (hasSpecialAttack) {
                 ImageView effectImageView = new ImageView(occupant.getEffect().getImage());
@@ -340,17 +340,15 @@ public class ActionsPane extends TabPane {
                 specialAttackButton.setContentDisplay(ContentDisplay.RIGHT);
                 specialAttackButton.setText(bundle.getString("actions.attack.specialAttack") + "\n" + MessageFormat.format(bundle.getString("power.effect"), occupant.getEffect().getName(locale)));
 
+                specialAttackButton.setDisable(!occupant.specialReady());
+                specialAttackButton.disableProperty().bind(occupant.recoveryChargesProperty().greaterThanOrEqualTo(occupant.getBaseRecoveryCharges()).not());
+                System.out.println("SPECIAL CHARGES " + occupant.getRecoveryCharges() + "/" + occupant.getBaseRecoveryCharges());
             }
 
             attackButton.setText(bundle.getString("actions.attack.normalAttack"));
 
             // Always default to normal attack when selecting a new minion
             attackToggleGroup.selectToggle(attackButton);
-        } else {
-            // No minion selected, disable attack options
-            attackButton.setDisable(true);
-            specialAttackButton.setDisable(true);
-            specialAttackButton.setVisible(false);
         }
     }
 
