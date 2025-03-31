@@ -13,6 +13,17 @@ public class SlowEffect extends MinionEffect {
 
     @Override
     public void applyEffect(Minion minion) {
+        int movement = minion.getMovement();
+
+        // Prevent negative values
+        if (movement - value.get()< 0) {
+            movement = 0;
+        } else {
+            movement = movement - value.get();
+        }
+
+        minion.setMovement(movement);
+
         System.out.println("Slow effect on " + minion.getName() + ", value: " + value );
     }
 }

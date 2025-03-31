@@ -14,6 +14,10 @@ public class ParalysisEffect extends MinionEffect {
 
     @Override
     public void applyEffect(Minion m) {
-        System.out.println("Paralysis " + m.getName() + ", value: " + value);
+        // Blocks all minion actions
+        m.setAttacked(true);
+        m.setMoved(true);
+
+        System.out.println("Paralyzing " + m.getName() + ", value: " + value);
     }
 }

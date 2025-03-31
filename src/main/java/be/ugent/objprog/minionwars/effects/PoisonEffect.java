@@ -13,7 +13,9 @@ public class PoisonEffect extends MinionEffect {
 
     @Override
     public void applyEffect(Minion minion) {
-        System.out.println(minion.getName() + " is poisoned with effect value: " + this.value);
+        minion.decreaseDefence(value.get());
+
+        System.out.println(minion.getName() + " is poisoned with effect value: " + this.value.get());
 
 
     }

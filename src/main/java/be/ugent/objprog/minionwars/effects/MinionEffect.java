@@ -12,6 +12,7 @@ public abstract class MinionEffect {
     protected Image image = null;
     protected SimpleIntegerProperty value = new SimpleIntegerProperty();
     protected SimpleIntegerProperty duration = new SimpleIntegerProperty();
+    protected boolean offensive = true;
 
     public MinionEffect(int baseDuration, int value) {
         this.baseDuration = baseDuration;
@@ -31,6 +32,10 @@ public abstract class MinionEffect {
 
     public int getDuration() {
         return duration.get();
+    }
+
+    public boolean isOffensive() {
+        return offensive;
     }
 
     public void setDuration(int duration) {

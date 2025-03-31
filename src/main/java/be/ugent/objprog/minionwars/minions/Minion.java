@@ -70,7 +70,9 @@ public class Minion {
         for (MinionEffect effect : statusAilments) {
             System.out.println("ACTIVATING STATUS AILMENT: " + effect.getClass().getSimpleName());
             effect.applyEffect(this);
+
         }
+
     }
 
     public void addRecoveryCharges(int recoveryCharges) {
@@ -81,14 +83,6 @@ public class Minion {
         if (effect != null) {
             effect.applyEffect(this);
         }
-    }
-
-    public double getBaseRecoveryCharges() {
-        return baseRecoveryCharges;
-    }
-
-    public BooleanBinding hasActionsProperty() {
-        return hasActionsProperty;
     }
 
     public SimpleIntegerProperty attackProperty() {
@@ -127,8 +121,24 @@ public class Minion {
         this.attack.set(attack);
     }
 
+    public int getBaseAttack() {
+        return baseAttack;
+    }
+
     public int getBaseDefence() {
         return baseDefence;
+    }
+
+    public int getBaseMovement() {
+        return baseMovement;
+    }
+
+    public Integer[] getBaseRange() {
+        return baseRange;
+    }
+
+    public double getBaseRecoveryCharges() {
+        return baseRecoveryCharges;
     }
 
     public int getCost() {
@@ -183,6 +193,10 @@ public class Minion {
         return !moved.get() || !attacked.get();
     }
 
+    public BooleanBinding hasActionsProperty() {
+        return hasActionsProperty;
+    }
+
     public boolean hasAttacked() {
         return attacked.get();
     }
@@ -233,11 +247,7 @@ public class Minion {
         return name;
     }
 
-    public SimpleIntegerProperty recoveryChargesProperty() {
-        return recoveryCharges;
-    }
-
-    public void reduceAilmentValue() {
+    public void reduceAilmentValues() {
         for (MinionEffect minionEffect : new ArrayList<>(statusAilments)) {
             minionEffect.reduceDuration();
             if (minionEffect.getDuration() <= 0) {
@@ -255,6 +265,10 @@ public class Minion {
         setAttacked(false);
     }
 
+    public void setAttacked(boolean attacked) {
+        this.attacked.set(attacked);
+    }
+
     public void rest() {
         System.out.println("RESTING: " + this);
         if (recoveryCharges.get() < baseRecoveryCharges) {
@@ -264,16 +278,26 @@ public class Minion {
         setAttacked(true);
         setMoved(true);
     }
-    public boolean specialReady(){
-        return recoveryChargesProperty().get() >= baseRecoveryCharges;
+
+    public void restoreStats() {
+        this.setMovement(this.baseMovement);
+        this.setAttack(this.baseAttack);
+        this.setDefence(this.baseDefence);
+        this.range.setAll(this.baseRange);
     }
+
     public void specialAttack(Minion target) {
         attack(target);
         if (effect != null) {
             EffectFactory effectFactory = new EffectFactory();
+
             MinionEffect effectClone = effectFactory.createEffect(effect.getClass().getSimpleName().toLowerCase().replace("effect", ""),
-                    effect.getDuration(), effect.getValue());
-            target.addStatusAilment(effectClone);
+                    effect.getDuration() , effect.getValue());
+            if (effect.isOffensive()) {
+                target.addStatusAilment(effectClone);
+            } else {
+                this.addStatusAilment(effectClone);
+            }
         }
         recoveryCharges.set(0);
     }
@@ -313,6 +337,14 @@ public class Minion {
 
     public void setOccupiedTile(Tile occupiedTile) {
         this.occupiedTile = occupiedTile;
+    }
+
+    public boolean specialReady() {
+        return recoveryChargesProperty().get() >= baseRecoveryCharges;
+    }
+
+    public SimpleIntegerProperty recoveryChargesProperty() {
+        return recoveryCharges;
     }
 
     @Override
@@ -360,10 +392,6 @@ public class Minion {
     public void useHealCharge() {
         healCharges.set(healCharges.get() - 1);
         setAttacked(true);
-    }
-
-    public void setAttacked(boolean attacked) {
-        this.attacked.set(attacked);
     }
 
 

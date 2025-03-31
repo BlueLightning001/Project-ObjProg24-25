@@ -97,13 +97,16 @@ public class PlayerModel {
             currentPlayer.set(player2.get());
             player1.get().getMinions().forEach(minion -> {
                 minion.refillActions();
-                minion.reduceAilmentValue();
+                minion.restoreStats();
+                minion.reduceAilmentValues(); // Lower all status ailments by 1
             });
+
         } else {
             currentPlayer.set(player1.get());
             player2.get().getMinions().forEach(minion -> {
                 minion.refillActions();
-                minion.reduceAilmentValue();
+                minion.restoreStats();
+                minion.reduceAilmentValues();
             });
         }
         // New to prevent concurrent modification (caused by status effect expiring)

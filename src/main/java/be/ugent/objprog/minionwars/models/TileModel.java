@@ -165,7 +165,7 @@ public class TileModel {
 
             for (Tile neighbor : getHexNeighbors(current.tile)) {
                 // Tile is not traversable
-                if (!neighbor.isTraversable()) continue;
+                if (!neighbor.isTraversable() || neighbor.isOccupied()) continue;
 
                 int cost = neighbor.getTraversalCost();
                 int newMovementLeft = current.movementLeft - cost;
