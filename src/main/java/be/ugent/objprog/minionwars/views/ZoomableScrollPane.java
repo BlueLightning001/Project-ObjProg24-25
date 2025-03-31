@@ -1,4 +1,4 @@
-package be.ugent.objprog.minionwars;
+package be.ugent.objprog.minionwars.views;
 
 
 import javafx.geometry.Bounds;
@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 // Based on
 /*

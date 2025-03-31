@@ -1,7 +1,7 @@
 package be.ugent.objprog.minionwars.controllers;
 
 import be.ugent.objprog.minionwars.JDOMReader;
-import be.ugent.objprog.minionwars.ZoomableScrollPane;
+import be.ugent.objprog.minionwars.views.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.Player;
@@ -29,7 +29,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
