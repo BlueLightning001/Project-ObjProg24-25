@@ -91,14 +91,15 @@ public class PlayerModel {
         int budget = startBudget.get();
         return budget >= MIN_START_BUDGET && budget <= MAX_START_BUDGET;
     }
-
+    //TODO Als effect duration 1 is
     public void nextPlayer() {
         if (currentPlayer.get() == player1.get()) {
             currentPlayer.set(player2.get());
+
+            // Restore old players actions and recalculate stats from effects
             player1.get().getMinions().forEach(minion -> {
                 minion.refillActions();
                 minion.restoreStats();
-                minion.reduceAilmentValues(); // Lower all status ailments by 1
             });
 
         } else {
@@ -106,7 +107,6 @@ public class PlayerModel {
             player2.get().getMinions().forEach(minion -> {
                 minion.refillActions();
                 minion.restoreStats();
-                minion.reduceAilmentValues();
             });
         }
         // New to prevent concurrent modification (caused by status effect expiring)

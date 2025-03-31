@@ -68,11 +68,13 @@ public class Minion {
 
     public void activateStatusAilments() {
         for (MinionEffect effect : statusAilments) {
-            System.out.println("ACTIVATING STATUS AILMENT: " + effect.getClass().getSimpleName());
-            effect.applyEffect(this);
+            System.out.println("-------------ACTIVATING STATUS AILMENT: " + effect);
+            if (effect.getDuration() > 0) {
+                effect.applyEffect(this);
+            }
 
         }
-
+        reduceAilmentValues();
     }
 
     public void addRecoveryCharges(int recoveryCharges) {
@@ -250,7 +252,7 @@ public class Minion {
     public void reduceAilmentValues() {
         for (MinionEffect minionEffect : new ArrayList<>(statusAilments)) {
             minionEffect.reduceDuration();
-            if (minionEffect.getDuration() <= 0) {
+            if (minionEffect.getDuration() < 0) {
                 removeStatusAilment(minionEffect);
             }
         }
@@ -282,7 +284,6 @@ public class Minion {
     public void restoreStats() {
         this.setMovement(this.baseMovement);
         this.setAttack(this.baseAttack);
-        this.setDefence(this.baseDefence);
         this.range.setAll(this.baseRange);
     }
 
