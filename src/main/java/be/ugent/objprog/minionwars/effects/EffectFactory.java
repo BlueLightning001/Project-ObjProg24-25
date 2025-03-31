@@ -24,7 +24,6 @@ public class EffectFactory {
             throw new IllegalArgumentException("Unknown effect type: " + effectType);
         }
 
-        System.out.println("Creating effect: " + effectType + ", Duration: " + duration + ", Value: " + value);
         return factoryFunction.create(duration, value);
     }
 

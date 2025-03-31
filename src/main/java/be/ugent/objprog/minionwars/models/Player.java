@@ -24,6 +24,11 @@ public class Player {
     public int getAvailablePowerUses() {
         return availablePowerUses.get();
     }
+
+    public void resetAvailablePowerUses() {
+        availablePowerUses.set(MAX_POWER_USAGE);
+    }
+
     public void usePower(Power power) {
         if (availablePowerUses.get() > 0 && availablePowers.contains(power)) {
             reduceAvailablePowerUsages();

@@ -74,9 +74,7 @@ public class ActionsPane extends TabPane {
         playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
             powerListView.itemsProperty().unbind();
             powerModel.selectedPowerProperty().unbind();
-            System.out.println("NEW PLAYER BEFORE BINDINGS: " + newPlayer);
             if (newPlayer != null) {
-                System.out.println("REACHED BINDINGS-----------------------");
                 // Properly bind power list
                 powerListView.itemsProperty().bind(
                         Bindings.createObjectBinding(newPlayer::getAvailablePowers, newPlayer.availablePowerUsesProperty())
@@ -341,8 +339,7 @@ public class ActionsPane extends TabPane {
 
                 specialAttackButton.setDisable(!occupant.specialReady());
                 specialAttackButton.disableProperty().bind(occupant.recoveryChargesProperty().greaterThanOrEqualTo(occupant.getBaseRecoveryCharges()).not());
-                System.out.println("SPECIAL CHARGES " + occupant.getRecoveryCharges() + "/" + occupant.getBaseRecoveryCharges());
-            }
+                 }
 
             attackButton.setText(bundle.getString("actions.attack.normalAttack"));
 

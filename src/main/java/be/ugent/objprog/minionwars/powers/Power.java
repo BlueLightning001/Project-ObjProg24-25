@@ -18,6 +18,7 @@ public abstract class Power {
     protected final int value;
     protected final MinionEffect effect;
     protected Image image = null;
+    protected EffectFactory effectFactory = new EffectFactory();
     protected final Image offensiveImage = new Image(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/attack-D60000.png"));
     protected final Image healthImage = new Image(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/health-D60000.png"));
     protected boolean offensive;
@@ -28,22 +29,30 @@ public abstract class Power {
         this.offensive = false;
     }
 
-    //TODO ALL IMPLEMENTATIONS
     public void apply(HexTile center, Player caster){
-        System.out.println("Using: " + getClass().getSimpleName() + ", VALUE: "+ value);
         List<Tile> affectedTiles = center.getTilesInRadius(radius);
         for (Tile tile : affectedTiles) {
             Minion minion = tile.getOccupant();
             if (minion != null )  {
 
+                String effectType = null;
+                if (effect != null) {
+                    effectType = effect.getClass().getSimpleName().toLowerCase().replace("effect", "");
+                }
                 if (offensive && !minion.getOwner().equals(caster)) {
-                    System.out.println("Damaging: " + minion);
                     minion.decreaseDefence(value);
-                    minion.addStatusAilment(effect); // Each spell can only be used once, so no need for a new instance
+                     if (effect != null) {
+                         MinionEffect effectClone = effectFactory.createEffect(effectType,
+                                 effect.getDuration() , effect.getValue());
+                         minion.addStatusAilment(effectClone);
+                     }
                 } else if (!offensive && minion.getOwner().equals(caster)) {
-                    System.out.println("Healing " + minion);
                     minion.heal(value);
-                    minion.addStatusAilment(effect);
+                    if (effect != null) {
+                        MinionEffect effectClone = effectFactory.createEffect(effectType,
+                                effect.getDuration() , effect.getValue());
+                        minion.addStatusAilment(effectClone);
+                    }
                 }
 
             }

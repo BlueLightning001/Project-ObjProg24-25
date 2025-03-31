@@ -54,12 +54,11 @@ public class TileModel {
         return tileNames.getOrDefault(tileClass, bundle.getString("tiles.unknownTile"));
     }
     public void initializeTiles(JDOMReader jdomReader) {
-        System.out.println(jdomReader.getTiles());
         initialTiles.addAll(jdomReader.getTiles());
 
     }
     /*
-      Manhattan distance is illogical for hexagonal tiles
+      Manhattan distance is strange for hexagonal tiles
 
       Sources that helped with the calculations:
       Hugo. (2024, January 14). #6 - Calculating the distance between hexagonal tiles. seaotter.games.
@@ -261,5 +260,14 @@ public class TileModel {
     }
     public void removeTile(int x, int y) {
         tileGrid[x][y] = null;
+    }
+    public void reset(){
+        for (int i = 0; i < tileGrid.length; i++) {
+            for (int j = 0; j < tileGrid[i].length; j++) {
+                Tile tile = tileGrid[i][j];
+                tile.setOccupant(null);
+            }
+        }
+        setSelectedTile(null);
     }
 }

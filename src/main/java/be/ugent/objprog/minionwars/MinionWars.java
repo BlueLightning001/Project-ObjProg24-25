@@ -39,7 +39,6 @@ public class MinionWars extends Application {
             Platform.exit(); // Close the application
             return;
         }
-        System.out.println(configs);
 
         JDOMReader reader;
         try {
@@ -50,7 +49,6 @@ public class MinionWars extends Application {
             return;
         }
 
-        System.out.println("READER: " + reader);
         StartScreenController controller = new StartScreenController(primaryStage, locale, reader);
         Scene scene = new Scene(controller.getView(), controller.getView().getPrefWidth(), controller.getView().getPrefHeight());
         primaryStage.setTitle("Minion Wars");

@@ -27,8 +27,6 @@ public class PowerFactory {
             throw new IllegalArgumentException("Unknown power type: " + powerType);
         }
         MinionEffect effectClone = (effect != null) ? cloneEffect(effect) : null;
-
-        System.out.println("Creating power: " + powerType + ", Radius: " + radius + ", Value: " + value);
         return factoryFunction.create(radius, value,effectClone);
     }
     private MinionEffect cloneEffect(MinionEffect effect) {

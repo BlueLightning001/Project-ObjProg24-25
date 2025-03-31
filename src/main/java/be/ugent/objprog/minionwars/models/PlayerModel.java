@@ -4,6 +4,7 @@ import be.ugent.objprog.minionwars.minions.Minion;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class PlayerModel {
         int budget = startBudget.get();
         return budget >= MIN_START_BUDGET && budget <= MAX_START_BUDGET;
     }
-    //TODO Als effect duration 1 is
+
     public void nextPlayer() {
         if (currentPlayer.get() == player1.get()) {
             currentPlayer.set(player2.get());
@@ -132,6 +133,26 @@ public class PlayerModel {
             throw new IllegalArgumentException("You don't have enough money to remove the money");
         }
         player.setMoney(player.getMoney() - amount);
+    }
+
+    public void reset(PowerModel powerModel) {
+        turnCounter.set(0);
+
+        Player player1 = this.player1.get();
+        Player player2 = this.player2.get();
+        player1.getMinions().clear();
+        player2.getMinions().clear();
+
+        player1.setMoney(startBudget.get());
+        player2.setMoney(startBudget.get());
+
+        player1.setAvailablePowers(FXCollections.observableArrayList(powerModel.getPowerList()));
+        player2.setAvailablePowers(FXCollections.observableArrayList(powerModel.getPowerList()));
+
+        player1.resetAvailablePowerUses();
+        player2.resetAvailablePowerUses();
+
+        currentPlayer.set(players.get(new Random().nextInt(2)).get());
     }
 
     public SimpleIntegerProperty startBudgetProperty() {

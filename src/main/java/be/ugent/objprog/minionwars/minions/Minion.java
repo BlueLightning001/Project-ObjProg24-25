@@ -68,7 +68,6 @@ public class Minion {
 
     public void activateStatusAilments() {
         for (MinionEffect effect : statusAilments) {
-            System.out.println("-------------ACTIVATING STATUS AILMENT: " + effect);
             if (effect.getDuration() > 0) {
                 effect.applyEffect(this);
             }
@@ -276,7 +275,6 @@ public class Minion {
         if (recoveryCharges.get() < baseRecoveryCharges) {
             recoveryCharges.set(recoveryCharges.get() + 1);
         }
-        System.out.println("CURRENT CHARGES: " + recoveryCharges.get());
         setAttacked(true);
         setMoved(true);
     }
@@ -313,13 +311,10 @@ public class Minion {
         if (effect != null) {
             statusAilments.removeIf(e -> e.getClass().equals(effect.getClass()) && e.getValue() <= effect.getValue()); // "Refreshes" the statusAilment if it is higher
             statusAilments.add(effect);
-            System.out.println(statusAilments);
         }
     }
 
     public void decreaseDefence(int value) {
-        System.out.println("CURRENT DEFENSE: " + defence.get());
-        System.out.println("VALUE: " + value);
         if (this.defence.get() <= value) { //Character dies
             markDead();
         }

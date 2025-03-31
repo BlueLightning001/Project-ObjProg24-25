@@ -53,7 +53,6 @@ public class MinionsTableView extends TableView<Minion> {
         placeHolder.setAlignment(Pos.CENTER);
 
         setPlaceholder(placeHolder);
-        System.out.println(model.getMinions());
 
         allMinions = model.getMinions();
 

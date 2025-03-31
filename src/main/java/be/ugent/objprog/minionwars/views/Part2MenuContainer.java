@@ -69,7 +69,6 @@ public class Part2MenuContainer extends VBox {
 
         // Listeners
         tileModel.selectedTileProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("VALUE CHANGED FROM " + oldValue + " TO " + newValue);
             if (newValue != null) {
                 setSelected(tileGroupPane.getHexTileGrid()[newValue.getXCoord()][newValue.getYCoord()]);
             } else {

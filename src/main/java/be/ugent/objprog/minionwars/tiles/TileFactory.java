@@ -15,8 +15,7 @@ public class TileFactory {
         if (factoryFunction == null) {
             throw new IllegalArgumentException("Unknown tile type: " + type);
         }
-        System.out.println("Creating tile " + type + " at " + x + ", " + y + ", hb: " + homebase );
-        return factoryFunction.create(x, y,homebase);
+         return factoryFunction.create(x, y,homebase);
     }
     @FunctionalInterface
     public interface TileFactoryFunction {

@@ -76,7 +76,6 @@ public class JDOMReader {
 
                     MinionEffect effect = effectFactory.createEffect(effectType, baseDuration, effectValue);
                     effectList.add(effect);
-                    System.out.println("Adding effect template: " + effect.toString());
                 }
             }
 
@@ -171,7 +170,9 @@ public class JDOMReader {
     public List<Power> getPowers() {
         return powers;
     }
-
+    public String getFilename(){
+        return filename;
+    }
     public List<Tile> getTiles() {
         return tiles;
     }

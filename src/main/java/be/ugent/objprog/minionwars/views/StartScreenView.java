@@ -1,6 +1,7 @@
 package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.models.PlayerModel;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.Group;

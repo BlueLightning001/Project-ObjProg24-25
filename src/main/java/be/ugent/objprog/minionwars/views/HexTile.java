@@ -169,7 +169,6 @@ public class HexTile extends Polygon {
         this.selected.addListener((obs, oldSelected, newSelected) -> {
             if (newSelected) {
                 this.setStroke(Color.CYAN); // Highlight border
-                System.out.println("Selected: " + tile.get());
 
             } else {
                 if (startPhase || !this.getTile().isOccupied() ||(this.getTile().isOccupied() && playerModel.getCurrentPlayer().equals(this.getTile().getOccupant().getOwner()))) {
@@ -177,7 +176,6 @@ public class HexTile extends Polygon {
                 } else if (this.getTile().isOccupied()) {
                     this.setStroke(Color.RED);
                 }
-                System.out.println("Unselected: " + tile.get());
             }
 
         });
