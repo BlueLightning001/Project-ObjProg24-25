@@ -130,7 +130,7 @@ public class StartScreenController {
                 stage.setFullScreen(!stage.isFullScreen());
             }
         });
-        stage.setMinHeight(250);
+        stage.setMinHeight(400);
         stage.setMinWidth(410);
         stage.setScene(scene);
         stage.centerOnScreen();

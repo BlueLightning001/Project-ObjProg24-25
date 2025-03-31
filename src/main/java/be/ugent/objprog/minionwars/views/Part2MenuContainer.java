@@ -4,10 +4,13 @@ import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Separator;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.Locale;
@@ -57,16 +60,38 @@ public class Part2MenuContainer extends VBox {
         actionsPane.setVisible(false);
 
         //// Buttons
-        ButtonBar menuButtonBar = new ButtonBar();
+        HBox menuButtons = new HBox();
+        menuButtons.setSpacing(10);
+        menuButtons.setAlignment(Pos.CENTER);
+
         restButton = new Button(bundle.getString("part2Menu.restButton"));
         restButton.setVisible(false);
         endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton"));
-        endTurnButton.setDisable(true); // Default behavior
+        endTurnButton.setDisable(true);
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
-        menuButtonBar.getButtons().addAll(restButton, endTurnButton, centerBoardButton);
-        ButtonBar.setButtonData(endTurnButton, ButtonBar.ButtonData.LEFT);
-        ButtonBar.setButtonData(centerBoardButton, ButtonBar.ButtonData.RIGHT);
-        ButtonBar.setButtonData(restButton, ButtonBar.ButtonData.BIG_GAP);
+
+        menuButtons.getChildren().addAll( endTurnButton,restButton, centerBoardButton);
+
+        endTurnButton.setWrapText(true);
+        centerBoardButton.setWrapText(true);
+        restButton.setWrapText(true);
+
+        // Bind button sizes to the HBox
+        restButton.prefWidthProperty().bind(menuButtons.widthProperty().divide(3));
+        endTurnButton.prefWidthProperty().bind(menuButtons.widthProperty().divide(3));
+        centerBoardButton.prefWidthProperty().bind(menuButtons.widthProperty().divide(3));
+
+        restButton.prefHeightProperty().bind(menuButtons.heightProperty().multiply(0.7));
+        endTurnButton.prefHeightProperty().bind(menuButtons.heightProperty().multiply(0.7));
+        centerBoardButton.prefHeightProperty().bind(menuButtons.heightProperty().multiply(0.7));
+
+        // Scale font size based on button height
+        double fontScaleFactor = 0.25;
+        restButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", restButton.heightProperty().multiply(fontScaleFactor).asString(), ";"));
+        endTurnButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", endTurnButton.heightProperty().multiply(fontScaleFactor).asString(), ";"));
+        centerBoardButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", centerBoardButton.heightProperty().multiply(fontScaleFactor).asString(), ";"));
+
+
 
         // Listeners
         tileModel.selectedTileProperty().addListener((observable, oldValue, newValue) -> {
@@ -78,11 +103,11 @@ public class Part2MenuContainer extends VBox {
         });
 
 
-        getChildren().addAll(this.currentPlayerDisplay, separator, selectedMinionDisplay, actionsPane, menuButtonBar);
+        getChildren().addAll(this.currentPlayerDisplay, separator, selectedMinionDisplay, actionsPane, menuButtons);
 
 
         // Height ratios
-        menuButtonBar.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
+        menuButtons.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
         actionsPane.prefHeightProperty().bind(this.heightProperty().multiply(0.7));
         selectedMinionDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
         this.currentPlayerDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));

@@ -182,7 +182,7 @@ public class GameController {
         view.changeGamePhase();
         setUpListenersPart2();
         stage.setMinWidth(650);
-        stage.setMinHeight(400);
+        stage.setMinHeight(600);
 
     }
 

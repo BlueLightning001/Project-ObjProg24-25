@@ -9,6 +9,7 @@ import be.ugent.objprog.minionwars.powers.Power;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -254,10 +255,11 @@ public class ActionsPane extends TabPane {
         VBox moveContent = new VBox();
         moveContent.setAlignment(Pos.CENTER);
 
-        Label moveLabel = new Label("Move Label");
+        Label moveLabel = new Label(bundle.getString("actions.move.moveLabel"));
+        moveLabel.setWrapText(true);
         styleNode(moveLabel, movePane, 0.7, 0.4);
 
-        stayButton = new Button("Stand still");
+        stayButton = new Button(bundle.getString("actions.move.stayButton"));
         styleNode(stayButton, movePane, 0.5, 0.1);
 
 
@@ -278,7 +280,7 @@ public class ActionsPane extends TabPane {
 
         Label attackLabel = new Label(bundle.getString("actions.attack.attackLabel"));
         styleNode(attackLabel, attackPane, 0.7, 0.4);
-        autoResizeText(attackLabel,0.2);
+
         attackLabel.setWrapText(true);
 
         // Create a ToggleGroup for the attack buttons
@@ -291,7 +293,7 @@ public class ActionsPane extends TabPane {
         specialAttackButton = new ToggleButton("Special attack");
         specialAttackButton.setMinHeight(70);
         styleNode(specialAttackButton, attackPane, 0.5, 0.2);
-        autoResizeText(specialAttackButton, 0.15);
+        autoResizeText(specialAttackButton, 0.2);
         specialAttackButton.setToggleGroup(attackToggleGroup);
 
         Label orLabel = new Label(bundle.getString("actions.or"));
@@ -363,13 +365,18 @@ public class ActionsPane extends TabPane {
     }
 
     private void autoResizeText(Labeled label, double scaleFactor) {
-        label.prefHeightProperty().addListener((obs, oldWidth, newWidth) -> {
+        ChangeListener<Number> resizeListener = (obs, oldVal, newVal) -> {
             Platform.runLater(() -> {
-                double fontSize = newWidth.doubleValue() * scaleFactor;
+                double fontSize = Math.min(label.getWidth(), label.getHeight()) * scaleFactor;
                 label.setStyle("-fx-font-size: " + fontSize + "px;");
             });
-        });
+        };
+
+        // Listen for both width and height changes
+        label.widthProperty().addListener(resizeListener);
+        label.heightProperty().addListener(resizeListener);
     }
+
 
     public ToggleButton getAttackButton() {
         return attackButton;
