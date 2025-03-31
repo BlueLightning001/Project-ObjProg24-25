@@ -58,10 +58,11 @@ public class Part2MenuContainer extends VBox {
 
         //// Buttons
         ButtonBar menuButtonBar = new ButtonBar();
-        restButton = new Button("Rest");
+        restButton = new Button(bundle.getString("part2Menu.restButton"));
         restButton.setVisible(false);
-        endTurnButton = new Button("End Turn");
-        centerBoardButton = new Button("Center Board");
+        endTurnButton = new Button(bundle.getString("gameScreen.endTurnButton"));
+        endTurnButton.setDisable(true); // Default behavior
+        centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
         menuButtonBar.getButtons().addAll(restButton, endTurnButton, centerBoardButton);
         ButtonBar.setButtonData(endTurnButton, ButtonBar.ButtonData.LEFT);
         ButtonBar.setButtonData(centerBoardButton, ButtonBar.ButtonData.RIGHT);

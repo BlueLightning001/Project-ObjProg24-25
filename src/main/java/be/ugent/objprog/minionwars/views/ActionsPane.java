@@ -184,7 +184,7 @@ public class ActionsPane extends TabPane {
                     setGraphic(null);
                 } else {
                     nameLabel.setText(power.getName(locale));
-                    descriptionLabel.setText(power.getDescription(locale));
+                    descriptionLabel.setText(MessageFormat.format(bundle.getString("power.effect"),power.getDescription(locale)));
                     powerIcon.setImage(power.getImage());
 
                     // Update value details

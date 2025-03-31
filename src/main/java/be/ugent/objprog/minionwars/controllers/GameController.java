@@ -211,16 +211,14 @@ public class GameController {
             // Every time player1's minions change, check if they are empty.
             Player player1 = playerModel.getPlayer1();
             if (player1 != null && player1.getMinions().isEmpty()) {
-                System.out.println("GAME ENDING DETECTED1: " + player1WinListener) ;
-                endGame(player1);
+                endGame(playerModel.getPlayer2());
             }
         };
         player2WinListener = change -> {
             // Every time player2's minions change, check if they are empty.
             Player player2 = playerModel.getPlayer2();
             if (player2 != null && player2.getMinions().isEmpty()) {
-                System.out.println("GAME ENDING DETECTED2: " + player2WinListener) ;
-                endGame(player2);
+                endGame(playerModel.getPlayer1());
             }
         };
 

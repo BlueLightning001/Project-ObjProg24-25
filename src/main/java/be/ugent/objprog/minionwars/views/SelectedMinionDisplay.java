@@ -56,7 +56,6 @@ public class SelectedMinionDisplay extends GridPane {
         VBox.setVgrow(this, Priority.SOMETIMES);
         setMinHeight(60);
         setPrefHeight(70);
-        setGridLinesVisible(true); //TODO debug
         setMaxHeight(70);
         // Set up minion display
         minionsIcon.setRadius(30);
