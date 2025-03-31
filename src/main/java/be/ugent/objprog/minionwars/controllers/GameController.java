@@ -314,7 +314,7 @@ public class GameController {
             restButton.setOnAction(event -> {
                 occupant.rest();
 
-                updateActionUI(moveTab);
+                updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem());
             });
 
             attackTab.disableProperty().bind(occupant.attackedProperty());
