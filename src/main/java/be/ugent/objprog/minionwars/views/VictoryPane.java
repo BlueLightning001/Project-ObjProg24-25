@@ -57,7 +57,6 @@ public class VictoryPane extends StackPane {
 
         VBox content = new VBox(20);
         content.setAlignment(Pos.CENTER);
-        content.setStyle("-fx-border-color: red");
         content.prefWidthProperty().bind(widthProperty().multiply(0.5)); // 50% of window width
         content.prefHeightProperty().bind(heightProperty().multiply(0.5)); // 50% of window height
 
