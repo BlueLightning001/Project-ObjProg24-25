@@ -9,12 +9,14 @@ import java.util.ResourceBundle;
 
 public abstract class MinionEffect {
     protected final int baseDuration;
+    protected final String name;
     protected Image image = null;
     protected SimpleIntegerProperty value = new SimpleIntegerProperty();
     protected SimpleIntegerProperty duration = new SimpleIntegerProperty();
     protected boolean offensive = true;
 
-    public MinionEffect(int baseDuration, int value) {
+    public MinionEffect(String name,int baseDuration, int value) {
+        this.name = name;
         this.baseDuration = baseDuration;
         this.duration.set(baseDuration);
         this.value.set(value);
@@ -34,6 +36,10 @@ public abstract class MinionEffect {
         return duration.get();
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public void setDuration(int duration) {
         this.duration.set(duration);
     }
@@ -46,7 +52,7 @@ public abstract class MinionEffect {
         this.image = image;
     }
 
-    public String getName(Locale locale) {
+    public String getDescription(Locale locale) {
         ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         return bundle.getString("effect." + this.getClass().getSimpleName());
     }

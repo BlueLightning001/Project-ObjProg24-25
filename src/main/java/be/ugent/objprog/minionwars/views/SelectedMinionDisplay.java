@@ -201,7 +201,7 @@ public class SelectedMinionDisplay extends GridPane {
                         effectImageView.setFitHeight(20);
 
                         Label effectLabel = new Label(MessageFormat.format(bundle.getString("effect.message"),
-                                effect.getName(Locale.getDefault()), effect.getDuration()));
+                                effect.getDescription(Locale.getDefault()), effect.getDuration()));
                         effectBox.getChildren().addAll(effectImageView, effectLabel);
                         statusAilmentsContainer.getChildren().add(effectBox);
                     }

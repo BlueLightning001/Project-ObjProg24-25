@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class BlindnessEffect extends MinionEffect {
 
-    public BlindnessEffect(int baseDuration, int value) {
-        super(baseDuration, value);
+    public BlindnessEffect(String name, int baseDuration, int value) {
+        super(name, baseDuration, value);
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/effects/blindness.png")));
     }
 

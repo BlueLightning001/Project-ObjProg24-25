@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class BurnEffect extends MinionEffect {
 
-    public BurnEffect(int duration, int value) {
-        super(duration, value);
+    public BurnEffect(String name, int duration, int value) {
+        super(name, duration, value);
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/effects/burn.png")));
     }
 

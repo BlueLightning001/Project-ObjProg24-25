@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class HealEffect extends MinionEffect {
 
-    public HealEffect(int duration, int value) {
-        super(duration, value);
+    public HealEffect(String name, int duration, int value) {
+        super(name, duration, value);
         offensive = false; // Marks this as a spell for friendly units
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/effects/heal.png")));
     }

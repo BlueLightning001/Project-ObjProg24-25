@@ -26,6 +26,7 @@ public class PowerFactory {
         EffectFactory effectFactory = new EffectFactory();
         return effectFactory.createEffect(
                 effect.getClass().getSimpleName().toLowerCase().replace("effect", ""),
+                effect.getName(),
                 effect.getDuration(),
                 effect.getValue()
         );

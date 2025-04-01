@@ -283,6 +283,7 @@ public class Minion {
             EffectFactory effectFactory = new EffectFactory();
 
             MinionEffect effectClone = effectFactory.createEffect(effect.getClass().getSimpleName().toLowerCase().replace("effect", ""),
+                    effect.getName(),
                     effect.getDuration(), effect.getValue());
             if (effect.isOffensive()) {
                 target.addStatusAilment(effectClone);

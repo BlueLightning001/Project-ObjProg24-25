@@ -327,7 +327,7 @@ public class ActionsPane extends TabPane {
                 effectImageView.fitHeightProperty().bind(specialAttackButton.heightProperty().multiply(0.3));
                 effectImageView.setPreserveRatio(true);
                 specialAttackButton.setContentDisplay(ContentDisplay.RIGHT);
-                specialAttackButton.setText(bundle.getString("actions.attack.specialAttack") + "\n" + MessageFormat.format(bundle.getString("power.effect"), occupant.getEffect().getName(locale)));
+                specialAttackButton.setText(bundle.getString("actions.attack.specialAttack") + "\n" + MessageFormat.format(bundle.getString("power.effect"), occupant.getEffect().getName()));
 
                 specialAttackButton.setDisable(!occupant.specialReady());
                 specialAttackButton.disableProperty().bind(occupant.recoveryChargesProperty().greaterThanOrEqualTo(occupant.getBaseRecoveryCharges()).not());

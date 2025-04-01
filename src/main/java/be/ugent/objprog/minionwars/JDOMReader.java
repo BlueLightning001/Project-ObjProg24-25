@@ -68,11 +68,12 @@ public class JDOMReader {
             if (effectsElement != null) {
                 for (Element effectElement : effectsElement.getChildren()) {
                     String effectType = effectElement.getName();
+                    String effectName = effectElement.getAttributeValue("name");
                     int baseDuration = Integer.parseInt(effectElement.getAttributeValue("duration"));
                     String effectValueAttr = effectElement.getAttributeValue("value");
                     int effectValue = (effectValueAttr != null) ? Integer.parseInt(effectValueAttr) : 0;
 
-                    MinionEffect effect = effectFactory.createEffect(effectType, baseDuration, effectValue);
+                    MinionEffect effect = effectFactory.createEffect(effectType, effectName,baseDuration, effectValue);
                     effectList.add(effect);
                 }
             }
@@ -102,7 +103,7 @@ public class JDOMReader {
                                     int valueToUse = effectValueAttr != null
                                             ? Integer.parseInt(effectValueAttr)
                                             : e.getValue(); // use default value from the effect instance
-                                    return effectFactory.createEffect(effectType, e.getDuration(), valueToUse);
+                                    return effectFactory.createEffect(effectType, e.getName(), e.getDuration(), valueToUse);
                                 })
                                 .orElse(null);
                     }
@@ -134,7 +135,7 @@ public class JDOMReader {
                                     int valueToUse = effectValueAttr != null
                                             ? Integer.parseInt(effectValueAttr)
                                             : e.getValue(); // use default value from the effect instance
-                                    return effectFactory.createEffect(effectType, e.getDuration(), valueToUse);
+                                    return effectFactory.createEffect(effectType, e.getName(), e.getDuration(), valueToUse);
                                 })
                                 .orElse(null);
                     }

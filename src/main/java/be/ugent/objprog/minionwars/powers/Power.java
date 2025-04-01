@@ -47,6 +47,7 @@ public abstract class Power {
                     minion.decreaseDefence(value);
                     if (effect != null) {
                         MinionEffect effectClone = effectFactory.createEffect(effectType,
+                                effect.getName(),
                                 effect.getDuration(), effect.getValue());
                         minion.addStatusAilment(effectClone);
                     }
@@ -54,6 +55,7 @@ public abstract class Power {
                     minion.heal(value);
                     if (effect != null) {
                         MinionEffect effectClone = effectFactory.createEffect(effectType,
+                                effect.getName(),
                                 effect.getDuration(), effect.getValue());
                         minion.addStatusAilment(effectClone);
                     }

@@ -6,8 +6,8 @@ import javafx.scene.image.Image;
 import java.util.Objects;
 
 public class PoisonEffect extends MinionEffect {
-    public PoisonEffect(int duration, int value) {
-        super(duration, value);
+    public PoisonEffect(String name, int duration, int value) {
+        super(name, duration, value);
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/effects/poison.png")));
     }
 

@@ -13,20 +13,20 @@ public class EffectFactory {
             "blindness", BlindnessEffect::new
     );
 
-    public MinionEffect createEffect(String effectType, int duration, int value) {
+    public MinionEffect createEffect(String effectType, String name, int duration, int value) {
         EffectFactoryFunction factoryFunction = minionEffectsFactories.get(effectType);
 
         if (factoryFunction == null) {
             throw new IllegalArgumentException("Unknown effect type: " + effectType);
         }
 
-        return factoryFunction.create(duration, value);
+        return factoryFunction.create(name, duration, value);
     }
 
 
     @FunctionalInterface
     public interface EffectFactoryFunction {
-        MinionEffect create(int duration, int value);
+        MinionEffect create(String name, int duration, int value);
     }
 
 }

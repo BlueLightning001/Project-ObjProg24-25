@@ -34,6 +34,7 @@ public class PowerModel {
                     if (p.getEffect() != null) {
                         newEffect = effectFactory.createEffect(
                                 p.getEffect().getClass().getSimpleName().replace("Effect", "").toLowerCase(),
+                                p.getName(),
                                 p.getEffect().getDuration(),
                                 p.getEffect().getValue()
                         );

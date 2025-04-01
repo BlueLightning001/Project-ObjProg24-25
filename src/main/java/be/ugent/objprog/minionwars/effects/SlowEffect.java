@@ -6,8 +6,8 @@ import javafx.scene.image.Image;
 import java.util.Objects;
 
 public class SlowEffect extends MinionEffect {
-    public SlowEffect(int duration, int value) {
-        super(duration, value);
+    public SlowEffect(String name, int duration, int value) {
+        super(name, duration, value);
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/effects/slow.png")));
     }
 
