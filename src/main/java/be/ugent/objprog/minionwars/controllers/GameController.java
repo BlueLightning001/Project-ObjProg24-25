@@ -128,7 +128,7 @@ public class GameController {
             if (event.getCode() == KeyCode.R) {
                 view.resetGameGroupPosition();
             }
-            if (eventSource instanceof ZoomableScrollPane pane && event.getCode() == KeyCode.DELETE) {
+            if (eventSource instanceof ZoomableScrollPane && event.getCode() == KeyCode.DELETE) {
                 HexTile selectedHexTile = view.getGameTileGroupPane().getSelectedHexTile();
                 Tile tileToDelete;
                 if (selectedHexTile != null) {
@@ -317,17 +317,11 @@ public class GameController {
         });
 
         // Refresh ui when
-        tileModel.selectedTileProperty().addListener((observable) -> {
-            updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem());
-        });
-        view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            updateActionUI(newValue);
-        });
+        tileModel.selectedTileProperty().addListener((observable) -> updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem()));
+        view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateActionUI(newValue));
 
 
-        view.getEndTurnButton().setOnAction(event -> {
-            playerModel.nextPlayer();
-        });
+        view.getEndTurnButton().setOnAction(event -> playerModel.nextPlayer());
     }
 
     private void startNextPhase() {
@@ -336,11 +330,9 @@ public class GameController {
         view.getView().setOnKeyPressed(null);
 
         //Clear homebase highlights
-        Platform.runLater(() -> {
-            view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
-                clearHighlights();
-            });
-        });
+        Platform.runLater(() -> view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
+            clearHighlights();
+        }));
         // Prevent listener duplication on replay
         playerModel.turnCounterProperty().removeListener(turnCounterListener);
 
