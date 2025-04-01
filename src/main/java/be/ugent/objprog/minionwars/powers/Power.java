@@ -22,7 +22,7 @@ public abstract class Power {
     protected final Image offensiveImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/attack-D60000.png")));
     protected final Image healthImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/health-D60000.png")));
     protected Image image = null;
-    protected EffectFactory effectFactory = new EffectFactory();
+    protected final EffectFactory effectFactory = new EffectFactory();
     protected boolean offensive;
 
     public Power(String name,int radius, int value, MinionEffect effect) {

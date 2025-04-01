@@ -16,11 +16,7 @@ public class SlowEffect extends MinionEffect {
         int movement = minion.getMovement();
 
         // Prevent negative values
-        if (movement - value.get() < 0) {
-            movement = 0;
-        } else {
-            movement = movement - value.get();
-        }
+        movement = Math.max(movement - value.get(), 0);
 
         minion.setMovement(movement);
 

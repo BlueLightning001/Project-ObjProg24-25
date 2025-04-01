@@ -259,8 +259,8 @@ public class TileModel {
     }
 
     private static class TileNode {
-        Tile tile;
-        int movementLeft;
+        final Tile tile;
+        final int movementLeft;
 
         TileNode(Tile tile, int movementLeft) {
             this.tile = tile;

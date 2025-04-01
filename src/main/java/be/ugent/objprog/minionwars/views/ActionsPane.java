@@ -43,7 +43,6 @@ public class ActionsPane extends TabPane {
     private final Tab moveTab;
     private final Tab attackTab;
     private final Tab specialTab;
-    private final Locale locale;
     private Button skipButton;
     private Button stayButton;
     private ToggleButton attackButton;
@@ -53,7 +52,6 @@ public class ActionsPane extends TabPane {
 
     public ActionsPane(TileModel tileModel, PlayerModel playerModel, PowerModel powerModel, Locale locale) {
         super();
-        this.locale = locale;
         bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         //// Moving

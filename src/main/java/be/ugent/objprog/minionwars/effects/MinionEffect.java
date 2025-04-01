@@ -11,8 +11,8 @@ public abstract class MinionEffect {
     protected final int baseDuration;
     protected final String name;
     protected Image image = null;
-    protected SimpleIntegerProperty value = new SimpleIntegerProperty();
-    protected SimpleIntegerProperty duration = new SimpleIntegerProperty();
+    protected final SimpleIntegerProperty value = new SimpleIntegerProperty();
+    protected final SimpleIntegerProperty duration = new SimpleIntegerProperty();
     protected boolean offensive = true;
 
     public MinionEffect(String name,int baseDuration, int value) {
