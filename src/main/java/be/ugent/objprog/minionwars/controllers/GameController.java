@@ -331,25 +331,23 @@ public class GameController {
     }
 
     private void startNextPhase() {
-        view.getGameTileGroupPane().shutdown(); //TODO TEMPORARY
-        stage.close();
 
-//        // Remove old selection logic
-//        view.getView().setOnKeyPressed(null);
-//
-//        //Clear homebase highlights
-//        Platform.runLater(() -> {
-//            view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
-//                clearHighlights();
-//            });
-//        });
-//        // Prevent listener duplication on replay
-//        playerModel.turnCounterProperty().removeListener(turnCounterListener);
-//
-//        view.changeGamePhase();
-//        setUpListenersPart2();
-//        stage.setMinWidth(650);
-//        stage.setMinHeight(600);
+        // Remove old selection logic
+        view.getView().setOnKeyPressed(null);
+
+        //Clear homebase highlights
+        Platform.runLater(() -> {
+            view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
+                clearHighlights();
+            });
+        });
+        // Prevent listener duplication on replay
+        playerModel.turnCounterProperty().removeListener(turnCounterListener);
+
+        view.changeGamePhase();
+        setUpListenersPart2();
+        stage.setMinWidth(650);
+        stage.setMinHeight(600);
 
     }
 
