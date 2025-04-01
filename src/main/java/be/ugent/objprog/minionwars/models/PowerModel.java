@@ -40,6 +40,7 @@ public class PowerModel {
                     }
                     return powerFactory.createPower(
                             p.getClass().getSimpleName().replace("Power", "").toLowerCase(),
+                            p.getName(),
                             p.getRadius(),
                             p.getValue(),
                             newEffect

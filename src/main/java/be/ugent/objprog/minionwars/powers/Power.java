@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 
 
 public abstract class Power {
+    protected final String name;
     protected final int radius;
     protected final int value;
     protected final MinionEffect effect;
@@ -24,7 +25,8 @@ public abstract class Power {
     protected EffectFactory effectFactory = new EffectFactory();
     protected boolean offensive;
 
-    public Power(int radius, int value, MinionEffect effect) {
+    public Power(String name,int radius, int value, MinionEffect effect) {
+        this.name = name;
         this.radius = radius;
         this.value = value;
         this.effect = effect;
@@ -74,9 +76,8 @@ public abstract class Power {
         return image;
     }
 
-    public String getName(Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
-        return bundle.getString("power." + this.getClass().getSimpleName());
+    public String getName() {
+        return name;
     }
 
     public int getRadius() {

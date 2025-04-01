@@ -94,13 +94,19 @@ public class JDOMReader {
                     String effectType = minionElement.getAttributeValue("effect");
                     MinionEffect minionEffect = null;
                     if (effectType != null) {
-                        int effectValue = Integer.parseInt(minionElement.getAttributeValue("effect-value"));
+                        String effectValueAttr = minionElement.getAttributeValue("effect-value");
                         minionEffect = effectList.stream()
                                 .filter(e -> e.getClass().getSimpleName().equalsIgnoreCase(effectType + "Effect"))
                                 .findFirst()
-                                .map(e -> effectFactory.createEffect(effectType, e.getDuration(), effectValue))
+                                .map(e -> {
+                                    int valueToUse = effectValueAttr != null
+                                            ? Integer.parseInt(effectValueAttr)
+                                            : e.getValue(); // use default value from the effect instance
+                                    return effectFactory.createEffect(effectType, e.getDuration(), valueToUse);
+                                })
                                 .orElse(null);
                     }
+
 
                     // Get the image for the type
                     MinionTypeImage minionImage = MinionTypeImage.valueOf(type.toUpperCase().replace("-", "_"));
@@ -114,19 +120,26 @@ public class JDOMReader {
             if (powersElement != null) {
                 for (Element powerElement : powersElement.getChildren()) {
                     String powerType = powerElement.getName();
+                    String name = powerElement.getAttributeValue("name");
                     int radius = Integer.parseInt(powerElement.getAttributeValue("radius"));
                     int value = Integer.parseInt(powerElement.getAttributeValue("value"));
                     String effectType = powerElement.getAttributeValue("effect");
                     MinionEffect minionEffect = null;
                     if (effectType != null) {
-                        int effectValue = Integer.parseInt(powerElement.getAttributeValue("effect-value"));
+                        String effectValueAttr = powersElement.getAttributeValue("effect-value");
                         minionEffect = effectList.stream()
                                 .filter(e -> e.getClass().getSimpleName().equalsIgnoreCase(effectType + "Effect"))
                                 .findFirst()
-                                .map(e -> effectFactory.createEffect(effectType, e.getDuration(), effectValue))
+                                .map(e -> {
+                                    int valueToUse = effectValueAttr != null
+                                            ? Integer.parseInt(effectValueAttr)
+                                            : e.getValue(); // use default value from the effect instance
+                                    return effectFactory.createEffect(effectType, e.getDuration(), valueToUse);
+                                })
                                 .orElse(null);
                     }
-                    powers.add(powerFactory.createPower(powerType, radius, value, minionEffect));
+
+                    powers.add(powerFactory.createPower(powerType, name,radius, value, minionEffect));
                 }
             }
 
@@ -149,7 +162,9 @@ public class JDOMReader {
 
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new IOException(e.getMessage());
+
         }
     }
 

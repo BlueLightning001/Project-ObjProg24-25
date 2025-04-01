@@ -12,14 +12,14 @@ public class PowerFactory {
             "heal", HealPower::new
     );
 
-    public Power createPower(String powerType, int radius, int value, MinionEffect effect) {
+    public Power createPower(String powerType,String name , int radius, int value, MinionEffect effect) {
         PowerFactory.PowerFactoryFunction factoryFunction = powerFactories.get(powerType);
 
         if (factoryFunction == null) {
             throw new IllegalArgumentException("Unknown power type: " + powerType);
         }
         MinionEffect effectClone = (effect != null) ? cloneEffect(effect) : null;
-        return factoryFunction.create(radius, value, effectClone);
+        return factoryFunction.create(name,radius, value, effectClone);
     }
 
     private MinionEffect cloneEffect(MinionEffect effect) {
@@ -33,6 +33,6 @@ public class PowerFactory {
 
     @FunctionalInterface
     public interface PowerFactoryFunction {
-        Power create(int radius, int value, MinionEffect effect);
+        Power create(String name,int radius, int value, MinionEffect effect);
     }
 }

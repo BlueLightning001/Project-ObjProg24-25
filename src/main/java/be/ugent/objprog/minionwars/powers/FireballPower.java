@@ -6,8 +6,8 @@ import javafx.scene.image.Image;
 import java.util.Objects;
 
 public class FireballPower extends Power {
-    public FireballPower(int radius, int value, MinionEffect effect) {
-        super(radius, value, effect);
+    public FireballPower(String name,int radius, int value, MinionEffect effect) {
+        super(name,radius, value, effect);
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/powers/fireball.png")));
         offensive = true;
     }
