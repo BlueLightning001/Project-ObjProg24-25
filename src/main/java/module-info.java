@@ -1,6 +1,6 @@
 open module be.ugent.objprog.minionwars {
     requires javafx.controls;
-    requires javafx.fxml;
+    requires javafx.base;
     requires org.jdom2;
     requires java.xml;
 

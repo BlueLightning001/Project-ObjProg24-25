@@ -12,41 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
+    private static final int MAX_POWER_USAGE = 2;
     private final SimpleStringProperty name;
     private final SimpleIntegerProperty money;
     private final ObservableList<Minion> minions = FXCollections.observableArrayList();
     private final ObservableList<Power> availablePowers = FXCollections.observableArrayList();
-    private static final int MAX_POWER_USAGE = 2;
-    public void reduceAvailablePowerUsages() {
-        availablePowerUses.set(availablePowerUses.get() - 1);
-    }
-
-    public int getAvailablePowerUses() {
-        return availablePowerUses.get();
-    }
-
-    public void resetAvailablePowerUses() {
-        availablePowerUses.set(MAX_POWER_USAGE);
-    }
-
-    public void usePower(Power power) {
-        if (availablePowerUses.get() > 0 && availablePowers.contains(power)) {
-            reduceAvailablePowerUsages();
-
-            List<Power> updatedPowers = new ArrayList<>(availablePowers);
-            updatedPowers.remove(power);
-
-
-            availablePowers.setAll(updatedPowers);
-        }
-    }
-
-    public SimpleIntegerProperty availablePowerUsesProperty() {
-        return availablePowerUses;
-    }
-
     private final SimpleIntegerProperty availablePowerUses = new SimpleIntegerProperty(MAX_POWER_USAGE);
-    private int id;
+    private final int id;
 
     public Player(String name, int id) {
         this.name = new SimpleStringProperty(name);
@@ -58,6 +30,10 @@ public class Player {
         this.minions.addAll(minions);
     }
 
+    public void addAllPowers(ObservableList<Power> powers) {
+        this.availablePowers.addAll(powers);
+    }
+
     public void addMinion(Minion minion) {
         this.minions.add(minion);
     }
@@ -66,8 +42,21 @@ public class Player {
         this.money.set(money.get() + amount);
     }
 
+    public SimpleIntegerProperty availablePowerUsesProperty() {
+        return availablePowerUses;
+    }
+
+    public int getAvailablePowerUses() {
+        return availablePowerUses.get();
+    }
+
     public ObservableList<Power> getAvailablePowers() {
         return availablePowers;
+    }
+
+    public void setAvailablePowers(ObservableList<Power> availablePowers) {
+        this.availablePowers.clear();
+        this.availablePowers.addAll(availablePowers);
     }
 
     public int getHomeBaseID() {
@@ -103,6 +92,10 @@ public class Player {
         money.set(money.get() - amount);
     }
 
+    public void resetAvailablePowerUses() {
+        availablePowerUses.set(MAX_POWER_USAGE);
+    }
+
     public String toString() {
         return "Name: " + getName() + ", Money: " + getMoney();
     }
@@ -123,11 +116,19 @@ public class Player {
         this.money.set(money);
     }
 
-    public void setAvailablePowers(ObservableList<Power> availablePowers) {
-        this.availablePowers.clear();
-        this.availablePowers.addAll(availablePowers);
+    public void usePower(Power power) {
+        if (availablePowerUses.get() > 0 && availablePowers.contains(power)) {
+            reduceAvailablePowerUsages();
+
+            List<Power> updatedPowers = new ArrayList<>(availablePowers);
+            updatedPowers.remove(power);
+
+
+            availablePowers.setAll(updatedPowers);
+        }
     }
-    public void addAllPowers(ObservableList<Power> powers) {
-        this.availablePowers.addAll(powers);
+
+    public void reduceAvailablePowerUsages() {
+        availablePowerUses.set(availablePowerUses.get() - 1);
     }
 }

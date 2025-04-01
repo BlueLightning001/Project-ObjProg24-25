@@ -1,9 +1,5 @@
 package be.ugent.objprog.minionwars.effects;
 
-import javafx.scene.effect.Effect;
-
-import java.util.Map;
-
 import java.util.Map;
 
 public class EffectFactory {

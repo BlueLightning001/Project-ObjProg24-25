@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 
@@ -17,11 +18,12 @@ public abstract class Power {
     protected final int radius;
     protected final int value;
     protected final MinionEffect effect;
+    protected final Image offensiveImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/attack-D60000.png")));
+    protected final Image healthImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/health-D60000.png")));
     protected Image image = null;
     protected EffectFactory effectFactory = new EffectFactory();
-    protected final Image offensiveImage = new Image(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/attack-D60000.png"));
-    protected final Image healthImage = new Image(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/health-D60000.png"));
     protected boolean offensive;
+
     public Power(int radius, int value, MinionEffect effect) {
         this.radius = radius;
         this.value = value;
@@ -29,11 +31,11 @@ public abstract class Power {
         this.offensive = false;
     }
 
-    public void apply(HexTile center, Player caster){
+    public void apply(HexTile center, Player caster) {
         List<Tile> affectedTiles = center.getTilesInRadius(radius);
         for (Tile tile : affectedTiles) {
             Minion minion = tile.getOccupant();
-            if (minion != null )  {
+            if (minion != null) {
 
                 String effectType = null;
                 if (effect != null) {
@@ -41,16 +43,16 @@ public abstract class Power {
                 }
                 if (offensive && !minion.getOwner().equals(caster)) {
                     minion.decreaseDefence(value);
-                     if (effect != null) {
-                         MinionEffect effectClone = effectFactory.createEffect(effectType,
-                                 effect.getDuration() , effect.getValue());
-                         minion.addStatusAilment(effectClone);
-                     }
+                    if (effect != null) {
+                        MinionEffect effectClone = effectFactory.createEffect(effectType,
+                                effect.getDuration(), effect.getValue());
+                        minion.addStatusAilment(effectClone);
+                    }
                 } else if (!offensive && minion.getOwner().equals(caster)) {
                     minion.heal(value);
                     if (effect != null) {
                         MinionEffect effectClone = effectFactory.createEffect(effectType,
-                                effect.getDuration() , effect.getValue());
+                                effect.getDuration(), effect.getValue());
                         minion.addStatusAilment(effectClone);
                     }
                 }
@@ -59,6 +61,10 @@ public abstract class Power {
         }
     }
 
+    public String getDescription(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
+        return bundle.getString("power.description." + this.getClass().getSimpleName());
+    }
 
     public MinionEffect getEffect() {
         return effect;
@@ -67,14 +73,12 @@ public abstract class Power {
     public Image getImage() {
         return image;
     }
+
     public String getName(Locale locale) {
         ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         return bundle.getString("power." + this.getClass().getSimpleName());
     }
-    public String getDescription(Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
-        return bundle.getString("power.description." + this.getClass().getSimpleName());
-    }
+
     public int getRadius() {
         return radius;
     }
@@ -83,15 +87,16 @@ public abstract class Power {
         return value;
     }
 
-    public boolean hasEffect() {
-        return effect != null;
-    }
     public Image getValueImage() {
         if (offensive) {
             return offensiveImage;
         } else {
             return healthImage;
         }
+    }
+
+    public boolean hasEffect() {
+        return effect != null;
     }
 
 }

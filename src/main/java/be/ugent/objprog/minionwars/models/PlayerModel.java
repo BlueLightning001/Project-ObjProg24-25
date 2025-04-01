@@ -111,7 +111,7 @@ public class PlayerModel {
             });
         }
         // New to prevent concurrent modification (caused by status effect expiring)
-        new  ArrayList<>(currentPlayer.get().getMinions()).forEach(Minion::activateStatusAilments);
+        new ArrayList<>(currentPlayer.get().getMinions()).forEach(Minion::activateStatusAilments);
         turnCounter.set(turnCounter.get() + 1); // To show how many turns you played after the game ends
     }
 

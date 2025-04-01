@@ -5,7 +5,7 @@ public class MountainTile extends Tile {
     private static final int TRAVERSAL_COST = 1;
 
     public MountainTile(int x, int y, int homebase) {
-    super(x, y,homebase ,IMAGE_PATH, true, TRAVERSAL_COST, false, true);
+        super(x, y, homebase, IMAGE_PATH, true, TRAVERSAL_COST, false, true);
     }
 
 }

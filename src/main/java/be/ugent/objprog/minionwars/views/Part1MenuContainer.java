@@ -22,18 +22,16 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class Part1MenuContainer extends VBox {
-    private Label currentPlayerLabel;
-    private Label currentPlayerCoinsLabel;
-    private HBox currentPlayerHBox;
-    private MinionsTableView menuTable;
-    private Button endTurnButton;
-    private Button centerBoardButton;
-    private ButtonBar menuButtonBar;
-    private ResourceBundle bundle;
+    private final Label currentPlayerLabel;
+    private final Label currentPlayerCoinsLabel;
+    private final HBox currentPlayerHBox;
+    private final MinionsTableView menuTable;
+    private final Button endTurnButton;
+    private final Button centerBoardButton;
 
     public Part1MenuContainer(PlayerModel playerModel, MinionModel minionModel, Locale locale) {
         // Load the resource bundle.
-        this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
+        ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         // Create and configure the player information elements.
         currentPlayerLabel = new Label("Current Player");
@@ -62,8 +60,6 @@ public class Part1MenuContainer extends VBox {
                 currentPlayerCoinsLabel.textProperty().bind(newPlayer.moneyProperty().asString());
             }
         });
-
-
 
 
         // Set alignments.
@@ -100,7 +96,7 @@ public class Part1MenuContainer extends VBox {
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
 
         // Create the button bar and add the buttons.
-        menuButtonBar = new ButtonBar();
+        ButtonBar menuButtonBar = new ButtonBar();
         menuButtonBar.setPrefSize(this.getPrefWidth(), 50);
         menuButtonBar.getButtons().addAll(endTurnButton, centerBoardButton);
         ButtonBar.setButtonData(endTurnButton, ButtonBar.ButtonData.LEFT);
@@ -133,12 +129,12 @@ public class Part1MenuContainer extends VBox {
         currentPlayerHBox.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
     }
 
-    public Button getEndTurnButton() {
-        return endTurnButton;
-    }
-
     public Button getCenterBoardButton() {
         return centerBoardButton;
+    }
+
+    public Button getEndTurnButton() {
+        return endTurnButton;
     }
 
     public MinionsTableView getMinionsTableView() {

@@ -32,9 +32,9 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MinionsTableView extends TableView<Minion> {
-    private ObservableList<Minion> allMinions;
-    private FilteredList<Minion> filteredMinions;
-    public MinionsTableView(PlayerModel playerModel,MinionModel model, Locale locale) {
+    private final FilteredList<Minion> filteredMinions;
+
+    public MinionsTableView(PlayerModel playerModel, MinionModel model, Locale locale) {
         super();
         ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         setEditable(false);
@@ -54,7 +54,7 @@ public class MinionsTableView extends TableView<Minion> {
 
         setPlaceholder(placeHolder);
 
-        allMinions = model.getMinions();
+        ObservableList<Minion> allMinions = model.getMinions();
 
         // filters based on minion cost and player money
         filteredMinions = new FilteredList<>(allMinions, minion -> minion.getCost() <= playerModel.getCurrentPlayer().getMoney());
@@ -71,7 +71,7 @@ public class MinionsTableView extends TableView<Minion> {
             }
             if (newPlayer != null) {
                 newPlayer.moneyProperty().addListener(this::moneyChanged);
-                this.moneyChanged(newPlayer.moneyProperty(),oldPlayer == null ? 0 : oldPlayer.getMoney(),newPlayer.getMoney());
+                this.moneyChanged(newPlayer.moneyProperty(), oldPlayer == null ? 0 : oldPlayer.getMoney(), newPlayer.getMoney());
             }
         });
 
@@ -140,8 +140,8 @@ public class MinionsTableView extends TableView<Minion> {
                     );
                     // Range label
                     Label rangeLabel = new Label();
-                    rangeLabel.textProperty().bind(Bindings.format("%d-%d", minion.getRange().getFirst(), minion.getRange().getLast()  ));
-                    ImageView rangeImageView  = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/range-119533.png"))));
+                    rangeLabel.textProperty().bind(Bindings.format("%d-%d", minion.getRange().getFirst(), minion.getRange().getLast()));
+                    ImageView rangeImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/range-119533.png"))));
                     rangeLabel.setGraphic(rangeImageView);
 
                     rangeImageView.setPreserveRatio(true);
@@ -170,7 +170,7 @@ public class MinionsTableView extends TableView<Minion> {
                             Bindings.format("-fx-font-size: %.2fpx;", getTableColumn().widthProperty().multiply(fontScale))
                     );
 
-                    GridPane statsGrid = new GridPane(5,5);
+                    GridPane statsGrid = new GridPane(5, 5);
                     statsGrid.setAlignment(Pos.CENTER_LEFT);
                     statsGrid.add(priceLabel, 0, 0);
                     statsGrid.add(attackLabel, 0, 1);
@@ -178,7 +178,7 @@ public class MinionsTableView extends TableView<Minion> {
                     statsGrid.add(rangeLabel, 1, 1);
                     if (effectImageView.getImage() != null) {
                         statsGrid.add(effectLabel, 0, 2);
-                        GridPane.setColumnSpan(effectLabel,2);
+                        GridPane.setColumnSpan(effectLabel, 2);
                     }
 
                     setGraphic(statsGrid);
@@ -194,42 +194,13 @@ public class MinionsTableView extends TableView<Minion> {
         nameCol.prefWidthProperty().bind(widthProperty().multiply(0.5));
         statsCol.prefWidthProperty().bind(widthProperty().multiply(0.3));
 
-        getStylesheets().add(MinionsTableView.class.getResource("/be/ugent/objprog/minionwars/css/tableview.css").toExternalForm());
+        getStylesheets().add(Objects.requireNonNull(MinionsTableView.class.getResource("/be/ugent/objprog/minionwars/css/tableview.css")).toExternalForm());
         getStyleClass().add("noheader");
     }
+
     private void moneyChanged(ObservableValue<? extends Number> obs, Number oldMoney, Number newMoney) {
         filteredMinions.setPredicate(minion -> minion.getCost() <= newMoney.intValue());
         refresh();
-    }
-    private TableColumn<Minion, String> getMinionStringTableColumn() {
-        TableColumn<Minion, String> nameCol = new TableColumn<>();
-        nameCol.setCellValueFactory(cell -> {
-            return new SimpleStringProperty(cell.getValue().getName());
-        });
-        nameCol.setCellFactory(column -> new TableCell<Minion, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null || item.isBlank()) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    setText(item);
-
-                    // Dynamically adjust font size
-                    TableRow<Minion> row = getTableRow();
-                    if (row != null) {
-                        fontProperty().bind(Bindings.createObjectBinding(() ->
-                                Font.font("Monotype Corsiva", FontWeight.EXTRA_BOLD, row.getWidth() * 0.08), row.widthProperty()));
-                    }
-
-                    setAlignment(Pos.CENTER);
-                    setWrapText(true);
-
-                }
-            }
-        });
-        return nameCol;
     }
 
     private static TableColumn<Minion, ImageView> getMinionImageViewTableColumn() {
@@ -262,6 +233,37 @@ public class MinionsTableView extends TableView<Minion> {
             }
         });
         return minionIconCol;
+    }
+
+    private TableColumn<Minion, String> getMinionStringTableColumn() {
+        TableColumn<Minion, String> nameCol = new TableColumn<>();
+        nameCol.setCellValueFactory(cell -> {
+            return new SimpleStringProperty(cell.getValue().getName());
+        });
+        nameCol.setCellFactory(column -> new TableCell<Minion, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || item.isBlank()) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setText(item);
+
+                    // Dynamically adjust font size
+                    TableRow<Minion> row = getTableRow();
+                    if (row != null) {
+                        fontProperty().bind(Bindings.createObjectBinding(() ->
+                                Font.font("Monotype Corsiva", FontWeight.EXTRA_BOLD, row.getWidth() * 0.08), row.widthProperty()));
+                    }
+
+                    setAlignment(Pos.CENTER);
+                    setWrapText(true);
+
+                }
+            }
+        });
+        return nameCol;
     }
 
 

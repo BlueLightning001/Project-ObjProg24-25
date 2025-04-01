@@ -20,22 +20,18 @@ public abstract class MinionEffect {
         this.value.set(value);
     }
 
-    public int getBaseDuration() {
-        return baseDuration;
-    }
-
     public abstract void applyEffect(Minion minion);
 
     public SimpleIntegerProperty durationProperty() {
         return duration;
     }
 
-    public int getDuration() {
-        return duration.get();
+    public int getBaseDuration() {
+        return baseDuration;
     }
 
-    public boolean isOffensive() {
-        return offensive;
+    public int getDuration() {
+        return duration.get();
     }
 
     public void setDuration(int duration) {
@@ -63,16 +59,21 @@ public abstract class MinionEffect {
         this.value.set(value);
     }
 
+    public boolean isOffensive() {
+        return offensive;
+    }
+
     public void reduceDuration() {
         this.duration.set(this.duration.get() - 1);
     }
 
-    public SimpleIntegerProperty valueProperty() {
-        return value;
-    }
     @Override
     public String toString() {
         return getClass().getSimpleName() + " [baseDuration=" + baseDuration + ", duration=" + duration + ", value=" + value + "]";
+    }
+
+    public SimpleIntegerProperty valueProperty() {
+        return value;
     }
 }
 

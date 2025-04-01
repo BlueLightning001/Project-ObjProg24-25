@@ -10,19 +10,18 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
-import javafx.scene.image.Image;
-import org.w3c.dom.ls.LSException;
 
 import java.util.List;
+import java.util.Objects;
 
 
 public class HexTile extends Polygon {
     private static final double BASE_R = 20;
-    private static final double BASE_N = Math.sqrt(BASE_R * BASE_R * 0.75);
     private final static int DEFAULT_STROKE = 1;
     private final static Color DEFAULT_STROKE_COLOR = Color.BLACK;
     private final ObjectProperty<Tile> tile;
@@ -31,16 +30,18 @@ public class HexTile extends Polygon {
     private final PlayerModel playerModel;
     private final ObjectProperty<Color> highlightColor = new SimpleObjectProperty<>(Color.TRANSPARENT);
     private final TileModel tileModel;
-    private double r, n, tileWidth, tileHeight;
+    private final SimpleBooleanProperty selected;
+    private double r;
+    private double n;
+    private double tileWidth;
     private boolean startPhase = true;
-    private SimpleBooleanProperty selected;
 
-    public HexTile(double x, double y, Tile tile, PlayerModel playerModel, double scaleFactor, TileModel tileModel) {
+    public HexTile(Tile tile, PlayerModel playerModel, double scaleFactor, TileModel tileModel) {
         this.tileModel = tileModel;
         this.tile = new SimpleObjectProperty<>(tile);
         this.playerModel = playerModel;
         this.currentPlayer = playerModel.currentPlayerProperty();
-        this.baseImage = new Image(getClass().getResource(this.tile.get().getImagePath()).toExternalForm());
+        this.baseImage = new Image(Objects.requireNonNull(getClass().getResource(this.tile.get().getImagePath())).toExternalForm());
         this.selected = new SimpleBooleanProperty(false);
         setScaleFactor(scaleFactor);
         setStrokeWidth(DEFAULT_STROKE);
@@ -57,32 +58,6 @@ public class HexTile extends Polygon {
     public void endStartPhase() {
         startPhase = false;
         updateTileAppearance();
-    }
-
-    public Color getHighlightColor() {
-        return highlightColor.get();
-    }
-
-    public void setHighlightColor(Color color) {
-        if (!tile.get().getClass().equals(VoidTile.class)) {
-            highlightColor.set(color);
-        }
-    }
-
-    public List<Tile> getTilesInRadius(int radius) {
-        return tileModel.getTilesInRadius(this.getTile(), 0, radius);
-    }
-
-    public Tile getTile() {
-        return tile.get();
-    }
-
-    public List<Tile> getTilesInRange(int minRange, int maxRange) {
-        return tileModel.getTilesInRadius(this.getTile(), minRange, maxRange);
-    }
-
-    public void highlight(Color color) {
-        setHighlightColor(color);
     }
 
     // Updates tile appearance using a Canvas to apply color overlays and highlighting.
@@ -118,7 +93,6 @@ public class HexTile extends Polygon {
         setFill(new ImagePattern(finalImage));
     }
 
-
     /**
      * Applies a color overlay using a Canvas and returns the modified image.
      */
@@ -141,6 +115,31 @@ public class HexTile extends Polygon {
         return blendedImage;
     }
 
+    public Color getHighlightColor() {
+        return highlightColor.get();
+    }
+
+    public void setHighlightColor(Color color) {
+        if (!tile.get().getClass().equals(VoidTile.class)) {
+            highlightColor.set(color);
+        }
+    }
+
+    public List<Tile> getTilesInRadius(int radius) {
+        return tileModel.getTilesInRadius(this.getTile(), 0, radius);
+    }
+
+    public Tile getTile() {
+        return tile.get();
+    }
+
+    public List<Tile> getTilesInRange(int minRange, int maxRange) {
+        return tileModel.getTilesInRadius(this.getTile(), minRange, maxRange);
+    }
+
+    public void highlight(Color color) {
+        setHighlightColor(color);
+    }
 
     public boolean isSelected() {
         return selected.get();
@@ -158,7 +157,6 @@ public class HexTile extends Polygon {
         this.r = BASE_R * scaleFactor;
         this.n = Math.sqrt(this.r * this.r * 0.75);
         this.tileWidth = 2 * this.n;
-        this.tileHeight = 2 * this.r;
         updateShape();
     }
 
@@ -171,7 +169,7 @@ public class HexTile extends Polygon {
                 this.setStroke(Color.CYAN); // Highlight border
 
             } else {
-                if (startPhase || !this.getTile().isOccupied() ||(this.getTile().isOccupied() && playerModel.getCurrentPlayer().equals(this.getTile().getOccupant().getOwner()))) {
+                if (startPhase || !this.getTile().isOccupied() || (this.getTile().isOccupied() && playerModel.getCurrentPlayer().equals(this.getTile().getOccupant().getOwner()))) {
                     this.setStroke(DEFAULT_STROKE_COLOR);
                 } else if (this.getTile().isOccupied()) {
                     this.setStroke(Color.RED);

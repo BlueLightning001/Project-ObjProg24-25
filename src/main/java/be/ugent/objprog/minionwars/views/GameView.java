@@ -17,20 +17,18 @@ import java.util.ResourceBundle;
 
 public class GameView {
     private final TileGroupPane gameTileGroupPane;
-    private StackPane container;
-    private Locale locale;
-    private PlayerModel playerModel;
-    private TileModel tileModel;
-    private HBox root;
-    private Part1MenuContainer part1MenuContainer;
+    private final StackPane container;
+    private final Locale locale;
+    private final PlayerModel playerModel;
+    private final TileModel tileModel;
+    private final HBox root;
+    private final MinionsTableView menuTable;
+    private final ZoomableScrollPane gamePane;
+    private final MinionModel minionModel;
+    private final PowerModel powerModel;
     private Part2MenuContainer part2MenuContainer;
-    private MinionsTableView menuTable;
     private Button endTurnButton;
-    private ZoomableScrollPane gamePane;
     private Button centerBoardButton;
-    private ResourceBundle bundle;
-    private MinionModel minionModel;
-    private PowerModel powerModel;
 
     public GameView(MinionModel minionModel, PlayerModel playerModel, TileModel tileModel, PowerModel powerModel, Locale locale) {
         this.minionModel = minionModel;
@@ -38,7 +36,7 @@ public class GameView {
         this.tileModel = tileModel;
         this.powerModel = powerModel;
         this.locale = locale;
-        bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
+        ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         container = new StackPane();
         root = new HBox();
@@ -55,7 +53,7 @@ public class GameView {
         gameTileGroupPane.prefHeightProperty().bind(gamePane.heightProperty());
 
         //// PART 1
-        part1MenuContainer = new Part1MenuContainer(playerModel, minionModel, locale);
+        Part1MenuContainer part1MenuContainer = new Part1MenuContainer(playerModel, minionModel, locale);
         centerBoardButton = part1MenuContainer.getCenterBoardButton();
         endTurnButton = part1MenuContainer.getEndTurnButton();
         menuTable = part1MenuContainer.getMinionsTableView();
@@ -72,7 +70,6 @@ public class GameView {
         // Ensure part1MenuContainer resizes properly
         part1MenuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.30));
         part1MenuContainer.prefHeightProperty().bind(root.heightProperty());
-        ;
 
 
         // Bind gamePane size
@@ -93,29 +90,6 @@ public class GameView {
         this.container.getChildren().add(root);
     }
 
-    private void rebindEndTurnButtonPart1() {
-        endTurnButton.disableProperty().unbind();
-        endTurnButton.disableProperty().bind(
-                Bindings.createBooleanBinding(
-                        () -> this.playerModel.getCurrentPlayer().getMinions().isEmpty(),
-                        this.playerModel.getCurrentPlayer().getMinions()
-                )
-        );
-    }
-    public HexTile getHexTile(int x, int y) {
-        HexTile[][] grid =  gameTileGroupPane.getHexTileGrid();
-        if (x < 0 || y < 0 || x >= grid.length || y >= grid[0].length) {
-            return null;
-        }
-        return grid[x][y];
-    }
-    public HexTile getHexTile(Tile tile) {
-        if (tile != null) {
-            return getHexTile(tile.getXCoord(), tile.getYCoord());
-        }
-        return null;
-    }
-
     public void resetGameGroupPosition() {
         gameTileGroupPane.setTranslateX(0);
         gameTileGroupPane.setTranslateY(0);
@@ -125,6 +99,16 @@ public class GameView {
         if (boundPane != null) {
             boundPane.resetScale();
         }
+    }
+
+    private void rebindEndTurnButtonPart1() {
+        endTurnButton.disableProperty().unbind();
+        endTurnButton.disableProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> this.playerModel.getCurrentPlayer().getMinions().isEmpty(),
+                        this.playerModel.getCurrentPlayer().getMinions()
+                )
+        );
     }
 
     public void changeGamePhase() { //TODO !!
@@ -156,6 +140,21 @@ public class GameView {
 
     public Button getEndTurnButton() {
         return endTurnButton;
+    }
+
+    public HexTile getHexTile(Tile tile) {
+        if (tile != null) {
+            return getHexTile(tile.getXCoord(), tile.getYCoord());
+        }
+        return null;
+    }
+
+    public HexTile getHexTile(int x, int y) {
+        HexTile[][] grid = gameTileGroupPane.getHexTileGrid();
+        if (x < 0 || y < 0 || x >= grid.length || y >= grid[0].length) {
+            return null;
+        }
+        return grid[x][y];
     }
 
     public MinionsTableView getMinionsTableView() {

@@ -10,16 +10,18 @@ public class TileFactory {
             "water", WaterTile::new,
             "void", VoidTile::new
     );
+
     public Tile createTile(String type, int x, int y, int homebase) {
         TileFactoryFunction factoryFunction = tileFactories.get(type);
         if (factoryFunction == null) {
             throw new IllegalArgumentException("Unknown tile type: " + type);
         }
-         return factoryFunction.create(x, y,homebase);
+        return factoryFunction.create(x, y, homebase);
     }
+
     @FunctionalInterface
     public interface TileFactoryFunction {
-        Tile create(int x, int y,int homebase);
+        Tile create(int x, int y, int homebase);
     }
 }
 

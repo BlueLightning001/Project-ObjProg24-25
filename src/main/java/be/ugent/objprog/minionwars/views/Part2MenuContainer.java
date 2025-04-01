@@ -8,7 +8,6 @@ import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,34 +16,20 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class Part2MenuContainer extends VBox {
-    private final Locale locale;
-    private final MinionModel minionModel;
-    private final PlayerModel playerModel;
-    private final TileGroupPane tileGroupPane;
-    private final TileModel tileModel;
-    private final PowerModel powerModel;
     private final Button restButton;
     private final Button endTurnButton;
     private final Button centerBoardButton;
-    private CurrentPlayerDisplay currentPlayerDisplay;
-    private ActionsPane actionsPane;
-    private ResourceBundle bundle;
-    private SelectedMinionDisplay selectedMinionDisplay;
+    private final ActionsPane actionsPane;
+    private final SelectedMinionDisplay selectedMinionDisplay;
 
     public Part2MenuContainer(PlayerModel playerModel, MinionModel minionModel, TileModel tileModel, PowerModel powerModel, TileGroupPane tileGroupPane, Locale locale) {
-        this.playerModel = playerModel;
-        this.minionModel = minionModel;
-        this.tileGroupPane = tileGroupPane;
-        this.tileModel = tileModel;
-        this.powerModel = powerModel;
-        this.locale = locale;
 
         // Load the resource bundle.
-        this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
+        ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
 
         // Current player info
-        currentPlayerDisplay = new CurrentPlayerDisplay(playerModel);
+        CurrentPlayerDisplay currentPlayerDisplay = new CurrentPlayerDisplay(playerModel);
 
 
         // Line below current player box
@@ -56,7 +41,7 @@ public class Part2MenuContainer extends VBox {
 
 
         //// Actions Tabs
-        actionsPane = new ActionsPane(tileModel,playerModel, powerModel, locale);
+        actionsPane = new ActionsPane(tileModel, playerModel, powerModel, locale);
         actionsPane.setVisible(false);
 
         //// Buttons
@@ -70,7 +55,7 @@ public class Part2MenuContainer extends VBox {
         endTurnButton.setDisable(true);
         centerBoardButton = new Button(bundle.getString("gameScreen.centerBoard"));
 
-        menuButtons.getChildren().addAll( endTurnButton,restButton, centerBoardButton);
+        menuButtons.getChildren().addAll(endTurnButton, restButton, centerBoardButton);
 
         endTurnButton.setWrapText(true);
         centerBoardButton.setWrapText(true);
@@ -92,7 +77,6 @@ public class Part2MenuContainer extends VBox {
         centerBoardButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", centerBoardButton.heightProperty().multiply(fontScaleFactor).asString(), ";"));
 
 
-
         // Listeners
         tileModel.selectedTileProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -103,14 +87,14 @@ public class Part2MenuContainer extends VBox {
         });
 
 
-        getChildren().addAll(this.currentPlayerDisplay, separator, selectedMinionDisplay, actionsPane, menuButtons);
+        getChildren().addAll(currentPlayerDisplay, separator, selectedMinionDisplay, actionsPane, menuButtons);
 
 
         // Height ratios
         menuButtons.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
         actionsPane.prefHeightProperty().bind(this.heightProperty().multiply(0.7));
         selectedMinionDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
-        this.currentPlayerDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
+        currentPlayerDisplay.prefHeightProperty().bind(this.heightProperty().multiply(0.1));
 
 
     }

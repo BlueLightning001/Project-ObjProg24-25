@@ -38,27 +38,22 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class ActionsPane extends TabPane {
-    private final PowerModel powerModel;
     private final ResourceBundle bundle;
     private final ListView<Power> powerListView;
     private final Tab moveTab;
     private final Tab attackTab;
     private final Tab specialTab;
-    private Locale locale;
-    private double font = 15;
-    private double error = 50; //%
+    private final Locale locale;
     private Button skipButton;
     private Button stayButton;
     private ToggleButton attackButton;
     private ToggleButton specialAttackButton;
     private Button healButton;
-    private TileModel tileModel;
     private ToggleGroup attackToggleGroup;
+
     public ActionsPane(TileModel tileModel, PlayerModel playerModel, PowerModel powerModel, Locale locale) {
         super();
         this.locale = locale;
-        this.powerModel = powerModel;
-        this.tileModel = tileModel;
         bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         //// Moving
@@ -119,7 +114,6 @@ public class ActionsPane extends TabPane {
             private final VBox infoBox = new VBox(nameLabel, descriptionLabel);
             private final GridPane detailsGrid = new GridPane();
             private final HBox cellContainer = new HBox(powerIcon, infoBox, separator, detailsGrid);
-
 
             {
 
@@ -185,7 +179,7 @@ public class ActionsPane extends TabPane {
                     setGraphic(null);
                 } else {
                     nameLabel.setText(power.getName(locale));
-                    descriptionLabel.setText(MessageFormat.format(bundle.getString("power.effect"),power.getDescription(locale)));
+                    descriptionLabel.setText(MessageFormat.format(bundle.getString("power.effect"), power.getDescription(locale)));
                     powerIcon.setImage(power.getImage());
 
                     // Update value details
@@ -240,10 +234,6 @@ public class ActionsPane extends TabPane {
         setTabDragPolicy(TabDragPolicy.FIXED);
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         getTabs().setAll(specialTab);
-    }
-
-    public Tab getSpecialTab() {
-        return specialTab;
     }
 
     private Tab makeMoveTab() {
@@ -341,7 +331,7 @@ public class ActionsPane extends TabPane {
 
                 specialAttackButton.setDisable(!occupant.specialReady());
                 specialAttackButton.disableProperty().bind(occupant.recoveryChargesProperty().greaterThanOrEqualTo(occupant.getBaseRecoveryCharges()).not());
-                 }
+            }
 
             attackButton.setText(bundle.getString("actions.attack.normalAttack"));
 
@@ -377,7 +367,6 @@ public class ActionsPane extends TabPane {
         label.heightProperty().addListener(resizeListener);
     }
 
-
     public ToggleButton getAttackButton() {
         return attackButton;
     }
@@ -404,6 +393,10 @@ public class ActionsPane extends TabPane {
 
     public ToggleButton getSpecialAttackButton() {
         return specialAttackButton;
+    }
+
+    public Tab getSpecialTab() {
+        return specialTab;
     }
 
     public Button getStayButton() {

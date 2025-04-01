@@ -2,7 +2,6 @@ package be.ugent.objprog.minionwars.controllers;
 
 import be.ugent.objprog.minionwars.JDOMReader;
 import be.ugent.objprog.minionwars.models.PlayerModel;
-import be.ugent.objprog.minionwars.views.GameView;
 import be.ugent.objprog.minionwars.views.StartScreenView;
 import javafx.scene.Scene;
 import javafx.scene.control.TextFormatter;
@@ -22,10 +21,11 @@ public class StartScreenController {
     private final PlayerModel model;
     private final ResourceBundle bundle;
     private final Stage stage;
-    private Double prefStageWidth = null;
-    private Double prefStageHeight = null;
-    private Locale locale;
-    private JDOMReader reader;
+    private final Double prefStageWidth = null;
+    private final Double prefStageHeight = null;
+    private final Locale locale;
+    private final JDOMReader reader;
+
     public StartScreenController(Stage stage, Locale locale, JDOMReader reader) {
         this.reader = reader;
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
@@ -43,25 +43,6 @@ public class StartScreenController {
         view.getPlayer2TextField().textProperty().bindBidirectional(model.player2Property().get().nameProperty(), new TrimStringConverter());
         view.getMoneyTextField().textProperty().bindBidirectional(model.startBudgetProperty(), new NumberStringConverter());
     }
-    private static class TrimStringConverter extends StringConverter<String> {
-
-        @Override
-        public String toString(String object) {
-            return object != null ? object.trim() : "";
-        }
-
-        /**
-         * Converts the string provided into an object defined by the specific converter.
-         * Format of the string and type of the resulting object is defined by the specific converter.
-         *
-         * @param string the {@code String} to convert
-         * @return an object representation of the string passed in.
-         */
-        @Override
-        public String fromString(String string) {
-            return string != null ? string.trim() : "";
-        }
-    }
 
     private void setupListeners() {
         // Only allows numbers moneyTextField
@@ -75,7 +56,7 @@ public class StartScreenController {
 
         TextFormatter<Number> textFormatter = new TextFormatter<>(new NumberStringConverter(), model.getMinStartBudget(), filter);
         view.getMoneyTextField().setTextFormatter(textFormatter);
-        // Makes it easier to navigate trough the menu using only keyboard
+        // Makes it easier to navigate through the menu using only keyboard
         view.getPlayer1TextField().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 view.getPlayer2TextField().requestFocus();
@@ -107,14 +88,12 @@ public class StartScreenController {
         }
 
         if (!model.isValidStartBudget()) {
-            view.showWarning(MessageFormat.format(bundle.getString("warning.invalidStartBudget"),
-                    model.getMinStartBudget(), model.getMaxStartBudget()));
+            view.showWarning(MessageFormat.format(bundle.getString("warning.invalidStartBudget"), model.getMinStartBudget(), model.getMaxStartBudget()));
             return;
         }
 
         // If all checks pass, start the game
         view.hideWarning();
-        System.out.println("STARTED");
         model.giveStartBudget();
         startGame();
     }
@@ -122,7 +101,7 @@ public class StartScreenController {
     private void startGame() {
         boolean fullscreen = stage.isFullScreen();
 
-        GameController gameController = new GameController(stage,model,locale,reader);
+        GameController gameController = new GameController(stage, model, locale, reader);
         Scene scene = new Scene(gameController.getView(), getView().getWidth(), getView().getHeight());
 
         scene.setOnKeyPressed(event -> {
@@ -145,6 +124,26 @@ public class StartScreenController {
 
     public Region getView() {
         return view.getContainer();
+    }
+
+    private static class TrimStringConverter extends StringConverter<String> {
+
+        /**
+         * Converts the string provided into an object defined by the specific converter.
+         * Format of the string and type of the resulting object is defined by the specific converter.
+         *
+         * @param string the {@code String} to convert
+         * @return an object representation of the string passed in.
+         */
+        @Override
+        public String fromString(String string) {
+            return string != null ? string.trim() : "";
+        }
+
+        @Override
+        public String toString(String object) {
+            return object != null ? object.trim() : "";
+        }
     }
 
 }

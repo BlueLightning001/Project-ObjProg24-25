@@ -16,12 +16,9 @@ import javafx.scene.layout.VBox;
     Stack Overflow. Retrieved March 14, 2025, from https://stackoverflow.com/a/44314455
  */
 public class ZoomableScrollPane extends ScrollPane {
+    private final Node target;
+    private final Node zoomNode;
     private double scaleValue = 1;
-    private double zoomIntensity = 0.02;
-    private Node target;
-    private Node zoomNode;
-    private final double minScale = 0.5;
-    private final double maxScale = 3.0;
 
     public ZoomableScrollPane(Node target) {
         super();
@@ -43,7 +40,6 @@ public class ZoomableScrollPane extends ScrollPane {
         });
 
 
-
         setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         setFitToHeight(true); //center
@@ -61,21 +57,25 @@ public class ZoomableScrollPane extends ScrollPane {
         return outerNode;
     }
 
+    private void updateScale() {
+        target.setScaleX(scaleValue);
+        target.setScaleY(scaleValue);
+    }
+
     private Node centeredNode(Node node) {
         VBox vBox = new VBox(node);
         vBox.setAlignment(Pos.CENTER);
         return vBox;
     }
 
-    private void updateScale() {
-        target.setScaleX(scaleValue);
-        target.setScaleY(scaleValue);
-    }
     private void onScroll(double wheelDelta, Point2D mousePoint) {
+        double zoomIntensity = 0.02;
         double zoomFactor = Math.exp(wheelDelta * zoomIntensity);
         double newScale = scaleValue * zoomFactor;
 
         // Apply zoom limits
+        double maxScale = 3.0;
+        double minScale = 0.5;
         if (newScale < minScale) {
             newScale = minScale;
         } else if (newScale > maxScale) {
@@ -104,6 +104,7 @@ public class ZoomableScrollPane extends ScrollPane {
         this.setHvalue((valX + adjustment.getX()) / (updatedInnerBounds.getWidth() - viewportBounds.getWidth()));
         this.setVvalue((valY + adjustment.getY()) / (updatedInnerBounds.getHeight() - viewportBounds.getHeight()));
     }
+
     public void resetScale() {
         scaleValue = 1;
     }

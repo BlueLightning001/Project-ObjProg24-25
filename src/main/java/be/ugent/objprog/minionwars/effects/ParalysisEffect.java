@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class ParalysisEffect extends MinionEffect {
 
-    public ParalysisEffect(int duration,int value) {
-        super(duration,value);
+    public ParalysisEffect(int duration, int value) {
+        super(duration, value);
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/effects/paralysis.png")));
     }
 
@@ -17,7 +17,5 @@ public class ParalysisEffect extends MinionEffect {
         // Blocks all minion actions
         m.setAttacked(true);
         m.setMoved(true);
-
-        System.out.println("Paralyzing " + m.getName() + ", value: " + value);
     }
 }

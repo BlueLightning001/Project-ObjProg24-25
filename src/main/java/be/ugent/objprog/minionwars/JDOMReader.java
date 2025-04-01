@@ -27,22 +27,21 @@ public class JDOMReader {
     private final List<Minion> minionList;
     private final List<Tile> tiles;
     private final List<MinionEffect> effectList;
-    private final TileFactory tileFactory;
     private final EffectFactory effectFactory;
-    private final PowerFactory powerFactory;
     private final List<Power> powers;
+
     public JDOMReader(String filename) throws IOException {
         this.filename = filename;
         tiles = new ArrayList<>();
-        tileFactory = new TileFactory();
+        TileFactory tileFactory = new TileFactory();
         effectFactory = new EffectFactory();
-        powerFactory = new PowerFactory();
+        PowerFactory powerFactory = new PowerFactory();
         minionList = new ArrayList<>();
         effectList = new ArrayList<>();
         powers = new ArrayList<>();
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
-            Document document = null;
+            Document document;
 
             File file = new File(filename);
 
@@ -159,8 +158,8 @@ public class JDOMReader {
         return effectList;
     }
 
-    public List<Minion> getMinionList() {
-        return minionList;
+    public String getFilename() {
+        return filename;
     }
 
     public List<Minion> getMinions() {
@@ -170,9 +169,7 @@ public class JDOMReader {
     public List<Power> getPowers() {
         return powers;
     }
-    public String getFilename(){
-        return filename;
-    }
+
     public List<Tile> getTiles() {
         return tiles;
     }

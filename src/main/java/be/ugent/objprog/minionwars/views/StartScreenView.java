@@ -1,7 +1,6 @@
 package be.ugent.objprog.minionwars.views;
 
 import be.ugent.objprog.minionwars.models.PlayerModel;
-import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -29,24 +28,19 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class StartScreenView  {
+public class StartScreenView {
     private final ResourceBundle bundle;
-    private final PlayerModel model;
     private final StackPane container;
     private final VBox centerContainer;
     private TextField player1TextField;
-    private Label player1Label;
     private TextField player2TextField;
-    private Label player2Label;
     private TextField moneyTextField;
-    private Label moneyLabel;
     private GridPane grid;
     private Button startButton;
-    private Label titleLabel;
     private StackPane titleContainer;
     private Label warningLabel;
+
     public StartScreenView(PlayerModel model, Locale locale) {
-        this.model = model;
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         Font labelFont = Font.font("Monotype Corsiva", FontWeight.BOLD, 20);
         DropShadow shadow = createDropShadow();
@@ -88,7 +82,7 @@ public class StartScreenView  {
         this.titleContainer.setPrefSize(titleBanner.getWidth(), titleBanner.getHeight());
         this.titleContainer.setBackground(new Background(getBackgroundImage(titleBanner)));
 
-        this.titleLabel = new Label(bundle.getString("startScreen.titleLabel"));
+        Label titleLabel = new Label(bundle.getString("startScreen.titleLabel"));
         titleLabel.setFont(Font.font("Old English Text MT", 90));
         titleLabel.setStyle("-fx-text-fill: #2D2D2D;");
         titleContainer.getChildren().add(titleLabel);
@@ -102,13 +96,13 @@ public class StartScreenView  {
         grid.setAlignment(Pos.CENTER);
 
         this.player1TextField = createTextField("startScreen.player1Prompt");
-        this.player1Label = createStyledLabel("startScreen.player1Label", labelFont, shadow);
+        Label player1Label = createStyledLabel("startScreen.player1Label", labelFont, shadow);
 
         this.player2TextField = createTextField("startScreen.player2Prompt");
-        this.player2Label = createStyledLabel("startScreen.player2Label", labelFont, shadow);
+        Label player2Label = createStyledLabel("startScreen.player2Label", labelFont, shadow);
 
         this.moneyTextField = createTextField("startScreen.moneyPrompt");
-        this.moneyLabel = createStyledLabel("startScreen.moneyLabel", labelFont, shadow);
+        Label moneyLabel = createStyledLabel("startScreen.moneyLabel", labelFont, shadow);
 
         grid.add(player1Label, 0, 0);
         grid.add(player1TextField, 1, 0);
@@ -117,21 +111,6 @@ public class StartScreenView  {
         grid.add(moneyLabel, 0, 2);
         grid.add(moneyTextField, 1, 2);
     }
-
-    private Label createStyledLabel(String key, Font font, DropShadow shadow) {
-        Label label = new Label(bundle.getString(key));
-        label.setStyle("-fx-text-fill: white;");
-        label.setEffect(shadow);
-        label.setFont(font);
-        return label;
-    }
-
-    private TextField createTextField(String prompt) {
-        TextField textField = new TextField();
-        textField.setPromptText(bundle.getString(prompt));
-        return textField;
-    }
-
 
     private void setupStartButton(Font labelFont) {
         this.startButton = new Button(bundle.getString("startScreen.startButton"));
@@ -146,13 +125,11 @@ public class StartScreenView  {
         );
     }
 
-
     private void setupWarningLabel() {
         this.warningLabel = new Label();
         warningLabel.setStyle("-fx-text-fill: red;");
         warningLabel.setVisible(false);
     }
-
 
     private void setupBackground() {
         Image backgroundImage = new Image("be/ugent/objprog/minionwars/images/splash-start.jpg");
@@ -187,6 +164,20 @@ public class StartScreenView  {
                         true, true
                 )
         );
+    }
+
+    private TextField createTextField(String prompt) {
+        TextField textField = new TextField();
+        textField.setPromptText(bundle.getString(prompt));
+        return textField;
+    }
+
+    private Label createStyledLabel(String key, Font font, DropShadow shadow) {
+        Label label = new Label(bundle.getString(key));
+        label.setStyle("-fx-text-fill: white;");
+        label.setEffect(shadow);
+        label.setFont(font);
+        return label;
     }
 
     public StackPane getContainer() {

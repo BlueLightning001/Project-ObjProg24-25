@@ -6,24 +6,21 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.geometry.Pos;
 
 import java.util.Objects;
 
 public class CurrentPlayerDisplay extends HBox {
     private final Label currentPlayerLabel;
     private final Label currentPlayerMinionsUsedLabel;
-    private final PlayerModel playerModel;
     private final double fontScale = 0.1;
 
     public CurrentPlayerDisplay(PlayerModel playerModel) {
-        this.playerModel = playerModel;
 
         currentPlayerLabel = new Label("Current Player");
         currentPlayerMinionsUsedLabel = new Label("currentPlayerCoins");

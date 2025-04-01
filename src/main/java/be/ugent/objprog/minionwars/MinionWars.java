@@ -2,6 +2,7 @@ package be.ugent.objprog.minionwars;
 
 import be.ugent.objprog.minionwars.controllers.StartScreenController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -10,25 +11,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Objects;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.Objects;
 
 public class MinionWars extends Application {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) {
         Locale.setDefault(new Locale("nl", "BE"));
 
         Locale locale = Locale.getDefault();
@@ -66,9 +57,5 @@ public class MinionWars extends Application {
         });
 
         primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

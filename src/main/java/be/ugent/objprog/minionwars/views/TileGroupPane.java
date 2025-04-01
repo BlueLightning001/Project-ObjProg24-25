@@ -23,10 +23,10 @@ public class TileGroupPane extends Pane {
     private final List<HexTile> hexTiles = new ArrayList<>();
     private final HexTile[][] hexTileGrid;
     private final ExecutorService resizeExecutor = Executors.newSingleThreadExecutor();
+    private final SimpleObjectProperty<HexTile> selectedHexTile;
+    private final TileModel tileModel;
     private double tileScaleFactor = 1.0;
-    private SimpleObjectProperty<HexTile> selectedHexTile;
     private ZoomableScrollPane boundPane;
-    private TileModel tileModel;
 
     public TileGroupPane(TileModel tileModel, PlayerModel playerModel) {
         this.tileModel = tileModel;
@@ -50,12 +50,11 @@ public class TileGroupPane extends Pane {
     }
 
 
-
     private void initializeTiles() {
         for (int i = 0; i < tileGridModel.length; i++) {
             for (int j = 0; j < tileGridModel[i].length; j++) {
                 Tile tile = tileGridModel[i][j];
-                HexTile hexTile = new HexTile(0, 0, tile, playerModel, tileScaleFactor, tileModel);
+                HexTile hexTile = new HexTile(tile, playerModel, tileScaleFactor, tileModel);
                 hexTiles.add(hexTile);
                 hexTileGrid[i][j] = hexTile;
             }
@@ -63,8 +62,8 @@ public class TileGroupPane extends Pane {
         Platform.runLater(() -> getChildren().setAll(hexTiles)); // Add to UI
     }
 
-    public SimpleObjectProperty<HexTile> selectedHexTileProperty() {
-        return selectedHexTile;
+    public HexTile[][] getHexTileGrid() {
+        return hexTileGrid;
     }
 
     public void bindPane(ZoomableScrollPane gamePane) {
@@ -77,13 +76,6 @@ public class TileGroupPane extends Pane {
         boundPane.heightProperty().addListener(resizeListener);
 
         adjustTileSizeAsync(); // Initial resize
-    }
-
-    private class ResizeListener implements InvalidationListener {
-        @Override
-        public void invalidated(Observable observable) {
-            adjustTileSizeAsync();
-        }
     }
 
     private void adjustTileSizeAsync() {
@@ -132,34 +124,8 @@ public class TileGroupPane extends Pane {
         });
     }
 
-
     public ZoomableScrollPane getBoundPane() {
         return boundPane;
-    }
-
-    public List<HexTile> getHexTiles() {
-        return hexTiles;
-    }
-
-    public HexTile getSelectedHexTile() {
-        return selectedHexTile.get();
-    }
-
-    public void setSelectedHexTile(HexTile selectedHexTile) {
-        if (selectedHexTile == null || selectedHexTile.equals(this.selectedHexTile.get())){
-            this.selectedHexTile.set(null);
-        } else {
-            if (this.selectedHexTile.get() != null) {
-                this.selectedHexTile.get().setSelected(false);
-            }
-            this.selectedHexTile.set(selectedHexTile);
-            this.selectedHexTile.get().setSelected(true);
-        }
-
-    }
-
-    public HexTile[][] getHexTileGrid() {
-        return hexTileGrid;
     }
 
     public HexTile getHexTileAt(double sceneX, double sceneY) {
@@ -172,6 +138,30 @@ public class TileGroupPane extends Pane {
         return null;
     }
 
+    public List<HexTile> getHexTiles() {
+        return hexTiles;
+    }
+
+    public HexTile getSelectedHexTile() {
+        return selectedHexTile.get();
+    }
+
+    public void setSelectedHexTile(HexTile selectedHexTile) {
+        if (selectedHexTile == null || selectedHexTile.equals(this.selectedHexTile.get())) {
+            this.selectedHexTile.set(null);
+        } else {
+            if (this.selectedHexTile.get() != null) {
+                this.selectedHexTile.get().setSelected(false);
+            }
+            this.selectedHexTile.set(selectedHexTile);
+            this.selectedHexTile.get().setSelected(true);
+        }
+
+    }
+
+    public SimpleObjectProperty<HexTile> selectedHexTileProperty() {
+        return selectedHexTile;
+    }
 
     public void shutdown() {
         resizeExecutor.shutdown(); // Call this when closing the game
@@ -197,6 +187,13 @@ public class TileGroupPane extends Pane {
         }
 
         return sb.toString();
+    }
+
+    private class ResizeListener implements InvalidationListener {
+        @Override
+        public void invalidated(Observable observable) {
+            adjustTileSizeAsync();
+        }
     }
 
 }

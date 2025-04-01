@@ -1,7 +1,6 @@
 package be.ugent.objprog.minionwars.controllers;
 
 import be.ugent.objprog.minionwars.JDOMReader;
-import be.ugent.objprog.minionwars.views.ZoomableScrollPane;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.models.MinionModel;
 import be.ugent.objprog.minionwars.models.Player;
@@ -13,6 +12,7 @@ import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.views.GameView;
 import be.ugent.objprog.minionwars.views.HexTile;
 import be.ugent.objprog.minionwars.views.VictoryPane;
+import be.ugent.objprog.minionwars.views.ZoomableScrollPane;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -24,7 +24,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -39,28 +38,22 @@ import java.util.ResourceBundle;
 
 public class GameController {
     private final Locale locale;
-    private final MinionModel minionModel;
     private final TileModel tileModel;
     private final PowerModel powerModel;
     private final ResourceBundle bundle;
-    private GameView view;
-    private PlayerModel playerModel;
-    private Stage stage;
+    private final GameView view;
+    private final PlayerModel playerModel;
+    private final Stage stage;
+    private final JDOMReader jdomReader;
     private EventHandler<MouseEvent> specialMouseClickedHandler;
     private EventHandler<MouseEvent> specialMouseMovedHandler;
-    private JDOMReader jdomReader;
     private ListChangeListener<Minion> player1WinListener;
     private ListChangeListener<Minion> player2WinListener;
-    private final ChangeListener<Number> turnCounterListener = (observable, oldValue, newValue) -> {
-        if (newValue.intValue() == 2) {
-            startNextPhase();
-        }
-    };
 
     public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader) {
         this.stage = stage;
         this.playerModel = playerModel;
-        this.minionModel = new MinionModel(reader);
+        MinionModel minionModel = new MinionModel(reader);
         this.tileModel = new TileModel(reader, locale);
         this.powerModel = new PowerModel(reader, locale);
         this.jdomReader = reader;
@@ -78,8 +71,6 @@ public class GameController {
             view.getGameTileGroupPane().shutdown();// Releases resources from other threads
         });
 
-        // TODO game logic
-
         // PART 1
         setUpListenersPart1();
     }
@@ -88,7 +79,7 @@ public class GameController {
         view.getMinionsTableView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             // Unselect the tile when selecting a minion
             if (newValue != null) {
-                view.getGameTileGroupPane().setSelectedHexTile(null);  // Deselect any selected tile
+                view.getGameTileGroupPane().setSelectedHexTile(null);
             }
         });
 
@@ -114,7 +105,7 @@ public class GameController {
                 if (selectedMinion != null && tile.isHomeBase() && tile.getHomebase() == currentPlayer.getHomeBaseID()
                         && !tile.isOccupied() && tile.isTraversable()) {
                     // Create a new instance of the minion
-                    Minion newMinion = selectedMinion.clone();
+                    Minion newMinion = selectedMinion.copy();
                     newMinion.setOwner(currentPlayer);
 
                     // Deduct money and place minion
@@ -139,7 +130,7 @@ public class GameController {
             }
             if (eventSource instanceof ZoomableScrollPane pane && event.getCode() == KeyCode.DELETE) {
                 HexTile selectedHexTile = view.getGameTileGroupPane().getSelectedHexTile();
-                Tile tileToDelete = null;
+                Tile tileToDelete;
                 if (selectedHexTile != null) {
                     tileToDelete = selectedHexTile.getTile();
                     Player currentPlayer = playerModel.getCurrentPlayer();
@@ -161,32 +152,114 @@ public class GameController {
 
     public Region getView() {
         return this.view.getView();
-    }
-
-    private void startNextPhase() {
-        System.out.println("STARTING NEXT PHASE");
-
-        // Remove old selection logic
-        view.getView().setOnKeyPressed(null);
-
-        //Clear homebase highlights
-        Platform.runLater(() -> {
-            view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
-                clearHighlights();
-            });
-        });
-        // Prevent listener duplication on replay
-        playerModel.turnCounterProperty().removeListener(turnCounterListener);
-
-        view.changeGamePhase();
-        setUpListenersPart2();
-        stage.setMinWidth(650);
-        stage.setMinHeight(600);
-
-    }
+    }    private final ChangeListener<Number> turnCounterListener = (observable, oldValue, newValue) -> {
+        if (newValue.intValue() == 2) {
+            startNextPhase();
+        }
+    };
 
     private void clearHighlights() {
         view.getGameTileGroupPane().getHexTiles().forEach(HexTile::clearHighlight);
+    }
+
+    // Helper method to undo highlights on tiles for certain situations
+    private void clearMinionHighlights(Player clearFromPlayer1, Player clearFromPlayer2) {
+        List<Minion> allMinions = new ArrayList<>();
+
+
+        if (clearFromPlayer1 != null) {
+            allMinions.addAll(clearFromPlayer1.getMinions());
+        }
+
+        if (clearFromPlayer2 != null) {
+            allMinions.addAll(clearFromPlayer2.getMinions());
+        }
+
+        for (Minion minion : allMinions) {
+            Tile tile = minion.getOccupiedTile();
+            if (tile != null) {
+                int x = tile.getXCoord();
+                int y = tile.getYCoord();
+                HexTile minionHexTile = view.getGameTileGroupPane().getHexTileGrid()[x][y];
+                minionHexTile.clearHighlight();
+            }
+        }
+    }
+
+    public void endGame(Player winner) {
+        view.getGameTileGroupPane().shutdown(); // Close active background threads
+
+
+        // Prevent duplication of game
+        playerModel.getPlayer1().getMinions().removeListener(player1WinListener);
+        playerModel.getPlayer2().getMinions().removeListener(player2WinListener);
+
+
+        boolean fullscreen = stage.isFullScreen();
+        VictoryPane victoryScreen = new VictoryPane(winner, playerModel, powerModel, jdomReader, stage, locale);
+        Scene scene = new Scene(victoryScreen, stage.getWidth(), stage.getHeight());
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.F11) {
+                stage.setFullScreen(!stage.isFullScreen());
+            }
+        });
+
+        stage.close();
+        stage.setScene(scene);
+        stage.setFullScreen(fullscreen);
+        stage.setFullScreenExitHint("");
+        stage.show();
+
+    }
+
+    private void highLightRadius(HexTile hexTile, int radius, Color color) {
+        if (hexTile != null) {
+            highLightRadius(hexTile.getTile(), radius, color);
+        }
+
+    }
+
+    private void highLightRadius(Tile tile, int radius, Color color) {
+        highlightRange(tile, 0, radius, color);
+    }
+
+    private List<Tile> highlightRange(HexTile hexTile, int minRange, int maxRange, Color color) {
+        return highlightRange(hexTile.getTile(), minRange, maxRange, color);
+    }
+
+    /**
+     * @param tile Center of the range
+     * @return Optional List of all affected tiles
+     */
+    private List<Tile> highlightRange(Tile tile, int minRange, int maxRange, Color color) {
+        List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile, minRange, maxRange);
+        for (Tile tileInRadius : tilesInRadius) {
+
+            HexTile hexTile = view.getHexTile(tileInRadius);
+            hexTile.highlight(color);
+
+        }
+        return tilesInRadius;
+    }
+
+    private void invalidateAndUpdateSelectedMinion() {
+        Tile selectedTile = tileModel.getSelectedTile();
+
+        if (selectedTile != null && selectedTile.isOccupied()) {
+            selectedTile.getOccupant();
+
+            // invalidate the selected minion in the view
+            tileModel.setSelectedTile(null);
+            tileModel.setSelectedTile(selectedTile);  // Re-select the minion to trigger a UI update
+        }
+    }
+
+    private void setSelected(HexTile hexTile) {
+        if (hexTile != null) {
+            tileModel.setSelectedTile(hexTile.getTile());
+        } else {
+            tileModel.setSelectedTile(null);
+        }
     }
 
     private void setUpListenersPart2() {
@@ -222,9 +295,7 @@ public class GameController {
         };
 
         // Attach the listener to player's minions list
-        System.out.println("Adding player1WinListener: " + player1WinListener);
         playerModel.getPlayer1().getMinions().addListener(player1WinListener);
-        System.out.println("Adding player2WinListener: " + player2WinListener);
         playerModel.getPlayer2().getMinions().addListener(player2WinListener);
 
 
@@ -259,6 +330,28 @@ public class GameController {
         });
     }
 
+    private void startNextPhase() {
+
+        // Remove old selection logic
+        view.getView().setOnKeyPressed(null);
+
+        //Clear homebase highlights
+        Platform.runLater(() -> {
+            view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
+                clearHighlights();
+            });
+        });
+        // Prevent listener duplication on replay
+        playerModel.turnCounterProperty().removeListener(turnCounterListener);
+
+        view.changeGamePhase();
+        setUpListenersPart2();
+        stage.setMinWidth(650);
+        stage.setMinHeight(600);
+
+    }
+
+    // Logic for all actions
     private void updateActionUI(Tab selectedTab) {
         clearHighlights();
 
@@ -282,7 +375,6 @@ public class GameController {
                         currentPlayer.getMinions()
                 )
         );
-
 
 
         // Remove previous event handlers before adding new ones
@@ -329,9 +421,11 @@ public class GameController {
             // Clear selection to avoid auto-triggering when switching tabs
             view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
 
+            // Highlights tiles around mouse to show what power will reach
             specialMouseMovedHandler = event -> {
 
-                if (view.getActionsTabPane() == null || !view.getActionsTabPane().getSelectionModel().getSelectedItem().getText().equals(bundle.getString("actions.special"))) return;
+                if (view.getActionsTabPane() == null || !view.getActionsTabPane().getSelectionModel().getSelectedItem().getText().equals(bundle.getString("actions.special")))
+                    return;
 
                 clearHighlights();
                 // Get the currently selected power
@@ -348,12 +442,13 @@ public class GameController {
                 }
             };
 
+            // Handler to activate the power
             specialMouseClickedHandler = event -> {
                 Power selectedPower = powerModel.getSelectedPower();
                 HexTile clickedTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
                 if (clickedTile != null && selectedPower != null && currentPlayer.getAvailablePowerUses() > 0) {
                     currentPlayer.usePower(selectedPower);
-                    selectedPower.apply(clickedTile,currentPlayer);
+                    selectedPower.apply(clickedTile, currentPlayer);
 
                     // Clear selection so the power is not used again automatically
                     view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
@@ -372,7 +467,7 @@ public class GameController {
                 Minion occupant = hexTile.getTile().getOccupant();
                 ToggleButton attackButton = view.getActionsTabPane().getAttackButton();
                 ToggleButton specialAttackButton = view.getActionsTabPane().getSpecialAttackButton();
-                ToggleGroup attackToggleGroup = attackButton.getToggleGroup();
+                attackButton.getToggleGroup();
 
                 attackButton.setSelected(true);
 
@@ -385,7 +480,11 @@ public class GameController {
                     Button skipButton = view.getActionsTabPane().getSkipButton();
 
                     healButton.disableProperty().unbind();
-                    healButton.disableProperty().bind(occupant.healChargesProperty().lessThanOrEqualTo(0));
+                    healButton.disableProperty().bind(
+                            occupant.healChargesProperty().lessThanOrEqualTo(0)
+                                    .or(occupant.defenceProperty().greaterThanOrEqualTo(occupant.getBaseDefence()))
+                    );
+
                     healButton.setOnAction(event -> {
                         occupant.useHealCharge();
                         occupant.heal(Minion.HEAL_CHARGE_VALUE);
@@ -422,7 +521,9 @@ public class GameController {
                         // Ensure the tile contains a minion and is within attack range
                         if (target != null
                                 && target.getOwner() != occupant.getOwner()  // Ensure it's an enemy
-                                && attackableTiles.contains(clickedHexTile.getTile())) {  // Check if it's within range
+                                && attackableTiles.contains(clickedHexTile.getTile() ) // Check if it's within range
+                                && clickedHexTile.getTile().isAbleToBeAttacked() // Check if it is attackable
+                                ) {
 
                             if (specialAttackButton.isSelected() && occupant.hasSpecialAttack()) {
                                 occupant.specialAttack(target);  // Execute special attack
@@ -439,9 +540,8 @@ public class GameController {
                     view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
                 }
             }
-        }
-        else if (tabText.equals(bundle.getString("actions.move"))) {
-            if (hexTile != null && hexTile.getTile().isOccupied() && !hexTile.getTile().getOccupant().hasMoved() ) {
+        } else if (tabText.equals(bundle.getString("actions.move"))) {
+            if (hexTile != null && hexTile.getTile().isOccupied() && !hexTile.getTile().getOccupant().hasMoved()) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
                     int movement = occupant.getMovement();
@@ -486,103 +586,8 @@ public class GameController {
 
         }
     }
-    private void invalidateAndUpdateSelectedMinion() {
-        // Assuming you have a tile model that tracks the selected tile
-        Tile selectedTile = tileModel.getSelectedTile();
-
-        if (selectedTile != null && selectedTile.isOccupied()) {
-            Minion selectedMinion = selectedTile.getOccupant();
-
-            // invalidate the selected minion in the view
-            tileModel.setSelectedTile(null);
-            tileModel.setSelectedTile(selectedTile);  // Re-select the minion to trigger a UI update
-        }
-    }
-
-    // Helper method to undo highlights on tiles for certain situations
-    private void clearMinionHighlights(Player clearFromPlayer1, Player clearFromPlayer2) {
-        List<Minion> allMinions = new ArrayList<>();
-
-
-        if (clearFromPlayer1 != null) {
-            allMinions.addAll(clearFromPlayer1.getMinions());
-        }
-
-        if (clearFromPlayer2 != null) {
-            allMinions.addAll(clearFromPlayer2.getMinions());
-        }
-
-        for (Minion minion : allMinions) {
-            Tile tile = minion.getOccupiedTile();
-            if (tile != null) {
-                int x = tile.getXCoord();
-                int y = tile.getYCoord();
-                HexTile minionHexTile = view.getGameTileGroupPane().getHexTileGrid()[x][y];
-                minionHexTile.clearHighlight();
-            }
-        }
-    }
-
-
-    private void highLightRadius(HexTile hexTile, int radius, Color color) {
-        if (hexTile != null) {
-            highLightRadius(hexTile.getTile(), radius, color);
-        }
-
-    }
-
-    private List<Tile> highlightRange(HexTile hexTile, int minRange, int maxRange, Color color) {
-        return highlightRange(hexTile.getTile(), minRange, maxRange, color);
-    }
-
-    private void highLightRadius(Tile tile, int radius, Color color) {
-        highlightRange(tile, 0, radius, color);
-    }
-    /**
-     * @param tile Center of the range
-     * @return Optional List of all affected tiles
-     */
-    private List<Tile> highlightRange(Tile tile, int minRange, int maxRange, Color color) {
-        List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile, minRange, maxRange);
-        for (Tile tileInRadius : tilesInRadius) {
-
-            HexTile hexTile = view.getHexTile(tileInRadius);
-            hexTile.highlight(color);
-
-        }
-        return tilesInRadius;
-    }
-    private void setSelected(HexTile hexTile){
-        if (hexTile != null) {
-            tileModel.setSelectedTile(hexTile.getTile());
-        } else {
-            tileModel.setSelectedTile(null);
-        }
-    }
-    public void endGame(Player winner) {
-        view.getGameTileGroupPane().shutdown(); // Close active background threads
 
 
 
-        // Prevent duplication of game
-        playerModel.getPlayer1().getMinions().removeListener(player1WinListener);
-        playerModel.getPlayer2().getMinions().removeListener(player2WinListener);
 
-
-        boolean fullscreen = stage.isFullScreen();
-        VictoryPane victoryScreen = new VictoryPane(winner,playerModel,powerModel,jdomReader,stage,locale);
-        Scene scene = new Scene(victoryScreen,stage.getWidth(),stage.getHeight());
-        scene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.F11) {
-                stage.setFullScreen(!stage.isFullScreen());
-            }
-        });
-
-        stage.close();
-        stage.setScene(scene);
-        stage.setFullScreen(fullscreen);
-        stage.setFullScreenExitHint("");
-        stage.show();
-
-    }
 }

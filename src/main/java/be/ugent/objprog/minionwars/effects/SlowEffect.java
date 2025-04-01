@@ -6,8 +6,8 @@ import javafx.scene.image.Image;
 import java.util.Objects;
 
 public class SlowEffect extends MinionEffect {
-    public SlowEffect(int duration,  int value) {
-        super(duration,value);
+    public SlowEffect(int duration, int value) {
+        super(duration, value);
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/effects/slow.png")));
     }
 
@@ -16,7 +16,7 @@ public class SlowEffect extends MinionEffect {
         int movement = minion.getMovement();
 
         // Prevent negative values
-        if (movement - value.get()< 0) {
+        if (movement - value.get() < 0) {
             movement = 0;
         } else {
             movement = movement - value.get();
@@ -24,6 +24,5 @@ public class SlowEffect extends MinionEffect {
 
         minion.setMovement(movement);
 
-        System.out.println("Slow effect on " + minion.getName() + ", value: " + value );
     }
 }

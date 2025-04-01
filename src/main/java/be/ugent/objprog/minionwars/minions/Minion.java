@@ -36,12 +36,13 @@ public class Minion {
     private final Integer[] baseRange;
     private final SimpleBooleanProperty moved = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty attacked = new SimpleBooleanProperty(false);
-    private ObservableList<Integer> range;
+    private final ObservableList<Integer> range;
+    private final Image minionIcon;
+    private final ObservableList<MinionEffect> statusAilments = FXCollections.observableArrayList();
     private MinionEffect effect;
-    private Image minionIcon;
     private Player owner = null;  //TODO REMOVE UNNECESSARY PROPERTIES AND REPLACE THEM WITH NORMAL VALUES
-    private ObservableList<MinionEffect> statusAilments = FXCollections.observableArrayList();
     private Tile occupiedTile = null;
+
     public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {
         this.type = new SimpleStringProperty(type);
         this.name = new SimpleStringProperty(name);
@@ -76,8 +77,17 @@ public class Minion {
         reduceAilmentValues();
     }
 
-    public void addRecoveryCharges(int recoveryCharges) {
-        this.recoveryCharges.add(recoveryCharges);
+    public void reduceAilmentValues() {
+        for (MinionEffect minionEffect : new ArrayList<>(statusAilments)) {
+            minionEffect.reduceDuration();
+            if (minionEffect.getDuration() < 0) {
+                removeStatusAilment(minionEffect);
+            }
+        }
+    }
+
+    public void removeStatusAilment(MinionEffect effect) {
+        statusAilments.remove(effect);
     }
 
     public void applyEffectLogic(MinionEffect effect) {
@@ -94,16 +104,12 @@ public class Minion {
         return attacked;
     }
 
-    @Override
-    public Minion clone() {
-        try {
-            return new Minion(this.type.get(), this.name.get(), this.cost.get(), this.movement.get(),
-                    List.of(this.range.getFirst(), this.range.getLast()).toArray(new Integer[2]),
-                    this.attack.get(), this.defence.get(), this.effect,
-                    this.minionIcon);
-        } catch (Exception e) {
-            throw new AssertionError("Cloning failed", e); // Should never happen
-        }
+    public Minion copy() {
+        return new Minion(this.type.get(), this.name.get(), this.cost.get(), this.movement.get(),
+                List.of(this.range.getFirst(), this.range.getLast()).toArray(new Integer[2]),
+                this.attack.get(), this.defence.get(), this.effect,
+                this.minionIcon);
+
     }
 
     public SimpleIntegerProperty costProperty() {
@@ -248,19 +254,6 @@ public class Minion {
         return name;
     }
 
-    public void reduceAilmentValues() {
-        for (MinionEffect minionEffect : new ArrayList<>(statusAilments)) {
-            minionEffect.reduceDuration();
-            if (minionEffect.getDuration() < 0) {
-                removeStatusAilment(minionEffect);
-            }
-        }
-    }
-
-    public void removeStatusAilment(MinionEffect effect) {
-        statusAilments.remove(effect);
-    }
-
     public void refillActions() {
         setMoved(false);
         setAttacked(false);
@@ -271,7 +264,6 @@ public class Minion {
     }
 
     public void rest() {
-        System.out.println("RESTING: " + this);
         if (recoveryCharges.get() < baseRecoveryCharges) {
             recoveryCharges.set(recoveryCharges.get() + 1);
         }
@@ -291,7 +283,7 @@ public class Minion {
             EffectFactory effectFactory = new EffectFactory();
 
             MinionEffect effectClone = effectFactory.createEffect(effect.getClass().getSimpleName().toLowerCase().replace("effect", ""),
-                    effect.getDuration() , effect.getValue());
+                    effect.getDuration(), effect.getValue());
             if (effect.isOffensive()) {
                 target.addStatusAilment(effectClone);
             } else {
@@ -346,7 +338,7 @@ public class Minion {
     @Override
     public String toString() {
         return type.get().toUpperCase() + ":  NAME: " + getName() + ", HEALTH: " + getDefence() + ", MOVEMENT: " + getMovement() + ",RANGE: " + getRange() + ", OWNER: " + owner +
-                "\n StatusAilments: " + statusAilments.toString();
+                "\n StatusAilments: " + statusAilments;
     }
 
     public String getName() {

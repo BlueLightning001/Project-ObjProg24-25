@@ -27,20 +27,21 @@ import javafx.scene.text.TextAlignment;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class SelectedMinionDisplay extends GridPane {
     private final TileModel tileModel;
     private final ResourceBundle bundle;
-    private Circle minionsIcon = new Circle();
-    private Label minionsLabel = new Label();
-    private Label attackStatLabel = new Label();
-    private Label defenseStatLabel = new Label();
-    private Label ailmentsStatLabel = new Label();
-    private Label tileNameLabel = new Label();
+    private final Circle minionsIcon = new Circle();
+    private final Label minionsLabel = new Label();
+    private final Label attackStatLabel = new Label();
+    private final Label defenseStatLabel = new Label();
+    private final Label ailmentsStatLabel = new Label();
+    private final Label tileNameLabel = new Label();
+    private final SimpleObjectProperty<Minion> selectedMinion = new SimpleObjectProperty<>();
     private VBox statusAilmentsContainer;
     private ScrollPane statusAilmentsScroll;
-    private SimpleObjectProperty<Minion> selectedMinion = new SimpleObjectProperty<>();
 
     public SelectedMinionDisplay(TileModel tileModel, Locale locale) {
         this.tileModel = tileModel;
@@ -270,7 +271,7 @@ public class SelectedMinionDisplay extends GridPane {
     }
 
     private void attachStatIcon(Label label, String path) {
-        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(path)));
+        ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(path))));
         imageView.setPreserveRatio(true);
         imageView.fitHeightProperty().bind(label.heightProperty().multiply(0.8));
         label.setGraphic(imageView);

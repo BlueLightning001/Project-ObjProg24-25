@@ -14,7 +14,8 @@ public abstract class Tile {
     private final boolean ableToAttack;
     private final boolean ableToBeAttacked;
     private final ObjectProperty<Minion> occupant = new SimpleObjectProperty<>(this, "occupant", null);
-    private int traversalCost;
+    private final int traversalCost;
+
     public Tile(int x, int y, int homebase, String imagePath, boolean traversable,
                 int traversalCost, boolean canAttack, boolean canBeAttacked) {
         this.xCoord = x;

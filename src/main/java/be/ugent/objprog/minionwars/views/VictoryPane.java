@@ -136,7 +136,6 @@ public class VictoryPane extends StackPane {
     }
 
 
-
     private void resetModels() {
         playerModel.reset(powerModel);
     }

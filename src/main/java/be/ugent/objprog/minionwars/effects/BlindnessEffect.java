@@ -15,7 +15,6 @@ public class BlindnessEffect extends MinionEffect {
     @Override
     public void applyEffect(Minion minion) {
         //Minimum range?
-        int minRange = 1;
         Integer[] newRange = new Integer[2];
 
         int newMinRange = minion.getRange().getFirst();
@@ -30,7 +29,5 @@ public class BlindnessEffect extends MinionEffect {
         newRange[1] = newMaxRange;
 
         minion.setRange(newRange);
-
-        System.out.println("Blindness effect on: " + minion);
     }
 }
