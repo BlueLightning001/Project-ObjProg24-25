@@ -330,9 +330,7 @@ public class GameController {
         view.getView().setOnKeyPressed(null);
 
         //Clear homebase highlights
-        Platform.runLater(() -> view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> {
-            clearHighlights();
-        }));
+        Platform.runLater(() -> view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> clearHighlights()));
         // Prevent listener duplication on replay
         playerModel.turnCounterProperty().removeListener(turnCounterListener);
 
@@ -545,9 +543,7 @@ public class GameController {
                         updateActionUI(null);
                     });
 
-                    reachableTiles.forEach(tile -> {
-                        view.getHexTile(tile).highlight(moveColor);
-                    });
+                    reachableTiles.forEach(tile -> view.getHexTile(tile).highlight(moveColor));
 
                     clearMinionHighlights(playerModel.getPlayer1(), playerModel.getPlayer2());
 
