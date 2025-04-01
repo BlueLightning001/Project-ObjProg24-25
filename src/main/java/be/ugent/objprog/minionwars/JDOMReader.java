@@ -46,7 +46,6 @@ public class JDOMReader {
             File file = new File(filename);
 
             if (file.exists()) {
-                System.out.println("Loading config from disk: " + filename);
                 document = saxBuilder.build(file);
             } else {
                 System.out.println("Config file not found on disk: " + filename);
