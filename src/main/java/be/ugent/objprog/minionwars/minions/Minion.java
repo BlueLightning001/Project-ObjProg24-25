@@ -40,7 +40,7 @@ public class Minion {
     private final Image minionIcon;
     private final ObservableList<MinionEffect> statusAilments = FXCollections.observableArrayList();
     private MinionEffect effect;
-    private Player owner = null;  //TODO REMOVE UNNECESSARY PROPERTIES AND REPLACE THEM WITH NORMAL VALUES
+    private Player owner = null;
     private Tile occupiedTile = null;
 
     public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {

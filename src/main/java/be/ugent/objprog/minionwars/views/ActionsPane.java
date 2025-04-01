@@ -229,7 +229,6 @@ public class ActionsPane extends TabPane {
 
 
         specialTab.setContent(powerListView);
-        //TODO
 
         setTabDragPolicy(TabDragPolicy.FIXED);
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);

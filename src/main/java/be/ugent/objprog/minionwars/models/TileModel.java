@@ -78,7 +78,7 @@ public class TileModel {
             }
         }
     }
-
+    // Helper methods to convert to/from 3 axes
     private int[] axialToOddR(int[] axial) {
         int q = axial[0];
         int r = axial[1];
@@ -102,7 +102,6 @@ public class TileModel {
     }
 
     // Finds all tiles that can be reached within a certain amount of steps
-    // TODO Replace with simpler logic if needed
     public List<Tile> getReachableTiles(Tile startTile, int maxMovement) {
         Map<Tile, Integer> movementLeftMap = new HashMap<>();
         PriorityQueue<TileNode> queue = new PriorityQueue<>(Comparator.comparingInt(n -> -n.movementLeft)); // Higher movement left first

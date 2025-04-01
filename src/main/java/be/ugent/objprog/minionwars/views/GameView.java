@@ -111,7 +111,7 @@ public class GameView {
         );
     }
 
-    public void changeGamePhase() { //TODO !!
+    public void changeGamePhase() {
         getGameTileGroupPane().getHexTiles().forEach(HexTile::endStartPhase);
         this.root.getChildren().clear();
         part2MenuContainer = new Part2MenuContainer(playerModel, minionModel, tileModel, powerModel, gameTileGroupPane, locale);

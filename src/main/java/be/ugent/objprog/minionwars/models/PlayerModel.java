@@ -37,10 +37,6 @@ public class PlayerModel {
         startBudget = new SimpleIntegerProperty(MIN_START_BUDGET);
     }
 
-    public void addMoney(int amount, Player player) {
-        player.setMoney(player.getMoney() + amount);
-    }
-
     public boolean allPlayersHaveNames() {
         return player1.get() != null && player2.get() != null &&
                 player1.get().getName() != null && player2.get().getName() != null &&
@@ -128,12 +124,6 @@ public class PlayerModel {
                 !player1.get().getName().trim().equalsIgnoreCase(player2.get().getName().trim());
     }
 
-    public void removeMoney(int amount, Player player) {
-        if (player.getMoney() < amount) { //TODO temporary
-            throw new IllegalArgumentException("You don't have enough money to remove the money");
-        }
-        player.setMoney(player.getMoney() - amount);
-    }
 
     public void reset(PowerModel powerModel) {
         turnCounter.set(0);
