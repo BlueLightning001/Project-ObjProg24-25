@@ -237,9 +237,7 @@ public class MinionsTableView extends TableView<Minion> {
 
     private TableColumn<Minion, String> getMinionStringTableColumn() {
         TableColumn<Minion, String> nameCol = new TableColumn<>();
-        nameCol.setCellValueFactory(cell -> {
-            return new SimpleStringProperty(cell.getValue().getName());
-        });
+        nameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getName()));
         nameCol.setCellFactory(column -> new TableCell<Minion, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {

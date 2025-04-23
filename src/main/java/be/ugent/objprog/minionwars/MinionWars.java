@@ -20,7 +20,7 @@ public class MinionWars extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Locale.setDefault(new Locale("nl", "BE"));
+        Locale.setDefault(new Locale("nl", "BE")); //ONLY FOR DEMONSTRATION!
 
         Locale locale = Locale.getDefault();
 

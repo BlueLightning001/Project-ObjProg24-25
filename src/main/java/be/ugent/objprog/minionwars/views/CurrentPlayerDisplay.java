@@ -6,6 +6,8 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -13,15 +15,22 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class CurrentPlayerDisplay extends HBox {
+    private final PlayerModel playerModel;
     private final Label currentPlayerLabel;
     private final Label currentPlayerMinionsUsedLabel;
+    private final Map<Player, List<Runnable>> currentListenerMap = new HashMap<>();
+    private Player currentBoundPlayer = null;
     private final double fontScale = 0.1;
 
     public CurrentPlayerDisplay(PlayerModel playerModel) {
-
+        this.playerModel = playerModel;
         currentPlayerLabel = new Label("Current Player");
         currentPlayerMinionsUsedLabel = new Label("currentPlayerCoins");
 
@@ -94,28 +103,43 @@ public class CurrentPlayerDisplay extends HBox {
 
     // Method to bind minion count label and listen for updates
     private void bindMinionCount(Player player) {
-
         currentPlayerMinionsUsedLabel.textProperty().unbind();
 
-        // update the label whenever a minion has no more actions
-        InvalidationListener updateListener = (obs) -> {
-            updateMinionActionCount(player);
-        };
-
-        // Attach listener to each minion
-        for (Minion minion : player.getMinions()) {
-            minion.hasActionsProperty().addListener(updateListener);
+        // Clean up listeners for the previous player
+        if (currentListenerMap.containsKey(currentBoundPlayer)) {
+            currentListenerMap.get(currentBoundPlayer).forEach(Runnable::run);
         }
 
-        // Bind the label initially
-        currentPlayerMinionsUsedLabel.setText(getMinionActionText(player));
+        List<Runnable> detachers = new ArrayList<>();
+        InvalidationListener updateListener = obs -> updateMinionActionCount(player);
+
+        // Add listeners to each minion's attacked and moved properties
+        for (Minion minion : player.getMinions()) {
+            minion.attackedProperty().addListener(updateListener);
+            minion.movedProperty().addListener(updateListener);
+            detachers.add(() -> minion.attackedProperty().removeListener(updateListener));
+            detachers.add(() -> minion.movedProperty().removeListener(updateListener));
+        }
+
+        // Also react to changes in the minion list (e.g. new minions added)
+        ListChangeListener<Minion> minionListChangeListener = change -> bindMinionCount(player);
+        player.getMinions().addListener(minionListChangeListener);
+        detachers.add(() -> player.getMinions().removeListener(minionListChangeListener));
+
+        currentBoundPlayer = player;
+        currentListenerMap.put(player, detachers);
+
+        updateMinionActionCount(player);
     }
+
 
     private void updateMinionActionCount(Player player) {
         Platform.runLater(() -> {
             currentPlayerMinionsUsedLabel.setText(getMinionActionText(player));
         });
     }
+
+
 
     // Produces the used/total text for the label
     private String getMinionActionText(Player player) {
