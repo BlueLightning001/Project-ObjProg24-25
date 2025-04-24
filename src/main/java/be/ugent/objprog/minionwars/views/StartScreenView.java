@@ -39,11 +39,13 @@ public class StartScreenView {
     private Button startButton;
     private StackPane titleContainer;
     private Label warningLabel;
+    private Locale locale;
 
     public StartScreenView(PlayerModel model, Locale locale) {
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         Font labelFont = Font.font("Monotype Corsiva", FontWeight.BOLD, 20);
         DropShadow shadow = createDropShadow();
+        this.locale = locale;
 
         this.container = new StackPane();
         this.centerContainer = new VBox();
@@ -104,12 +106,14 @@ public class StartScreenView {
         this.moneyTextField = createTextField("startScreen.moneyPrompt");
         Label moneyLabel = createStyledLabel("startScreen.moneyLabel", labelFont, shadow);
 
-        grid.add(player1Label, 0, 0);
-        grid.add(player1TextField, 1, 0);
-        grid.add(player2Label, 0, 1);
-        grid.add(player2TextField, 1, 1);
-        grid.add(moneyLabel, 0, 2);
-        grid.add(moneyTextField, 1, 2);
+        InfoTooltip infoTooltip = new InfoTooltip(locale);
+        grid.add(infoTooltip, 0, 0);
+        grid.add(player1Label, 0, 1);
+        grid.add(player1TextField, 1, 1);
+        grid.add(player2Label, 0, 2);
+        grid.add(player2TextField, 1, 2);
+        grid.add(moneyLabel, 0, 3);
+        grid.add(moneyTextField, 1, 3);
     }
 
     private void setupStartButton(Font labelFont) {
