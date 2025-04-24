@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class VictoryPane extends StackPane {
-    private static final Image BACKGROUND = new Image("/be/ugent/objprog/minionwars/images/splash-end.jpg");
     private final PlayerModel playerModel;
     private final PowerModel powerModel;
     private final JDOMReader reader;
@@ -43,8 +42,9 @@ public class VictoryPane extends StackPane {
         this.reader = reader;
         ResourceBundle bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
+        Image background = getBackground(winner, playerModel);
         setBackground(new Background(new BackgroundImage(
-                BACKGROUND,
+                background,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
@@ -60,8 +60,12 @@ public class VictoryPane extends StackPane {
         content.prefWidthProperty().bind(widthProperty().multiply(0.5)); // 50% of window width
         content.prefHeightProperty().bind(heightProperty().multiply(0.5)); // 50% of window height
 
-
-        Label winnerLabel = new Label(MessageFormat.format(bundle.getString("victoryScreen.winnerLabel"), winner.getName(), playerModel.getTurnCounter()));
+        Label winnerLabel;
+        if (playerModel.isDespicable()){
+            winnerLabel = new Label(MessageFormat.format(bundle.getString("victoryScreen.winnerLabel.despicable"), winner.getName(), playerModel.getTurnCounter()));
+        } else {
+            winnerLabel = new Label(MessageFormat.format(bundle.getString("victoryScreen.winnerLabel"), winner.getName(), playerModel.getTurnCounter()));
+        }
         winnerLabel.setStyle("-fx-text-fill: white;");
         winnerLabel.setWrapText(true);
 
@@ -73,6 +77,9 @@ public class VictoryPane extends StackPane {
 
         Button exitGameButton = new Button(bundle.getString("victoryScreen.exitGameButton"));
         Button restartButton = new Button(bundle.getString("victoryScreen.restartButton"));
+        if (playerModel.isDespicable()){
+            restartButton.setText(bundle.getString("victoryScreen.restartButton.despicable"));
+        }
 
 
         String buttonStyle = "-fx-background-color: rgba(0, 0, 0, 0.7); " +
@@ -100,6 +107,20 @@ public class VictoryPane extends StackPane {
 
     }
 
+    private static Image getBackground(Player winner, PlayerModel playerModel) {
+        Image background = null;
+        if (playerModel.isDespicable()) {
+            if (winner.getName().trim().equalsIgnoreCase("gru")){
+                background = new Image("/be/ugent/objprog/minionwars/images/splash/gru-win-splash-end.jpg");
+            } else{
+                background = new Image("/be/ugent/objprog/minionwars/images/splash/vector-win-splash-end.png");
+            }
+        }else  {
+            background = new Image("/be/ugent/objprog/minionwars/images/splash/splash-end.jpg");
+        }
+        return background;
+    }
+
     private void restartGame(Stage oldStage, Locale locale) {
         resetModels(); // Reset game state
 
@@ -120,7 +141,7 @@ public class VictoryPane extends StackPane {
         newStage.setFullScreen(isFullscreen);
 
         try {
-            GameController gameController = new GameController(newStage, playerModel, locale, new JDOMReader(reader.getFilename()),playerModel.isDespicable());
+            GameController gameController = new GameController(newStage, playerModel, locale, new JDOMReader(reader.getFilename()));
             Scene scene = new Scene(gameController.getView(), width, height);
             scene.setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.F11) {

@@ -132,7 +132,7 @@ public class StartScreenView {
     }
 
     private void setupBackground() {
-        Image backgroundImage = new Image("be/ugent/objprog/minionwars/images/splash-start.jpg");
+        Image backgroundImage = new Image("be/ugent/objprog/minionwars/images/splash/splash-start.jpg");
         BackgroundImage bgImage = getBackgroundImage(backgroundImage);
         container.setBackground(new Background(bgImage));
     }

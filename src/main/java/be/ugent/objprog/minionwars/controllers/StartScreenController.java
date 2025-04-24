@@ -102,7 +102,7 @@ public class StartScreenController {
     private void startGame() {
         boolean fullscreen = stage.isFullScreen();
 
-        GameController gameController = new GameController(stage, model, locale, reader, model.isDespicable());
+        GameController gameController = new GameController(stage, model, locale, reader);
         Scene scene = new Scene(gameController.getView(), getView().getWidth(), getView().getHeight());
 
         scene.setOnKeyPressed(event -> {

@@ -51,14 +51,14 @@ public class GameController {
     private ListChangeListener<Minion> player1WinListener;
     private ListChangeListener<Minion> player2WinListener;
     private Tab lastTab;
-
-    public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader,boolean despicable) {
+    public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader) {
         this.stage = stage;
         this.playerModel = playerModel;
         MinionModel minionModel = new MinionModel(reader);
         this.tileModel = new TileModel(reader, locale);
         this.powerModel = new PowerModel(reader, locale);
         this.jdomReader = reader;
+
         // Load the players powers
         this.playerModel.getPlayer1().setAvailablePowers(FXCollections.observableArrayList(powerModel.getPowerList()));
         this.playerModel.getPlayer2().setAvailablePowers(FXCollections.observableArrayList(powerModel.getPowerList()));
@@ -70,7 +70,7 @@ public class GameController {
         view.resetGameGroupPosition();
 
         // Enables despicable mode
-        if (despicable) {
+        if (playerModel.isDespicable()) {
             minionModel.enableDespicableMode();
         }
 
@@ -324,8 +324,12 @@ public class GameController {
         });
 
         // Refresh ui when
-        tileModel.selectedTileProperty().addListener((observable) -> updateActionUI(lastTab));
-        view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateActionUI(newValue));
+        tileModel.selectedTileProperty().addListener((observable) -> updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem()));
+        view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println(oldValue.getText() + " To " + newValue.getText());
+
+            updateActionUI(newValue);
+        });
 
 
         view.getEndTurnButton().setOnAction(event -> playerModel.nextPlayer());
