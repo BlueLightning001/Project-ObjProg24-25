@@ -98,6 +98,10 @@ public abstract class Power {
         }
     }
 
+    public boolean isOffensive() {
+        return offensive;
+    }
+
     public boolean hasEffect() {
         return effect != null;
     }

@@ -248,6 +248,32 @@ public class GameController {
         }
         return tilesInRadius;
     }
+    private List<Tile> highlightRange(Tile tile, int minRange, int maxRange, boolean offensive) {
+        List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile, minRange, maxRange);
+        boolean conditionMet = false;
+
+        for (Tile tileInRadius : tilesInRadius) {
+            Minion minion = tileInRadius.getOccupant();
+            if (minion != null) {
+                boolean isOwnedByCurrentPlayer = minion.getOwner().equals(playerModel.getCurrentPlayer());
+                if ((!offensive && isOwnedByCurrentPlayer) || (offensive && !isOwnedByCurrentPlayer)) {
+                    conditionMet = true;
+                    break;
+                }
+            }
+        }
+
+        Color highlightColor = conditionMet ? Color.BLUE : Color.RED;
+
+        for (Tile tileInRadius : tilesInRadius) {
+            HexTile hexTile = view.getHexTile(tileInRadius);
+            hexTile.highlight(highlightColor);
+        }
+
+        return tilesInRadius;
+    }
+
+
 
     private void invalidateAndUpdateSelectedMinion() {
         Tile selectedTile = tileModel.getSelectedTile();
@@ -440,7 +466,7 @@ public class GameController {
                 // Get the tile under the mouse
                 HexTile tileUnderMouse = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
                 if (tileUnderMouse != null) {
-                    highLightRadius(tileUnderMouse, selectedPower.getRadius(), Color.BLUE);
+                    highlightRange(tileUnderMouse.getTile(),0, selectedPower.getRadius(), selectedPower.isOffensive());
                 }
             };
 
