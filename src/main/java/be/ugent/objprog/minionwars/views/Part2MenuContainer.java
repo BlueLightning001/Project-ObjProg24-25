@@ -9,6 +9,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -112,7 +113,6 @@ public class Part2MenuContainer extends VBox {
     public ActionsPane getActionsPane() {
         return actionsPane;
     }
-
     public Button getCenterBoardButton() {
         return centerBoardButton;
     }

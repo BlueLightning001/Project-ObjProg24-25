@@ -49,6 +49,7 @@ public class GameController {
     private EventHandler<MouseEvent> specialMouseMovedHandler;
     private ListChangeListener<Minion> player1WinListener;
     private ListChangeListener<Minion> player2WinListener;
+    private Tab lastTab;
 
     public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader) {
         this.stage = stage;
@@ -317,7 +318,7 @@ public class GameController {
         });
 
         // Refresh ui when
-        tileModel.selectedTileProperty().addListener((observable) -> updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem()));
+        tileModel.selectedTileProperty().addListener((observable) -> updateActionUI(lastTab));
         view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateActionUI(newValue));
 
 
@@ -393,7 +394,7 @@ public class GameController {
             restButton.setOnAction(event -> {
                 occupant.rest();
 
-                updateActionUI(view.getActionsTabPane().getSelectionModel().getSelectedItem());
+                updateActionUI(lastTab);
             });
 
             attackTab.disableProperty().bind(occupant.attackedProperty());
@@ -405,9 +406,10 @@ public class GameController {
 
         if (selectedTab == null) return;
 
-        String tabText = selectedTab.getText();
+        lastTab = selectedTab;
+        //Special power tab
+        if (selectedTab.equals(view.getActionsTabPane().getSpecialTab())) {
 
-        if (tabText.equals(bundle.getString("actions.special"))) {
             // Clear selection to avoid auto-triggering when switching tabs
             view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
 
@@ -452,7 +454,8 @@ public class GameController {
             view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
             view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
 
-        } else if (tabText.equals(bundle.getString("actions.attack"))) {
+        // Attack tab
+        } else if (selectedTab.equals(view.getActionsTabPane().getAttackTab())) {
             if (hexTile != null && hexTile.getTile().isOccupied()) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 ToggleButton attackButton = view.getActionsTabPane().getAttackButton();
@@ -480,12 +483,12 @@ public class GameController {
                         occupant.heal(Minion.HEAL_CHARGE_VALUE);
 
                         invalidateAndUpdateSelectedMinion();
-                        updateActionUI(null);
+                        updateActionUI(lastTab);
                     });
 
                     skipButton.setOnAction(event -> {
                         occupant.setAttacked(true);
-                        updateActionUI(null);
+                        updateActionUI(lastTab);
                     });
 
 
@@ -530,7 +533,9 @@ public class GameController {
                     view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
                 }
             }
-        } else if (tabText.equals(bundle.getString("actions.move"))) {
+
+        // Move tab
+        } else if (selectedTab.equals(view.getActionsTabPane().getMoveTab())) {
             if (hexTile != null && hexTile.getTile().isOccupied() && !hexTile.getTile().getOccupant().hasMoved()) {
                 Minion occupant = hexTile.getTile().getOccupant();
                 if (occupant != null) {
@@ -540,7 +545,7 @@ public class GameController {
                     stayButton.setOnAction(event -> {
                         occupant.setMoved(true);
                         clearHighlights();
-                        updateActionUI(null);
+                        updateActionUI(lastTab);
                     });
 
                     reachableTiles.forEach(tile -> view.getHexTile(tile).highlight(moveColor));
