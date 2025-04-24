@@ -1,6 +1,7 @@
 package be.ugent.objprog.minionwars.controllers;
 
 import be.ugent.objprog.minionwars.JDOMReader;
+import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.views.StartScreenView;
 import javafx.scene.Scene;
@@ -101,7 +102,7 @@ public class StartScreenController {
     private void startGame() {
         boolean fullscreen = stage.isFullScreen();
 
-        GameController gameController = new GameController(stage, model, locale, reader);
+        GameController gameController = new GameController(stage, model, locale, reader, model.isDespicable());
         Scene scene = new Scene(gameController.getView(), getView().getWidth(), getView().getHeight());
 
         scene.setOnKeyPressed(event -> {

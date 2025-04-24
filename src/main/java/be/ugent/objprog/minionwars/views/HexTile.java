@@ -89,7 +89,6 @@ public class HexTile extends Polygon {
         if (!highlightColor.get().equals(Color.TRANSPARENT)) {
             finalImage = applyColorOverlay(finalImage, highlightColor.get());
         }
-
         setFill(new ImagePattern(finalImage));
     }
 

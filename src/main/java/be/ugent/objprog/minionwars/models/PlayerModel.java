@@ -144,6 +144,16 @@ public class PlayerModel {
 
         currentPlayer.set(players.get(new Random().nextInt(2)).get());
     }
+    public boolean isDespicable(){
+        String player1Name = getPlayer1().getName().toLowerCase().trim();
+        String player2Name = getPlayer2().getName().toLowerCase().trim();
+
+        // Activates despicable mode, just changes some images
+        return  (player1Name.equals("gru") && player2Name.equals("vector")) ||
+                (player2Name.equals("gru") && player1Name.equals("vector"));
+
+
+    }
 
     public SimpleIntegerProperty startBudgetProperty() {
         return startBudget;

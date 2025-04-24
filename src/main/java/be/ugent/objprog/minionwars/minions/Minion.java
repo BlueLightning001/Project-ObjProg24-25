@@ -37,12 +37,11 @@ public class Minion {
     private final SimpleBooleanProperty moved = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty attacked = new SimpleBooleanProperty(false);
     private final ObservableList<Integer> range;
-    private final Image minionIcon;
     private final ObservableList<MinionEffect> statusAilments = FXCollections.observableArrayList();
+    private Image minionIcon;
     private MinionEffect effect;
     private Player owner = null;
     private Tile occupiedTile = null;
-
     public Minion(String type, String name, int cost, int movement, Integer[] range, int attack, int defence, MinionEffect effect, Image minionIcon) {
         this.type = new SimpleStringProperty(type);
         this.name = new SimpleStringProperty(name);
@@ -170,6 +169,10 @@ public class Minion {
 
     public Image getMinionIcon() {
         return minionIcon;
+    }
+
+    public void setMinionIcon(Image minionIcon) {
+        this.minionIcon = minionIcon;
     }
 
     public Player getOwner() {

@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -51,7 +52,7 @@ public class GameController {
     private ListChangeListener<Minion> player2WinListener;
     private Tab lastTab;
 
-    public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader) {
+    public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader,boolean despicable) {
         this.stage = stage;
         this.playerModel = playerModel;
         MinionModel minionModel = new MinionModel(reader);
@@ -67,6 +68,11 @@ public class GameController {
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
 
         view.resetGameGroupPosition();
+
+        // Enables despicable mode
+        if (despicable) {
+            minionModel.enableDespicableMode();
+        }
 
         stage.setOnCloseRequest(event -> {
             view.getGameTileGroupPane().shutdown();// Releases resources from other threads

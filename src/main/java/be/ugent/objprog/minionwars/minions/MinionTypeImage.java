@@ -1,25 +1,31 @@
 package be.ugent.objprog.minionwars.minions;
 
 public enum MinionTypeImage {
-    MILITIA("/be/ugent/objprog/minionwars/images/minions/militia.png"),
-    SPEAR("/be/ugent/objprog/minionwars/images/minions/spear.png"),
-    SWORD("/be/ugent/objprog/minionwars/images/minions/sword.png"),
-    AXE("/be/ugent/objprog/minionwars/images/minions/axe.png"),
-    ARCHER("/be/ugent/objprog/minionwars/images/minions/archer.png"),
-    SCOUT("/be/ugent/objprog/minionwars/images/minions/scout.png"),
-    CAVALRY("/be/ugent/objprog/minionwars/images/minions/cavalry.png"),
-    MOUNTED_ARCHER("/be/ugent/objprog/minionwars/images/minions/mounted-archer.png"),
-    HEAVY_CAVALRY("/be/ugent/objprog/minionwars/images/minions/heavy-cavalry.png"),
-    CATAPULT("/be/ugent/objprog/minionwars/images/minions/catapult.png"),
-    TREBUCHET("/be/ugent/objprog/minionwars/images/minions/trebuchet.png");
+    MILITIA("militia.png"),
+    SPEAR("spear.png"),
+    SWORD("sword.png"),
+    AXE("axe.png"),
+    ARCHER("archer.png"),
+    SCOUT("scout.png"),
+    CAVALRY("cavalry.png"),
+    MOUNTED_ARCHER("mounted-archer.png"),
+    HEAVY_CAVALRY("heavy-cavalry.png"),
+    CATAPULT("catapult.png"),
+    TREBUCHET("trebuchet.png");
 
-    private final String imagePath;
+    private final String fileName;
 
-    MinionTypeImage(String imagePath) {
-        this.imagePath = imagePath;
+    MinionTypeImage(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getImagePath() {
-        return imagePath;
+        return getImagePath(false);
+    }
+
+    public String getImagePath(boolean despicable) {
+        String folder = despicable ? "minions-despicable" : "minions";
+        return "/be/ugent/objprog/minionwars/images/" + folder + "/" + fileName;
     }
 }
+

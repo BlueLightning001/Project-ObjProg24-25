@@ -206,7 +206,6 @@ public class MinionsTableView extends TableView<Minion> {
     private static TableColumn<Minion, ImageView> getMinionImageViewTableColumn() {
         TableColumn<Minion, ImageView> minionIconCol = new TableColumn<>();
         minionIconCol.setCellValueFactory(cell -> {
-
             Image image = cell.getValue().getMinionIcon();
             ImageView imageView = new ImageView(image);
             return new SimpleObjectProperty<>(imageView);
@@ -216,7 +215,7 @@ public class MinionsTableView extends TableView<Minion> {
             protected void updateItem(ImageView imageView, boolean empty) {
                 super.updateItem(imageView, empty);
 
-                if (empty || getTableRow() == null || getTableRow().getItem() == null || imageView == null) {
+                if (empty || getTableRow() == null || getTableRow().getItem() == null || imageView == null ||imageView.getImage() == null) {
                     setGraphic(null);
                 } else {
 

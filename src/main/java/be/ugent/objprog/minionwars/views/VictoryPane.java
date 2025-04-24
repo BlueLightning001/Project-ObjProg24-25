@@ -120,7 +120,7 @@ public class VictoryPane extends StackPane {
         newStage.setFullScreen(isFullscreen);
 
         try {
-            GameController gameController = new GameController(newStage, playerModel, locale, new JDOMReader(reader.getFilename()));
+            GameController gameController = new GameController(newStage, playerModel, locale, new JDOMReader(reader.getFilename()),playerModel.isDespicable());
             Scene scene = new Scene(gameController.getView(), width, height);
             scene.setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.F11) {
