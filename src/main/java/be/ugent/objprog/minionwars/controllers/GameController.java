@@ -115,6 +115,7 @@ public class GameController {
                 Player currentPlayer = this.playerModel.getCurrentPlayer();
 
                 // Player wants to place a minion
+                // Only on traversable homebases with same id
                 if (selectedMinion != null && tile.isHomeBase() && tile.getHomebase() == currentPlayer.getHomeBaseID()
                         && !tile.isOccupied() && tile.isTraversable()) {
                     // Create a new instance of the minion
@@ -126,33 +127,33 @@ public class GameController {
                     currentPlayer.addMinion(newMinion);
                     tile.setOccupant(newMinion);
 
-                } else if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
+                } else // Player wants to select a placed minion
+                    if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
                     // Select the tile
-                    view.getGameTileGroupPane().setSelectedHexTile(hexTile);
+                    tileModel.setSelectedTile(tile);
                 }
 
                 view.getMinionsTableView().getSelectionModel().clearSelection();
             }
         });
 
-        // Logic for deleting minion
+
         getView().setOnKeyPressed(event -> {
             Object eventSource = event.getTarget();
             if (event.getCode() == KeyCode.R) {
                 view.resetGameGroupPosition();
             }
+            // Logic for deleting minion
             if (eventSource instanceof ZoomableScrollPane && event.getCode() == KeyCode.DELETE) {
-                HexTile selectedHexTile = view.getGameTileGroupPane().getSelectedHexTile();
-                Tile tileToDelete;
-                if (selectedHexTile != null) {
-                    tileToDelete = selectedHexTile.getTile();
+                Tile selectedTile = tileModel.getSelectedTile();
+                if (selectedTile != null) {
                     Player currentPlayer = playerModel.getCurrentPlayer();
-                    Minion occupant = tileToDelete.getOccupant();
-                    if (tileToDelete.isOccupied() && occupant.getOwner().equals(currentPlayer)) {
-                        tileToDelete.setOccupant(null);
-                        view.getGameTileGroupPane().setSelectedHexTile(null);
-                        currentPlayer.removeMinion(occupant);
-                        currentPlayer.addMoney(occupant.getCost());
+                    Minion occupant = selectedTile.getOccupant();
+                    if (selectedTile.isOccupied() && occupant.getOwner().equals(currentPlayer)) {
+                        selectedTile.setOccupant(null); // Remove minion from field
+                        tileModel.setSelectedTile(null); // Unselect selected tile
+                        currentPlayer.removeMinion(occupant); // Remove minion from player
+                        currentPlayer.addMoney(occupant.getCost()); // Refund minion cost
 
                     }
                 }
@@ -611,7 +612,7 @@ public class GameController {
             });
         });
 
-        thread.setDaemon(true);
+        thread.setDaemon(true); // Does not prevent JVM exit
         thread.start();
     }
 
