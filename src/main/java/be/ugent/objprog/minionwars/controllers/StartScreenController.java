@@ -99,14 +99,8 @@ public class StartScreenController {
     private void startGame() {
         boolean fullscreen = stage.isFullScreen();
 
-        GameController gameController = new GameController(stage, model, locale, reader);
-        Scene scene = new Scene(gameController.getView(), getView().getWidth(), getView().getHeight());
-
-        scene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.F11) {
-                stage.setFullScreen(!stage.isFullScreen());
-            }
-        });
+        // Provide a fallback/ windowed size if fullscreen
+        Scene scene = getScene(fullscreen);
         stage.setMinHeight(400);
         stage.setMinWidth(410);
         stage.setScene(scene);
@@ -118,6 +112,21 @@ public class StartScreenController {
 
         stage.show();
         stage.setFullScreenExitHint(null); // Restore default hint
+    }
+
+    private Scene getScene(boolean fullscreen) {
+        double windowedWidth = fullscreen ? stage.getWidth()/2 : stage.getWidth();
+        double windowedHeight = fullscreen ? stage.getHeight()/2 : stage.getHeight();
+
+        GameController gameController = new GameController(stage, model, locale, reader);
+        Scene scene = new Scene(gameController.getView(), windowedWidth, windowedHeight);
+
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.F11) {
+                stage.setFullScreen(!stage.isFullScreen());
+            }
+        });
+        return scene;
     }
 
     public Region getView() {
