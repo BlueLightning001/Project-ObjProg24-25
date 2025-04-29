@@ -25,7 +25,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -52,6 +51,7 @@ public class GameController {
     private ListChangeListener<Minion> player1WinListener;
     private ListChangeListener<Minion> player2WinListener;
     private Tab lastTab;
+    private ChangeListener<Number> turnCounterListener;
 
     public GameController(Stage stage, PlayerModel playerModel, Locale locale, JDOMReader reader) {
         this.stage = stage;
@@ -82,10 +82,6 @@ public class GameController {
 
         // PART 1
         setUpListenersPart1();
-    }
-
-    private void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-        updateActionUI(newValue);
     }
 
     private void setUpListenersPart1() {
@@ -129,9 +125,9 @@ public class GameController {
 
                 } else // Player wants to select a placed minion
                     if (tile.isOccupied() && tile.getOccupant().getOwner().equals(currentPlayer)) {
-                    // Select the tile
-                    tileModel.setSelectedTile(tile);
-                }
+                        // Select the tile
+                        tileModel.setSelectedTile(tile);
+                    }
 
                 view.getMinionsTableView().getSelectionModel().clearSelection();
             }
@@ -160,6 +156,12 @@ public class GameController {
 
             }
         });
+        turnCounterListener = (observable, oldValue, newValue) -> {
+            if (newValue.intValue() == playerModel.getPlayers().size()) {
+                startNextPhase();
+            }
+        };
+
         // Starts phase 2 after 2 turns passed
         playerModel.turnCounterProperty().addListener(turnCounterListener);
     }
@@ -168,11 +170,9 @@ public class GameController {
         return this.view.getView();
     }
 
-    private final ChangeListener<Number> turnCounterListener = (observable, oldValue, newValue) -> {
-        if (newValue.intValue() == 2) {
-            startNextPhase();
-        }
-    };
+    private void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
+        updateActionUI(newValue);
+    }
 
     private void clearHighlights() {
         view.getGameTileGroupPane().getHexTiles().forEach(HexTile::clearHighlight);
@@ -202,6 +202,15 @@ public class GameController {
         }
     }
 
+    private void clearPreviousEventHandlers() {
+        if (specialMouseClickedHandler != null) {
+            view.getGameTileGroupPane().removeEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
+        }
+        if (specialMouseMovedHandler != null) {
+            view.getGameTileGroupPane().removeEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
+        }
+    }
+
     public void endGame(Player winner) {
         view.getGameTileGroupPane().shutdown(); // Close active background threads
 
@@ -228,19 +237,21 @@ public class GameController {
 
     }
 
-    private void highLightRadius(HexTile hexTile, int radius, Color color) {
-        if (hexTile != null) {
-            highLightRadius(hexTile.getTile(), radius, color);
+    private Color getHighlightColor(boolean offensive, List<Tile> tilesInRadius) {
+        boolean conditionMet = false;
+
+        for (Tile tileInRadius : tilesInRadius) {
+            Minion minion = tileInRadius.getOccupant();
+            if (minion != null) {
+                boolean isOwnedByCurrentPlayer = minion.getOwner().equals(playerModel.getCurrentPlayer());
+                if ((!offensive && isOwnedByCurrentPlayer) || (offensive && !isOwnedByCurrentPlayer)) {
+                    conditionMet = true;
+                    break;
+                }
+            }
         }
 
-    }
-
-    private void highLightRadius(Tile tile, int radius, Color color) {
-        highlightRange(tile, 0, radius, color);
-    }
-
-    private List<Tile> highlightRange(HexTile hexTile, int minRange, int maxRange, Color color) {
-        return highlightRange(hexTile.getTile(), minRange, maxRange, color);
+        return conditionMet ? Color.BLUE : Color.RED;
     }
 
     /**
@@ -261,22 +272,13 @@ public class GameController {
         return tilesInRadius;
     }
 
+    private List<Tile> highlightRange(HexTile hexTile, int minRange, int maxRange, Color color) {
+        return highlightRange(hexTile.getTile(), minRange, maxRange, color);
+    }
+
     private List<Tile> highlightRange(Tile tile, int minRange, int maxRange, boolean offensive) {
         List<Tile> tilesInRadius = tileModel.getTilesInRadius(tile, minRange, maxRange);
-        boolean conditionMet = false;
-
-        for (Tile tileInRadius : tilesInRadius) {
-            Minion minion = tileInRadius.getOccupant();
-            if (minion != null) {
-                boolean isOwnedByCurrentPlayer = minion.getOwner().equals(playerModel.getCurrentPlayer());
-                if ((!offensive && isOwnedByCurrentPlayer) || (offensive && !isOwnedByCurrentPlayer)) {
-                    conditionMet = true;
-                    break;
-                }
-            }
-        }
-
-        Color highlightColor = conditionMet ? Color.BLUE : Color.RED;
+        Color highlightColor = getHighlightColor(offensive, tilesInRadius);
 
         for (Tile tileInRadius : tilesInRadius) {
             HexTile hexTile = view.getHexTile(tileInRadius);
@@ -291,7 +293,6 @@ public class GameController {
         return tilesInRadius;
     }
 
-
     private void invalidateAndUpdateSelectedMinion() {
         Tile selectedTile = tileModel.getSelectedTile();
 
@@ -302,6 +303,18 @@ public class GameController {
             tileModel.setSelectedTile(null);
             tileModel.setSelectedTile(selectedTile);  // Re-select the minion to trigger a UI update
         }
+    }
+
+    private boolean isAttackTab(Tab tab) {
+        return tab.equals(view.getActionsTabPane().getAttackTab());
+    }
+
+    private boolean isMoveTab(Tab tab) {
+        return tab.equals(view.getActionsTabPane().getMoveTab());
+    }
+
+    private boolean isSpecialTab(Tab tab) {
+        return tab.equals(view.getActionsTabPane().getSpecialTab());
     }
 
     private void setSelected(HexTile hexTile) {
@@ -374,133 +387,6 @@ public class GameController {
         view.getEndTurnButton().setOnAction(event -> playerModel.nextPlayer());
     }
 
-    private void startNextPhase() {
-
-        // Remove old selection logic
-        view.getView().setOnKeyPressed(null);
-
-        //Clear homebase highlights
-        Platform.runLater(() -> view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> clearHighlights()));
-        // Prevent listener duplication on replay
-        playerModel.turnCounterProperty().removeListener(turnCounterListener);
-
-        view.changeGamePhase();
-        setUpListenersPart2();
-        stage.setMinWidth(650);
-        stage.setMinHeight(600);
-
-    }
-
-    // Logic for all actions
-    private void updateActionUI(Tab selectedTab) {
-        clearHighlights();
-        clearPreviousEventHandlers();
-        setupRestAndTurnButtons();
-        updateSelectedTileBindings();
-
-        if (selectedTab == null) return;
-
-        lastTab = selectedTab;
-
-        if (isSpecialTab(selectedTab)) {
-            setupSpecialTabHandlers();
-        } else if (isAttackTab(selectedTab)) {
-            setupAttackTabHandlers();
-        } else if (isMoveTab(selectedTab)) {
-            setupMoveTabHandlers();
-        }
-    }
-    private void clearPreviousEventHandlers() {
-        if (specialMouseClickedHandler != null) {
-            view.getGameTileGroupPane().removeEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
-        }
-        if (specialMouseMovedHandler != null) {
-            view.getGameTileGroupPane().removeEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
-        }
-    }
-    private void setupRestAndTurnButtons() {
-        Player currentPlayer = playerModel.getCurrentPlayer();
-        Button restButton = view.getRestButton();
-        Button endTurnButton = view.getPart2MenuContainer().getEndTurnButton();
-
-        restButton.disableProperty().unbind();
-        endTurnButton.disableProperty().unbind();
-
-        endTurnButton.disableProperty().bind(
-                Bindings.createBooleanBinding(
-                        () -> currentPlayer.getMinions().stream().anyMatch(Minion::hasActions),
-                        currentPlayer.getMinions()
-                )
-        );
-    }
-    private void updateSelectedTileBindings() {
-        Tile selectedTile = tileModel.getSelectedTile();
-        if (selectedTile != null && selectedTile.isOccupied()) {
-            Minion occupant = selectedTile.getOccupant();
-            Button restButton = view.getRestButton();
-            Tab attackTab = view.getActionsTabPane().getAttackTab();
-            Tab moveTab = view.getActionsTabPane().getMoveTab();
-
-            restButton.disableProperty().bind(
-                    Bindings.createBooleanBinding(
-                            () -> occupant.hasAttacked() || occupant.hasMoved(),
-                            occupant.attackedProperty(),
-                            occupant.movedProperty()
-                    )
-            );
-
-            restButton.setOnAction(event -> {
-                occupant.rest();
-                changed(null, null, lastTab);
-            });
-
-            attackTab.disableProperty().bind(occupant.attackedProperty());
-            moveTab.disableProperty().bind(occupant.movedProperty());
-        }
-    }
-    private boolean isSpecialTab(Tab tab) {
-        return tab.equals(view.getActionsTabPane().getSpecialTab());
-    }
-
-    private boolean isAttackTab(Tab tab) {
-        return tab.equals(view.getActionsTabPane().getAttackTab());
-    }
-
-    private boolean isMoveTab(Tab tab) {
-        return tab.equals(view.getActionsTabPane().getMoveTab());
-    }
-    private void setupSpecialTabHandlers() {
-        view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
-
-        specialMouseMovedHandler = event -> {
-            if (!isSpecialTab(view.getActionsTabPane().getSelectionModel().getSelectedItem())) return;
-            clearHighlights();
-            Power selectedPower = powerModel.getSelectedPower();
-            if (selectedPower == null) return;
-
-            HexTile tileUnderMouse = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
-            if (tileUnderMouse != null) {
-                highlightRange(tileUnderMouse.getTile(), 0, selectedPower.getRadius(), selectedPower.isOffensive());
-            }
-        };
-
-        specialMouseClickedHandler = event -> {
-            Power selectedPower = powerModel.getSelectedPower();
-            HexTile clickedTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
-            Player currentPlayer = playerModel.getCurrentPlayer();
-
-            if (clickedTile != null && selectedPower != null && currentPlayer.getAvailablePowerUses() > 0) {
-                currentPlayer.usePower(selectedPower);
-                selectedPower.apply(clickedTile, currentPlayer);
-                view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
-                clearHighlights();
-                invalidateAndUpdateSelectedMinion();
-            }
-        };
-
-        view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
-        view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
-    }
     private void setupAttackTabHandlers() {
         Tile selectedTile = tileModel.getSelectedTile();
         if (selectedTile == null || !selectedTile.isOccupied()) return;
@@ -513,7 +399,7 @@ public class GameController {
 
         ToggleButton attackButton = view.getActionsTabPane().getAttackButton();
         ToggleButton specialAttackButton = view.getActionsTabPane().getSpecialAttackButton();
-        attackButton.setSelected(true);
+        attackButton.setSelected(true); // Default to normal attack
 
         attackButton.disableProperty().unbind();
         specialAttackButton.disableProperty().unbind();
@@ -549,9 +435,9 @@ public class GameController {
             if (clickedHexTile == null || clickedHexTile.getTile() == null) return;
 
             Minion target = clickedHexTile.getTile().getOccupant();
-            if (target != null && target.getOwner() != occupant.getOwner()
-                    && attackableTiles.contains(clickedHexTile.getTile())
-                    && clickedHexTile.getTile().isAbleToBeAttacked()) {
+            if (target != null && target.getOwner() != occupant.getOwner() // Tile contains enemy
+                    && attackableTiles.contains(clickedHexTile.getTile()) // Tile is in reach
+                    && clickedHexTile.getTile().isAbleToBeAttacked()) {   // Tile is attackable
 
                 if (specialAttackButton.isSelected() && occupant.hasSpecialAttack()) {
                     occupant.specialAttack(target);
@@ -566,6 +452,7 @@ public class GameController {
 
         view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
     }
+
     private void setupMoveTabHandlers() {
         Tile selectedTile = tileModel.getSelectedTile();
         if (selectedTile == null || !selectedTile.isOccupied()) return;
@@ -616,8 +503,117 @@ public class GameController {
         thread.start();
     }
 
+    private void setupRestAndTurnButtons() {
+        Player currentPlayer = playerModel.getCurrentPlayer();
+        Button restButton = view.getRestButton();
+        Button endTurnButton = view.getPart2MenuContainer().getEndTurnButton();
 
+        restButton.disableProperty().unbind();
+        endTurnButton.disableProperty().unbind();
 
+        endTurnButton.disableProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> currentPlayer.getMinions().stream().anyMatch(Minion::hasActions),
+                        currentPlayer.getMinions()
+                )
+        );
+    }
+
+    private void setupSpecialTabHandlers() {
+        view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
+
+        specialMouseMovedHandler = event -> {
+            if (!isSpecialTab(view.getActionsTabPane().getSelectionModel().getSelectedItem())) return;
+            clearHighlights();
+            Power selectedPower = powerModel.getSelectedPower();
+            if (selectedPower == null) return;
+
+            HexTile tileUnderMouse = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
+            if (tileUnderMouse != null) {
+                highlightRange(tileUnderMouse.getTile(), 0, selectedPower.getRadius(), selectedPower.isOffensive());
+            }
+        };
+
+        specialMouseClickedHandler = event -> {
+            Power selectedPower = powerModel.getSelectedPower();
+            HexTile clickedTile = view.getGameTileGroupPane().getHexTileAt(event.getSceneX(), event.getSceneY());
+            Player currentPlayer = playerModel.getCurrentPlayer();
+
+            if (clickedTile != null && selectedPower != null && currentPlayer.getAvailablePowerUses() > 0) {
+                currentPlayer.usePower(selectedPower);
+                selectedPower.apply(clickedTile, currentPlayer);
+                view.getActionsTabPane().getPowerListView().getSelectionModel().clearSelection();
+                clearHighlights();
+                invalidateAndUpdateSelectedMinion();
+            }
+        };
+
+        view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_MOVED, specialMouseMovedHandler);
+        view.getGameTileGroupPane().addEventFilter(MouseEvent.MOUSE_CLICKED, specialMouseClickedHandler);
+    }
+
+    private void startNextPhase() {
+
+        // Remove old selection logic
+        view.getView().setOnKeyPressed(null);
+
+        //Clear homebase highlights
+        Platform.runLater(() -> view.getGameTileGroupPane().getHexTiles().forEach(hexTile -> clearHighlights()));
+        // Prevent listener duplication on replay
+        playerModel.turnCounterProperty().removeListener(turnCounterListener);
+
+        view.changeGamePhase();
+        setUpListenersPart2();
+        stage.setMinWidth(650);
+        stage.setMinHeight(600);
+
+    }
+
+    // Logic for all actions
+    private void updateActionUI(Tab selectedTab) {
+        clearHighlights();
+        clearPreviousEventHandlers();
+        setupRestAndTurnButtons();
+        updateSelectedTileBindings();
+
+        if (selectedTab == null) return;
+
+        lastTab = selectedTab;
+
+        if (isSpecialTab(selectedTab)) {
+            setupSpecialTabHandlers();
+        } else if (isAttackTab(selectedTab)) {
+            setupAttackTabHandlers();
+        } else if (isMoveTab(selectedTab)) {
+            setupMoveTabHandlers();
+        }
+    }
+
+    private void updateSelectedTileBindings() {
+        Tile selectedTile = tileModel.getSelectedTile();
+        if (selectedTile != null && selectedTile.isOccupied()) {
+            Minion occupant = selectedTile.getOccupant();
+            Button restButton = view.getRestButton();
+            Tab attackTab = view.getActionsTabPane().getAttackTab();
+            Tab moveTab = view.getActionsTabPane().getMoveTab();
+
+            restButton.disableProperty().bind(
+                    Bindings.createBooleanBinding(
+                            () -> occupant.hasAttacked() || occupant.hasMoved(),
+                            occupant.attackedProperty(),
+                            occupant.movedProperty()
+                    )
+            );
+
+            restButton.setOnAction(event -> {
+                occupant.rest();
+                changed(null, null, lastTab);
+            });
+
+            attackTab.disableProperty().bind(occupant.attackedProperty());
+            moveTab.disableProperty().bind(occupant.movedProperty());
+        }
+    }
 
 
 
