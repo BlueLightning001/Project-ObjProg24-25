@@ -1,6 +1,5 @@
 package be.ugent.objprog.minionwars.views;
 
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.StackPane;

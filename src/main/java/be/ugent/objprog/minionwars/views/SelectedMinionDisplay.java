@@ -287,15 +287,4 @@ public class SelectedMinionDisplay extends GridPane {
         return null;
     }
 
-    public Minion getSelectedMinion() {
-        return selectedMinion.get();
-    }
-
-    public void setSelectedMinion(Minion selectedMinion) {
-        this.selectedMinion.set(selectedMinion);
-    }
-
-    public SimpleObjectProperty<Minion> selectedMinionProperty() {
-        return selectedMinion;
-    }
 }

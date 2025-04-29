@@ -13,5 +13,4 @@ public class LightningPower extends Power {
         offensive = true;
     }
 
-
 }

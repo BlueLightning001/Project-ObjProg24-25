@@ -1,7 +1,6 @@
 package be.ugent.objprog.minionwars.controllers;
 
 import be.ugent.objprog.minionwars.JDOMReader;
-import be.ugent.objprog.minionwars.models.Player;
 import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.views.StartScreenView;
 import javafx.scene.Scene;
@@ -22,8 +21,6 @@ public class StartScreenController {
     private final PlayerModel model;
     private final ResourceBundle bundle;
     private final Stage stage;
-    private final Double prefStageWidth = null;
-    private final Double prefStageHeight = null;
     private final Locale locale;
     private final JDOMReader reader;
 
@@ -31,7 +28,7 @@ public class StartScreenController {
         this.reader = reader;
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         this.model = new PlayerModel();
-        this.view = new StartScreenView(model, locale);
+        this.view = new StartScreenView(locale);
         this.stage = stage;
         this.locale = locale;
 
@@ -129,13 +126,6 @@ public class StartScreenController {
 
     private static class TrimStringConverter extends StringConverter<String> {
 
-        /**
-         * Converts the string provided into an object defined by the specific converter.
-         * Format of the string and type of the resulting object is defined by the specific converter.
-         *
-         * @param string the {@code String} to convert
-         * @return an object representation of the string passed in.
-         */
         @Override
         public String fromString(String string) {
             return string != null ? string.trim() : "";

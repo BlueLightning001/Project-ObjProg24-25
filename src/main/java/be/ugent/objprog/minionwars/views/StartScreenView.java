@@ -1,6 +1,5 @@
 package be.ugent.objprog.minionwars.views;
 
-import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -39,9 +38,9 @@ public class StartScreenView {
     private Button startButton;
     private StackPane titleContainer;
     private Label warningLabel;
-    private Locale locale;
+    private final Locale locale;
 
-    public StartScreenView(PlayerModel model, Locale locale) {
+    public StartScreenView(Locale locale) {
         this.bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
         Font labelFont = Font.font("Monotype Corsiva", FontWeight.BOLD, 20);
         DropShadow shadow = createDropShadow();

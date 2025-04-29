@@ -114,7 +114,7 @@ public class GameView {
     public void changeGamePhase() {
         getGameTileGroupPane().getHexTiles().forEach(HexTile::endStartPhase);
         this.root.getChildren().clear();
-        part2MenuContainer = new Part2MenuContainer(playerModel, minionModel, tileModel, powerModel, gameTileGroupPane, locale);
+        part2MenuContainer = new Part2MenuContainer(playerModel, tileModel, powerModel, gameTileGroupPane, locale);
         this.root.getChildren().addAll(part2MenuContainer, gamePane);
 
         part2MenuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.30));

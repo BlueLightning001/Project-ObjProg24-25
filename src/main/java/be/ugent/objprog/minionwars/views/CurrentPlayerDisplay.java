@@ -6,7 +6,6 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class CurrentPlayerDisplay extends HBox {
-    private final PlayerModel playerModel;
     private final Label currentPlayerLabel;
     private final Label currentPlayerMinionsUsedLabel;
     private final Map<Player, List<Runnable>> currentListenerMap = new HashMap<>();
@@ -30,7 +28,6 @@ public class CurrentPlayerDisplay extends HBox {
     private final double fontScale = 0.1;
 
     public CurrentPlayerDisplay(PlayerModel playerModel) {
-        this.playerModel = playerModel;
         currentPlayerLabel = new Label("Current Player");
         currentPlayerMinionsUsedLabel = new Label("currentPlayerCoins");
 

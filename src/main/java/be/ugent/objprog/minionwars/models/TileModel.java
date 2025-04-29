@@ -169,7 +169,7 @@ public class TileModel {
     }
 
     /*
-      Manhattan distance is strange for hexagonal tiles
+      Calculating distance between tiles
 
       Sources that helped with the calculations:
       Hugo. (2024, January 14). #6 - Calculating the distance between hexagonal tiles. seaotter.games.
@@ -240,9 +240,8 @@ public class TileModel {
     }
 
     public void reset() {
-        for (int i = 0; i < tileGrid.length; i++) {
-            for (int j = 0; j < tileGrid[i].length; j++) {
-                Tile tile = tileGrid[i][j];
+        for (Tile[] tiles : tileGrid) {
+            for (Tile tile : tiles) {
                 tile.setOccupant(null);
             }
         }
@@ -258,13 +257,6 @@ public class TileModel {
         tileGrid[tile.getXCoord()][tile.getYCoord()] = tile;
     }
 
-    private static class TileNode {
-        final Tile tile;
-        final int movementLeft;
-
-        TileNode(Tile tile, int movementLeft) {
-            this.tile = tile;
-            this.movementLeft = movementLeft;
-        }
+    private record TileNode(Tile tile, int movementLeft) {
     }
 }

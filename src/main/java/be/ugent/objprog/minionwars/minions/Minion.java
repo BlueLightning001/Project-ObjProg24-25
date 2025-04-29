@@ -89,12 +89,6 @@ public class Minion {
         statusAilments.remove(effect);
     }
 
-    public void applyEffectLogic(MinionEffect effect) {
-        if (effect != null) {
-            effect.applyEffect(this);
-        }
-    }
-
     public SimpleIntegerProperty attackProperty() {
         return attack;
     }
@@ -282,7 +276,7 @@ public class Minion {
 
     public void specialAttack(Minion target) {
         attack(target);
-        if (effect != null) {
+        if (effect != null) { // Create effect clone to apply as a status ailment to caster/target
             EffectFactory effectFactory = new EffectFactory();
 
             MinionEffect effectClone = effectFactory.createEffect(effect.getClass().getSimpleName().toLowerCase().replace("effect", ""),
