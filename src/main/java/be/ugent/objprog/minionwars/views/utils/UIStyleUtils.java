@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class UIStyleUtils {
     // Map to store listeners for cleanup
-    private static final Map<Labeled, List<ChangeListener<Number>>> labelListeners = new HashMap<>();
+    private final Map<Labeled, List<ChangeListener<Number>>> labelListeners = new HashMap<>();
 
     /**
      * Styles a labeled node with responsive font sizing based on container dimensions.
@@ -26,7 +26,7 @@ public class UIStyleUtils {
      * @param width The width multiplier (relative to container width)
      * @param height The height multiplier (relative to container height)
      */
-    public static void styleNode(Labeled toBeStyled, StackPane container, double width, double height) {
+    public void styleNode(Labeled toBeStyled, StackPane container, double width, double height) {
         toBeStyled.setAlignment(Pos.CENTER);
         toBeStyled.prefWidthProperty().bind(container.widthProperty().multiply(width));
         toBeStyled.prefHeightProperty().bind(container.heightProperty().multiply(height));
@@ -50,7 +50,7 @@ public class UIStyleUtils {
      * @param label The label to resize
      * @param scaleFactor The scale factor to apply to the font size
      */
-    public static void autoResizeText(Labeled label, double scaleFactor) {
+    public void autoResizeText(Labeled label, double scaleFactor) {
         ChangeListener<Number> resizeListener = (obs, oldVal, newVal) -> {
             Platform.runLater(() -> {
                 double fontSize = Math.min(label.getWidth(), label.getHeight()) * scaleFactor;
@@ -68,9 +68,8 @@ public class UIStyleUtils {
 
     /**
      * Removes all listeners to prevent memory leaks.
-     * Should be called when components are no longer needed.
      */
-    public static void cleanup() {
+    public void cleanup() {
         // Remove all stored listeners
         labelListeners.forEach((label, listeners) -> {
             for (ChangeListener<Number> listener : listeners) {
@@ -86,7 +85,7 @@ public class UIStyleUtils {
      *
      * @param label The labeled component to clean up
      */
-    public static void cleanup(Labeled label) {
+    public void cleanup(Labeled label) {
         List<ChangeListener<Number>> listeners = labelListeners.get(label);
         if (listeners != null) {
             for (ChangeListener<Number> listener : listeners) {

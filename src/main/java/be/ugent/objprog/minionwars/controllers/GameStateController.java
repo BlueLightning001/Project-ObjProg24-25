@@ -284,31 +284,5 @@ public class GameStateController {
         stage.show();
     }
 
-    /**
-     * Gets the player1 win listener.
-     *
-     * @return The player1 win listener
-     */
-    public ListChangeListener<be.ugent.objprog.minionwars.minions.Minion> getPlayer1WinListener() {
-        return player1WinListener;
-    }
-
-    /**
-     * Gets the player2 win listener.
-     *
-     * @return The player2 win listener
-     */
-    public ListChangeListener<be.ugent.objprog.minionwars.minions.Minion> getPlayer2WinListener() {
-        return player2WinListener;
-    }
-
-    /**
-     * Gets the turn counter listener.
-     *
-     * @return The turn counter listener
-     */
-    public ChangeListener<Number> getTurnCounterListener() {
-        return turnCounterListener;
-    }
 }
 

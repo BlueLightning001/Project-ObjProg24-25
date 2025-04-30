@@ -7,7 +7,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 /**
- * Utility class for image manipulation operations.
+ * Utility class for image operations.
  */
 public class ImageUtils {
     
@@ -48,15 +48,5 @@ public class ImageUtils {
     public static Image applyColorOverlay(Image baseImage, Color overlayColor) {
         return applyColorOverlay(baseImage, overlayColor, 0.3);
     }
-    
-    /**
-     * Applies a highlight effect to an image.
-     * 
-     * @param baseImage The original image to highlight
-     * @param highlightColor The color to use for highlighting
-     * @return A new image with the highlight effect applied
-     */
-    public static Image applyHighlight(Image baseImage, Color highlightColor) {
-        return applyColorOverlay(baseImage, highlightColor, 0.5);
-    }
+
 }

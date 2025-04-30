@@ -65,32 +65,15 @@ public class ActionTabController {
         }
     }
 
-    /**
-     * Checks if the given tab is the Attack tab.
-     *
-     * @param tab The tab to check
-     * @return True if the tab is the Attack tab, false otherwise
-     */
+
     public boolean isAttackTab(Tab tab) {
         return tab.equals(view.getActionsTabPane().getAttackTab());
     }
 
-    /**
-     * Checks if the given tab is the Move tab.
-     *
-     * @param tab The tab to check
-     * @return True if the tab is the Move tab, false otherwise
-     */
     public boolean isMoveTab(Tab tab) {
         return tab.equals(view.getActionsTabPane().getMoveTab());
     }
 
-    /**
-     * Checks if the given tab is the Special tab.
-     *
-     * @param tab The tab to check
-     * @return True if the tab is the Special tab, false otherwise
-     */
     public boolean isSpecialTab(Tab tab) {
         return tab.equals(view.getActionsTabPane().getSpecialTab());
     }
@@ -323,21 +306,4 @@ public class ActionTabController {
         }
     }
 
-    /**
-     * Gets the last selected tab.
-     *
-     * @return The last selected tab
-     */
-    public Tab getLastTab() {
-        return lastTab;
-    }
-
-    /**
-     * Sets the last selected tab.
-     *
-     * @param lastTab The tab to set as the last selected tab
-     */
-    public void setLastTab(Tab lastTab) {
-        this.lastTab = lastTab;
-    }
 }

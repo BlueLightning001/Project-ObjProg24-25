@@ -51,10 +51,12 @@ public class ActionsPane extends TabPane {
     private ToggleButton specialAttackButton;
     private Button healButton;
     private ToggleGroup attackToggleGroup;
+    private final UIStyleUtils uiStyleUtils;
 
     public ActionsPane(TileModel tileModel, PlayerModel playerModel, PowerModel powerModel, Locale locale) {
         super();
         bundle = ResourceBundle.getBundle("be.ugent.objprog.minionwars.lang.messages", locale);
+        uiStyleUtils = new UIStyleUtils();
 
         //// Moving
         moveTab = makeMoveTab();
@@ -149,7 +151,7 @@ public class ActionsPane extends TabPane {
         specialAttackButton = new ToggleButton("Special attack");
         specialAttackButton.setMinHeight(70);
         styleNode(specialAttackButton, attackPane, 0.5, 0.2);
-        autoResizeText(specialAttackButton, 0.2);
+        autoResizeText(specialAttackButton, 0.17);
         specialAttackButton.setToggleGroup(attackToggleGroup);
 
         Label orLabel = new Label(bundle.getString("actions.or"));
@@ -208,11 +210,11 @@ public class ActionsPane extends TabPane {
     }
 
     private void styleNode(Labeled toBeStyled, StackPane container, double width, double height) {
-        UIStyleUtils.styleNode(toBeStyled, container, width, height);
+        uiStyleUtils.styleNode(toBeStyled, container, width, height);
     }
 
     private void autoResizeText(Labeled label, double scaleFactor) {
-        UIStyleUtils.autoResizeText(label, scaleFactor);
+        uiStyleUtils.autoResizeText(label, scaleFactor);
     }
 
     /**
@@ -221,7 +223,7 @@ public class ActionsPane extends TabPane {
      */
     public void cleanup() {
         // Use UIStyleUtils to clean up all listeners
-        UIStyleUtils.cleanup();
+        uiStyleUtils.cleanup();
     }
 
     public ToggleButton getAttackButton() {
