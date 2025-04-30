@@ -310,6 +310,9 @@ public class ActionsPane extends TabPane {
         return attackTab;
     }
 
+    // Map to store listeners for cleanup
+    private final java.util.Map<Labeled, java.util.List<ChangeListener<Number>>> labelListeners = new java.util.HashMap<>();
+
     private void updateAttackOptions(Tile selectedTile) {
         if (selectedTile != null && selectedTile.isOccupied()) {
             Minion occupant = selectedTile.getOccupant();
@@ -341,14 +344,18 @@ public class ActionsPane extends TabPane {
         toBeStyled.setAlignment(Pos.CENTER);
         toBeStyled.prefWidthProperty().bind(container.widthProperty().multiply(width));
         toBeStyled.prefHeightProperty().bind(container.heightProperty().multiply(height));
-        toBeStyled.widthProperty().addListener(obs -> {
+
+        ChangeListener<Number> widthListener = (obs, oldVal, newVal) -> {
             Platform.runLater(() -> {
                 double fontSize = toBeStyled.getWidth() * 0.1;
                 toBeStyled.setStyle("-fx-font-size: " + fontSize + "px;");
             });
-        });
+        };
 
+        toBeStyled.widthProperty().addListener(widthListener);
 
+        // Store listener for later cleanup
+        labelListeners.computeIfAbsent(toBeStyled, k -> new java.util.ArrayList<>()).add(widthListener);
     }
 
     private void autoResizeText(Labeled label, double scaleFactor) {
@@ -362,6 +369,24 @@ public class ActionsPane extends TabPane {
         // Listen for both width and height changes
         label.widthProperty().addListener(resizeListener);
         label.heightProperty().addListener(resizeListener);
+
+        // Store listeners for later cleanup
+        labelListeners.computeIfAbsent(label, k -> new java.util.ArrayList<>()).add(resizeListener);
+    }
+
+    /**
+     * Removes all listeners to prevent memory leaks.
+     * Should be called when this pane is no longer needed.
+     */
+    public void cleanup() {
+        // Remove all stored listeners
+        labelListeners.forEach((label, listeners) -> {
+            for (ChangeListener<Number> listener : listeners) {
+                label.widthProperty().removeListener(listener);
+                label.heightProperty().removeListener(listener);
+            }
+        });
+        labelListeners.clear();
     }
 
     public ToggleButton getAttackButton() {

@@ -29,6 +29,8 @@ public class GameView {
     private Part2MenuContainer part2MenuContainer;
     private Button endTurnButton;
     private Button centerBoardButton;
+    // Store listener reference for cleanup
+    private javafx.beans.value.ChangeListener<be.ugent.objprog.minionwars.models.Player> currentPlayerListener;
 
     public GameView(MinionModel minionModel, PlayerModel playerModel, TileModel tileModel, PowerModel powerModel, Locale locale) {
         this.minionModel = minionModel;
@@ -60,9 +62,12 @@ public class GameView {
 
         // End turn only when player has at least one minion
         rebindEndTurnButtonPart1();
-        this.playerModel.currentPlayerProperty().addListener((observable) -> {
+
+        // Store listener reference for cleanup
+        currentPlayerListener = (observable, oldValue, newValue) -> {
             rebindEndTurnButtonPart1();
-        });
+        };
+        this.playerModel.currentPlayerProperty().addListener(currentPlayerListener);
 
         // Ensure part1MenuContainer resizes properly
         part1MenuContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.30));
@@ -110,6 +115,17 @@ public class GameView {
 
     public void changeGamePhase() {
         getGameTileGroupPane().getHexTiles().forEach(HexTile::endStartPhase);
+
+        // Get reference to part1MenuContainer before clearing
+        javafx.scene.Node part1MenuContainer = this.root.getChildren().get(0);
+
+        // Unbind properties of part1MenuContainer to prevent memory leaks
+        if (part1MenuContainer instanceof javafx.scene.layout.Region) {
+            javafx.scene.layout.Region region = (javafx.scene.layout.Region) part1MenuContainer;
+            region.prefWidthProperty().unbind();
+            region.prefHeightProperty().unbind();
+        }
+
         this.root.getChildren().clear();
         part2MenuContainer = new Part2MenuContainer(playerModel, tileModel, powerModel, gameTileGroupPane, locale);
         this.root.getChildren().addAll(part2MenuContainer, gamePane);
@@ -122,7 +138,6 @@ public class GameView {
 
         centerBoardButton = part2MenuContainer.getCenterBoardButton();
         endTurnButton = part2MenuContainer.getEndTurnButton();
-
     }
 
     public TileGroupPane getGameTileGroupPane() {
@@ -175,4 +190,28 @@ public class GameView {
         return container;
     }
 
+    /**
+     * Cleans up resources to prevent memory leaks.
+     */
+    public void cleanup() {
+        // Remove the current player listener
+        if (currentPlayerListener != null) {
+            playerModel.currentPlayerProperty().removeListener(currentPlayerListener);
+        }
+
+        // Unbind all bindings
+        if (part2MenuContainer != null) {
+            part2MenuContainer.prefWidthProperty().unbind();
+            part2MenuContainer.prefHeightProperty().unbind();
+        }
+
+        gamePane.prefWidthProperty().unbind();
+        gamePane.prefHeightProperty().unbind();
+
+        root.prefWidthProperty().unbind();
+        root.prefHeightProperty().unbind();
+
+        gameTileGroupPane.prefWidthProperty().unbind();
+        gameTileGroupPane.prefHeightProperty().unbind();
+    }
 }

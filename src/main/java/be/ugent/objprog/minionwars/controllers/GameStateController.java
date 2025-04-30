@@ -31,6 +31,11 @@ public class GameStateController {
     private ListChangeListener<be.ugent.objprog.minionwars.minions.Minion> player2WinListener;
     private ChangeListener<Number> turnCounterListener;
 
+    // Store references to listeners for cleanup
+    private javafx.beans.value.ChangeListener<Player> currentPlayerListener;
+    private javafx.beans.value.ChangeListener<be.ugent.objprog.minionwars.tiles.Tile> selectedTileListener;
+    private javafx.beans.value.ChangeListener<javafx.scene.control.Tab> tabSelectionListener;
+
     private be.ugent.objprog.minionwars.JDOMReader jdomReader;
 
     public GameStateController(PlayerModel playerModel, GameView view, Stage stage, Locale locale, 
@@ -180,7 +185,7 @@ public class GameStateController {
         playerModel.getPlayer2().minionsProperty().addListener(player2WinListener);
 
         // Sets powerListview bindings and ensures selection is cleared
-        playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
+        currentPlayerListener = (obs, oldPlayer, newPlayer) -> {
             javafx.scene.control.ListView<be.ugent.objprog.minionwars.powers.Power> powerListView = view.getPart2MenuContainer().getActionsPane().getPowerListView();
             if (newPlayer != null) {
                 powerListView.itemsProperty().bind(newPlayer.availablePowersProperty());
@@ -194,20 +199,23 @@ public class GameStateController {
             } else {
                 powerListView.setItems(javafx.collections.FXCollections.observableArrayList()); // Clear if no player
             }
-        });
+        };
+        playerModel.currentPlayerProperty().addListener(currentPlayerListener);
 
         // Refresh UI when selected tile changes
-        tileModel.selectedTileProperty().addListener((observable) -> {
+        selectedTileListener = (observable, oldValue, newValue) -> {
             javafx.scene.control.Tab selectedTab = view.getActionsTabPane().getSelectionModel().getSelectedItem();
             if (selectedTab != null) {
                 actionTabController.updateActionUI(selectedTab);
             }
-        });
+        };
+        tileModel.selectedTileProperty().addListener(selectedTileListener);
 
         // Set up tab selection listener
-        view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tabSelectionListener = (observable, oldValue, newValue) -> {
             actionTabController.updateActionUI(newValue);
-        });
+        };
+        view.getActionsTabPane().getSelectionModel().selectedItemProperty().addListener(tabSelectionListener);
 
         // Set up end turn button
         view.getEndTurnButton().setOnAction(event -> playerModel.nextPlayer());
@@ -232,17 +240,33 @@ public class GameStateController {
         stage.setMinHeight(600);
     }
 
-    /**
-     * Ends the game and displays the victory screen.
-     *
-     * @param winner The player who won the game
-     */
     public void endGame(Player winner) {
         view.getGameTileGroupPane().shutdown(); // Close active background threads
+
+        // Clean up ActionsPane listeners to prevent memory leaks
+        if (view.getPart2MenuContainer() != null && view.getActionsTabPane() != null) {
+            view.getActionsTabPane().cleanup();
+        }
+
+        // Clean up GameView resources to prevent memory leaks
+        view.cleanup();
 
         // Prevent duplication of game
         playerModel.getPlayer1().minionsProperty().removeListener(player1WinListener);
         playerModel.getPlayer2().minionsProperty().removeListener(player2WinListener);
+
+        // Remove other listeners to prevent memory leaks
+        if (currentPlayerListener != null) {
+            playerModel.currentPlayerProperty().removeListener(currentPlayerListener);
+        }
+
+        if (selectedTileListener != null) {
+            tileModel.selectedTileProperty().removeListener(selectedTileListener);
+        }
+
+        if (tabSelectionListener != null && view.getActionsTabPane() != null) {
+            view.getActionsTabPane().getSelectionModel().selectedItemProperty().removeListener(tabSelectionListener);
+        }
 
         boolean fullscreen = stage.isFullScreen();
         VictoryPane victoryScreen = new VictoryPane(winner, playerModel, powerModel, jdomReader, stage, locale);
