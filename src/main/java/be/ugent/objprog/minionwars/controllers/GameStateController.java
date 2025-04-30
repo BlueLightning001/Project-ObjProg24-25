@@ -51,6 +51,9 @@ public class GameStateController {
      * Sets up listeners for phase 1 of the game.
      */
     public void setUpListenersPart1() {
+        // Set up center board button
+        view.getCenterBoardButton().setOnAction(event -> view.resetGameGroupPosition());
+
         // Set up minion selection listener
         view.getMinionsTableView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             // Unselect the tile when selecting a minion
@@ -138,6 +141,9 @@ public class GameStateController {
      * Sets up listeners for phase 2 of the game, including win condition listeners.
      */
     public void setUpListenersPart2() {
+        // Set up center board button
+        view.getCenterBoardButton().setOnAction(event -> view.resetGameGroupPosition());
+
         // Handles selecting tiles
         view.getGameTileGroupPane().setOnMouseClicked(event -> {
             Object eventSource = event.getTarget();
@@ -169,15 +175,15 @@ public class GameStateController {
             }
         };
 
-        // Attach the listener to player's minions list
-        playerModel.getPlayer1().getMinions().addListener(player1WinListener);
-        playerModel.getPlayer2().getMinions().addListener(player2WinListener);
+        // Attach the listener to player's minions list using the property
+        playerModel.getPlayer1().minionsProperty().addListener(player1WinListener);
+        playerModel.getPlayer2().minionsProperty().addListener(player2WinListener);
 
         // Sets powerListview bindings and ensures selection is cleared
         playerModel.currentPlayerProperty().addListener((obs, oldPlayer, newPlayer) -> {
             javafx.scene.control.ListView<be.ugent.objprog.minionwars.powers.Power> powerListView = view.getPart2MenuContainer().getActionsPane().getPowerListView();
             if (newPlayer != null) {
-                powerListView.itemsProperty().bind(javafx.beans.binding.Bindings.createObjectBinding(newPlayer::getAvailablePowers));
+                powerListView.itemsProperty().bind(newPlayer.availablePowersProperty());
 
                 // Force update: clear power selection when the turn changes
                 javafx.application.Platform.runLater(() -> {
@@ -235,8 +241,8 @@ public class GameStateController {
         view.getGameTileGroupPane().shutdown(); // Close active background threads
 
         // Prevent duplication of game
-        playerModel.getPlayer1().getMinions().removeListener(player1WinListener);
-        playerModel.getPlayer2().getMinions().removeListener(player2WinListener);
+        playerModel.getPlayer1().minionsProperty().removeListener(player1WinListener);
+        playerModel.getPlayer2().minionsProperty().removeListener(player2WinListener);
 
         boolean fullscreen = stage.isFullScreen();
         VictoryPane victoryScreen = new VictoryPane(winner, playerModel, powerModel, jdomReader, stage, locale);

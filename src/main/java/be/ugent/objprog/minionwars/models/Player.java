@@ -3,6 +3,8 @@ package be.ugent.objprog.minionwars.models;
 import be.ugent.objprog.minionwars.minions.Minion;
 import be.ugent.objprog.minionwars.powers.Power;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -16,7 +18,9 @@ public class Player {
     private final SimpleStringProperty name;
     private final SimpleIntegerProperty money;
     private final ObservableList<Minion> minions = FXCollections.observableArrayList();
+    private final ReadOnlyListWrapper<Minion> minionsProperty = new ReadOnlyListWrapper<>(this, "minions", minions);
     private final ObservableList<Power> availablePowers = FXCollections.observableArrayList();
+    private final ReadOnlyListWrapper<Power> availablePowersProperty = new ReadOnlyListWrapper<>(this, "availablePowers", availablePowers);
     private final SimpleIntegerProperty availablePowerUses = new SimpleIntegerProperty(MAX_POWER_USAGE);
     private final int id;
 
@@ -114,6 +118,14 @@ public class Player {
 
     public void setMoney(int money) {
         this.money.set(money);
+    }
+
+    public ReadOnlyListProperty<Minion> minionsProperty() {
+        return minionsProperty.getReadOnlyProperty();
+    }
+
+    public ReadOnlyListProperty<Power> availablePowersProperty() {
+        return availablePowersProperty.getReadOnlyProperty();
     }
 
     public void usePower(Power power) {

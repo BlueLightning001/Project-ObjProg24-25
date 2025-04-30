@@ -58,9 +58,6 @@ public class GameView {
         endTurnButton = part1MenuContainer.getEndTurnButton();
         menuTable = part1MenuContainer.getMinionsTableView();
 
-        // Reset board position
-        centerBoardButton.setOnAction(event -> resetGameGroupPosition());
-
         // End turn only when player has at least one minion
         rebindEndTurnButtonPart1();
         this.playerModel.currentPlayerProperty().addListener((observable) -> {
@@ -106,7 +103,7 @@ public class GameView {
         endTurnButton.disableProperty().bind(
                 Bindings.createBooleanBinding(
                         () -> this.playerModel.getCurrentPlayer().getMinions().isEmpty(),
-                        this.playerModel.getCurrentPlayer().getMinions()
+                        this.playerModel.getCurrentPlayer().minionsProperty()
                 )
         );
     }
@@ -124,8 +121,6 @@ public class GameView {
         gamePane.prefHeightProperty().bind(root.heightProperty());
 
         centerBoardButton = part2MenuContainer.getCenterBoardButton();
-        centerBoardButton.setOnAction(event -> resetGameGroupPosition());
-
         endTurnButton = part2MenuContainer.getEndTurnButton();
 
     }
@@ -140,6 +135,10 @@ public class GameView {
 
     public Button getEndTurnButton() {
         return endTurnButton;
+    }
+
+    public Button getCenterBoardButton() {
+        return centerBoardButton;
     }
 
     public HexTile getHexTile(Tile tile) {
