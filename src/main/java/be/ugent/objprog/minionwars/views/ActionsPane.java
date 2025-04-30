@@ -7,6 +7,8 @@ import be.ugent.objprog.minionwars.models.PowerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.powers.Power;
 import be.ugent.objprog.minionwars.tiles.Tile;
+import be.ugent.objprog.minionwars.views.cells.PowerListCell;
+import be.ugent.objprog.minionwars.views.utils.UIStyleUtils;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -88,140 +90,7 @@ public class ActionsPane extends TabPane {
         }
 
 
-        powerListView.setCellFactory(listView -> new ListCell<>() {
-            private final Label nameLabel = new Label();
-            private final Label descriptionLabel = new Label();
-
-            // Detail labels for each value
-            private final Label valueLabel = new Label();
-            private final Label radiusLabel = new Label();
-            private final Label durationLabel = new Label();
-            private final Label effectLabel = new Label();
-
-            // Icon views for each detail
-            private final ImageView powerIcon = new ImageView();
-            private final ImageView valueIcon = new ImageView();
-            private final ImageView radiusIcon = new ImageView();
-            private final ImageView durationIcon = new ImageView();
-            private final ImageView effectIcon = new ImageView();
-
-            private final Image radiusImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/range-119533.png")));
-            private final Image durationImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/be/ugent/objprog/minionwars/images/icons/duration-0073FF.png")));
-
-            private final Separator separator = new Separator();
-            private final VBox infoBox = new VBox(nameLabel, descriptionLabel);
-            private final GridPane detailsGrid = new GridPane();
-            private final HBox cellContainer = new HBox(powerIcon, infoBox, separator, detailsGrid);
-
-            {
-
-                separator.setOrientation(Orientation.VERTICAL);
-
-
-                nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
-                descriptionLabel.setStyle("-fx-font-size: 16;");
-                descriptionLabel.setWrapText(true);
-                descriptionLabel.setMaxWidth(200);
-                descriptionLabel.setPrefWidth(200);
-                descriptionLabel.setMinWidth(100);
-                HBox.setHgrow(descriptionLabel, Priority.NEVER);
-
-
-                powerIcon.setFitWidth(70);
-                powerIcon.setFitHeight(70);
-                powerIcon.setPreserveRatio(true);
-
-                valueIcon.setFitWidth(20);
-                valueIcon.setFitHeight(20);
-                radiusIcon.setFitWidth(20);
-                radiusIcon.setFitHeight(20);
-                durationIcon.setFitWidth(20);
-                durationIcon.setFitHeight(20);
-                effectIcon.setFitWidth(20);
-                effectIcon.setFitHeight(20);
-
-
-                valueLabel.setStyle("-fx-font-size: 14;");
-                radiusLabel.setStyle("-fx-font-size: 14;");
-                durationLabel.setStyle("-fx-font-size: 14;");
-                effectLabel.setStyle("-fx-font-size: 14;");
-
-                // Set up the detailsGrid with two rows and two columns
-                detailsGrid.setHgap(5);
-                detailsGrid.setVgap(5);
-                detailsGrid.add(valueLabel, 0, 0);
-                detailsGrid.add(radiusLabel, 1, 0);
-                detailsGrid.add(durationLabel, 0, 1);
-                detailsGrid.add(effectLabel, 1, 1);
-
-
-                // Set alignment and spacing for containers
-                cellContainer.setSpacing(10);
-                infoBox.setSpacing(2);
-                detailsGrid.setAlignment(Pos.CENTER_LEFT);
-                separator.setPrefWidth(5);
-
-                detailsGrid.setMaxWidth(Double.MAX_VALUE);
-                GridPane.setHgrow(detailsGrid, Priority.ALWAYS);
-
-                detailsGrid.prefWidthProperty().bind(listView.widthProperty().multiply(0.1));
-                infoBox.prefWidthProperty().bind(listView.widthProperty().multiply(0.5));
-            }
-
-            @Override
-            protected void updateItem(Power power, boolean empty) {
-                super.updateItem(power, empty);
-
-                if (empty || power == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    nameLabel.setText(power.getName());
-                    descriptionLabel.setText(MessageFormat.format(bundle.getString("power.effect"), power.getDescription(locale)));
-                    powerIcon.setImage(power.getImage());
-
-                    // Update value details
-                    if (power.getValue() > 0) {
-                        valueLabel.setText("" + power.getValue());
-                        valueIcon.setImage(power.getValueImage());
-                        valueIcon.setVisible(true);
-                    } else {
-                        valueLabel.setText("");
-                        valueIcon.setVisible(false);
-                    }
-                    valueLabel.setGraphic(valueIcon);
-
-                    // Update radius details
-                    radiusLabel.setText("" + power.getRadius());
-                    radiusIcon.setImage(radiusImage);
-                    radiusLabel.setGraphic(radiusIcon);
-
-                    // Update effect details
-                    if (power.hasEffect()) {
-                        durationLabel.setText("" + power.getEffect().getDuration());
-                        durationIcon.setImage(durationImage);
-                        durationIcon.setVisible(true);
-
-                        effectLabel.setText("" + power.getEffect().getValue());
-                        effectIcon.setImage(power.getEffect().getImage());
-                        effectIcon.setVisible(true);
-                    } else {
-                        durationLabel.setText("");
-                        durationIcon.setVisible(false);
-
-                        effectLabel.setText("");
-                        effectIcon.setVisible(false);
-                    }
-                    durationLabel.setGraphic(durationIcon);
-                    effectLabel.setGraphic(effectIcon);
-
-
-                    setGraphic(cellContainer);
-
-                    setDisable(playerModel.getCurrentPlayer().getAvailablePowerUses() <= 0);
-                }
-            }
-        });
+        powerListView.setCellFactory(listView -> new PowerListCell(playerModel, locale));
         // Update UI when selected tile changes
         tileModel.selectedTileProperty().addListener((obs, oldTile, newTile) -> updateAttackOptions(newTile));
 
@@ -310,8 +179,6 @@ public class ActionsPane extends TabPane {
         return attackTab;
     }
 
-    // Map to store listeners for cleanup
-    private final java.util.Map<Labeled, java.util.List<ChangeListener<Number>>> labelListeners = new java.util.HashMap<>();
 
     private void updateAttackOptions(Tile selectedTile) {
         if (selectedTile != null && selectedTile.isOccupied()) {
@@ -341,37 +208,11 @@ public class ActionsPane extends TabPane {
     }
 
     private void styleNode(Labeled toBeStyled, StackPane container, double width, double height) {
-        toBeStyled.setAlignment(Pos.CENTER);
-        toBeStyled.prefWidthProperty().bind(container.widthProperty().multiply(width));
-        toBeStyled.prefHeightProperty().bind(container.heightProperty().multiply(height));
-
-        ChangeListener<Number> widthListener = (obs, oldVal, newVal) -> {
-            Platform.runLater(() -> {
-                double fontSize = toBeStyled.getWidth() * 0.1;
-                toBeStyled.setStyle("-fx-font-size: " + fontSize + "px;");
-            });
-        };
-
-        toBeStyled.widthProperty().addListener(widthListener);
-
-        // Store listener for later cleanup
-        labelListeners.computeIfAbsent(toBeStyled, k -> new java.util.ArrayList<>()).add(widthListener);
+        UIStyleUtils.styleNode(toBeStyled, container, width, height);
     }
 
     private void autoResizeText(Labeled label, double scaleFactor) {
-        ChangeListener<Number> resizeListener = (obs, oldVal, newVal) -> {
-            Platform.runLater(() -> {
-                double fontSize = Math.min(label.getWidth(), label.getHeight()) * scaleFactor;
-                label.setStyle("-fx-font-size: " + fontSize + "px;");
-            });
-        };
-
-        // Listen for both width and height changes
-        label.widthProperty().addListener(resizeListener);
-        label.heightProperty().addListener(resizeListener);
-
-        // Store listeners for later cleanup
-        labelListeners.computeIfAbsent(label, k -> new java.util.ArrayList<>()).add(resizeListener);
+        UIStyleUtils.autoResizeText(label, scaleFactor);
     }
 
     /**
@@ -379,14 +220,8 @@ public class ActionsPane extends TabPane {
      * Should be called when this pane is no longer needed.
      */
     public void cleanup() {
-        // Remove all stored listeners
-        labelListeners.forEach((label, listeners) -> {
-            for (ChangeListener<Number> listener : listeners) {
-                label.widthProperty().removeListener(listener);
-                label.heightProperty().removeListener(listener);
-            }
-        });
-        labelListeners.clear();
+        // Use UIStyleUtils to clean up all listeners
+        UIStyleUtils.cleanup();
     }
 
     public ToggleButton getAttackButton() {

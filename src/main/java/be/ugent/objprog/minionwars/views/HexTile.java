@@ -5,13 +5,11 @@ import be.ugent.objprog.minionwars.models.PlayerModel;
 import be.ugent.objprog.minionwars.models.TileModel;
 import be.ugent.objprog.minionwars.tiles.Tile;
 import be.ugent.objprog.minionwars.tiles.VoidTile;
+import be.ugent.objprog.minionwars.views.utils.ImageUtils;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
@@ -93,25 +91,10 @@ public class HexTile extends Polygon {
     }
 
     /**
-     * Applies a color overlay using a Canvas and returns the modified image.
+     * Applies a color overlay using ImageUtils and returns the modified image.
      */
     private Image applyColorOverlay(Image baseImage, Color overlayColor) {
-        int width = (int) baseImage.getWidth();
-        int height = (int) baseImage.getHeight();
-
-        Canvas canvas = new Canvas(width, height);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        // Draw base image
-        gc.drawImage(baseImage, 0, 0, width, height);
-
-        // Apply overlay
-        gc.setFill(new Color(overlayColor.getRed(), overlayColor.getGreen(), overlayColor.getBlue(), 0.3));
-        gc.fillRect(0, 0, width, height);
-
-        WritableImage blendedImage = new WritableImage(width, height);
-        canvas.snapshot(null, blendedImage);
-        return blendedImage;
+        return ImageUtils.applyColorOverlay(baseImage, overlayColor);
     }
 
     public Color getHighlightColor() {
@@ -210,5 +193,3 @@ public class HexTile extends Polygon {
         );
     }
 }
-
-
